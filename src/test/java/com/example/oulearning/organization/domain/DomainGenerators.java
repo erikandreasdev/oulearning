@@ -1,5 +1,9 @@
 package com.example.oulearning.organization.domain;
 
+import com.example.oulearning.shared.domain.Money;
+import java.math.BigDecimal;
+import java.util.Set;
+import java.util.UUID;
 import org.instancio.Instancio;
 
 /**
@@ -49,5 +53,40 @@ public final class DomainGenerators {
 
     public static Employee randomEmployee() {
         return Employee.of(randomCorporateKey(), randomFullName(), randomEmail(), randomEmployeeRole());
+    }
+
+    public static Money randomMoney() {
+        final var amount = BigDecimal.valueOf(Instancio.gen().doubles().range(100.0, 10000.0).get());
+        return Money.euros(amount);
+    }
+
+    public static OuId randomOuId() {
+        return OuId.of(UUID.randomUUID());
+    }
+
+    public static OuName randomOuName() {
+        return OuName.of("OU " + randomAlphabetic(3, 12));
+    }
+
+    public static Subarea randomSubarea() {
+        return Subarea.of(
+                randomOuId(),
+                randomOuName(),
+                Set.of(randomCorporateKey()),
+                Set.of(randomOuId()),
+                randomMoney());
+    }
+
+    public static Area randomArea() {
+        final var sub1 = randomSubarea();
+        final var sub2 = randomSubarea();
+        final var totalBudget = sub1.budget().plus(sub2.budget());
+        return Area.of(
+                randomOuId(),
+                randomOuName(),
+                Set.of(randomCorporateKey()),
+                Set.of(randomOuId()),
+                totalBudget,
+                Set.of(sub1, sub2));
     }
 }

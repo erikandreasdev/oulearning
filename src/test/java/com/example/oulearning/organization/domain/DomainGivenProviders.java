@@ -1,5 +1,7 @@
 package com.example.oulearning.organization.domain;
 
+import com.example.oulearning.shared.domain.Money;
+import java.math.BigDecimal;
 import org.instancio.Instancio;
 import org.instancio.junit.GivenProvider;
 
@@ -168,6 +170,22 @@ public final class DomainGivenProviders {
             final var randomText = Instancio.gen().string().mixedCase().length(5, 12).get();
             final var randomDigits = Instancio.gen().string().digits().length(2, 4).get();
             return "%s_%s".formatted(randomText, randomDigits);
+        }
+    }
+
+    public static final class ValidOuNameProvider implements GivenProvider {
+        @Override
+        public Object provide(ElementContext context) {
+            final var base = Instancio.gen().string().mixedCase().length(4, 20).get();
+            return "OU " + base;
+        }
+    }
+
+    public static final class ValidMoneyProvider implements GivenProvider {
+        @Override
+        public Object provide(ElementContext context) {
+            final var amount = BigDecimal.valueOf(Instancio.gen().doubles().range(10.0, 5000.0).get());
+            return Money.euros(amount);
         }
     }
 }
