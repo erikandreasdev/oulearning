@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.shared.domain.Money;
+import com.example.oulearning.shared.domain.OuId;
 import java.util.Set;
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +39,8 @@ class SubareaTest {
             assertThat(subarea.parentIds()).isEqualTo(parentIds);
             assertThat(subarea.budget()).isEqualTo(budget);
             assertThat(subarea.type()).isEqualTo(OuType.SUBAREA);
+            assertThat(subarea.childIds()).isEmpty();
+            assertThat(subarea.totalSubtreeBudget()).isEqualTo(budget);
         }
 
         @Test

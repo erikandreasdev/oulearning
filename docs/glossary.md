@@ -7,6 +7,9 @@ This document captures the Ubiquitous Language for the domain model.
 ### Money
 An immutable value object representing a monetary amount backed by the Moneta library (JSR 354 reference implementation), using EUR as the default currency across the project.
 
+### OuId
+Strongly-typed identity value object uniquely identifying an organizational unit across bounded contexts using a `UUID`.
+
 ## Organization Bounded Context
 
 ### Email
@@ -33,9 +36,6 @@ The organizational functional role assigned to an employee (`EMPLOYEE`, `MANAGER
 ### Employee
 A value object representing an employee in the organization, composed of their `CorporateKey`, `FullName`, `Email`, and `EmployeeRole`.
 
-### OuId
-Strongly-typed identity value object uniquely identifying an organizational unit using a `UUID`.
-
 ### OuName
 A value object representing the normalized name of an organizational unit (1 to 100 characters).
 
@@ -56,3 +56,29 @@ Strongly-typed identity value object uniquely identifying an immutable snapshot 
 
 ### Organization
 The Aggregate Root representing the entire organizational hierarchy at a specific point in time. It starts from a single root `Area` (Level 1) with no parents and maintains historical snapshots as organization structure evolutions occur. Supports calculating total organization budgets, subtree budgets, and collection budgets.
+
+## Budgeting Bounded Context
+
+### BudgetId
+Strongly-typed identity value object uniquely identifying a `Budget` aggregate using a `UUID`.
+
+### Budget
+The Aggregate Root in the budgeting context representing the financial allocation and lifecycle for an organizational unit (`OuId`). Tracks allocated, reserved, and spent funds, and computes the currently available balance.
+
+### Allocated
+The total monetary budget assigned to an organizational unit. Defaults to zero if no budget has been assigned.
+
+### Reserved
+Funds temporarily placed on hold/committed for planned activities (e.g. approved upcoming trainings) before invoices or final costs are settled.
+
+### Spent
+Finalized, consumed expenses that have been deducted from the budget.
+
+### Available
+The computed uncommitted funds remaining in a budget, calculated as $\text{allocated} - (\text{reserved} + \text{spent})$.
+
+### BudgetDistributionStrategy
+A domain strategy defining how a parent organizational unit distributes its allocated funds to its children:
+- **`ExclusiveAllocation`**: Funds stay exclusively on the parent OU without cascading.
+- **`EqualDistribution`**: Funds are divided equally among all child OUs (with exact cent remainder handling).
+- **`ExplicitDistribution`**: Custom specific amounts are allocated to designated child OUs.

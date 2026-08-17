@@ -1,5 +1,6 @@
 package com.example.oulearning.organization.domain;
 
+import com.example.oulearning.shared.domain.OuId;
 import java.util.Optional;
 
 /**

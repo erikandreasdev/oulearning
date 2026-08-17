@@ -1,4 +1,4 @@
-package com.example.oulearning.organization.domain;
+package com.example.oulearning.shared.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -40,27 +40,27 @@ class OuIdTest {
         }
 
         @Test
-        @DisplayName("should throw InvalidOuException when UUID is null")
+        @DisplayName("should throw InvalidOuIdException when UUID is null")
         void should_throwException_when_uuidIsNull() {
             assertThatThrownBy(() -> new OuId(null))
-                    .isInstanceOf(InvalidOuException.class)
+                    .isInstanceOf(InvalidOuIdException.class)
                     .hasMessageContaining("cannot be null");
         }
 
         @ParameterizedTest
         @ValueSource(strings = {"", " ", "\t"})
-        @DisplayName("should throw InvalidOuException when string is blank")
+        @DisplayName("should throw InvalidOuIdException when string is blank")
         void should_throwException_when_stringIsBlank(String blank) {
             assertThatThrownBy(() -> OuId.of(blank))
-                    .isInstanceOf(InvalidOuException.class)
+                    .isInstanceOf(InvalidOuIdException.class)
                     .hasMessageContaining("cannot be null or blank");
         }
 
         @Test
-        @DisplayName("should throw InvalidOuException when string is not valid UUID")
+        @DisplayName("should throw InvalidOuIdException when string is not valid UUID")
         void should_throwException_when_stringIsNotValidUuid() {
             assertThatThrownBy(() -> OuId.of("not-a-valid-uuid"))
-                    .isInstanceOf(InvalidOuException.class)
+                    .isInstanceOf(InvalidOuIdException.class)
                     .hasMessageContaining("Invalid UUID format");
         }
     }

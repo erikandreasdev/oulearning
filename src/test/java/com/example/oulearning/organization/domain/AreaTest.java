@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.shared.domain.Money;
+import com.example.oulearning.shared.domain.OuId;
 import java.util.Set;
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.DisplayName;

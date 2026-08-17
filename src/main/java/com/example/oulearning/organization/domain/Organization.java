@@ -1,6 +1,7 @@
 package com.example.oulearning.organization.domain;
 
 import com.example.oulearning.shared.domain.Money;
+import com.example.oulearning.shared.domain.OuId;
 import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.Collection;

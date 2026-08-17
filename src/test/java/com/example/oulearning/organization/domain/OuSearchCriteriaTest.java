@@ -3,6 +3,7 @@ package com.example.oulearning.organization.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.shared.domain.OuId;
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

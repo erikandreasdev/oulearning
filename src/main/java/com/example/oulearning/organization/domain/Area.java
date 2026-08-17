@@ -1,6 +1,7 @@
 package com.example.oulearning.organization.domain;
 
 import com.example.oulearning.shared.domain.Money;
+import com.example.oulearning.shared.domain.OuId;
 import java.util.Set;
 import java.util.stream.Collectors;
 

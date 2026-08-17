@@ -1,4 +1,4 @@
-package com.example.oulearning.organization.domain;
+package com.example.oulearning.shared.domain;
 
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ public record OuId(UUID value) {
      */
     public OuId {
         if (value == null) {
-            throw new InvalidOuException("OuId cannot be null");
+            throw new InvalidOuIdException("OuId cannot be null");
         }
     }
 
@@ -36,12 +36,12 @@ public record OuId(UUID value) {
      */
     public static OuId of(String rawValue) {
         if (rawValue == null || rawValue.isBlank()) {
-            throw new InvalidOuException("OuId string representation cannot be null or blank");
+            throw new InvalidOuIdException("OuId string representation cannot be null or blank");
         }
         try {
             return new OuId(UUID.fromString(rawValue.strip()));
         } catch (IllegalArgumentException e) {
-            throw new InvalidOuException("Invalid UUID format for OuId: '%s'".formatted(rawValue));
+            throw new InvalidOuIdException("Invalid UUID format for OuId: '%s'".formatted(rawValue));
         }
     }
 
