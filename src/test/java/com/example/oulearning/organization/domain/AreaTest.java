@@ -37,12 +37,38 @@ class AreaTest {
             assertThat(area.owners()).isEqualTo(owners);
             assertThat(area.parentIds()).isEqualTo(parentIds);
             assertThat(area.budget()).isEqualTo(budget);
-            assertThat(area.subareas()).isEmpty();
+            assertThat(area.subareaIds()).isEmpty();
+            assertThat(area.loadedSubareas()).isEmpty();
+            assertThat(area.isSubtreeLoaded()).isTrue();
             assertThat(area.type()).isEqualTo(OuType.AREA);
         }
 
         @Test
-        @DisplayName("should create Area when non-equally distributed subareas budgets match the Area budget")
+        @DisplayName("should create Area with subarea IDs when subtree is not loaded")
+        void should_createArea_with_subareaIds_subtreeNotLoaded() {
+            // given
+            final var id = DomainGenerators.randomOuId();
+            final var subId1 = DomainGenerators.randomOuId();
+            final var subId2 = DomainGenerators.randomOuId();
+            final var budget = Money.euros(10000.00);
+
+            // when
+            final var area = Area.of(
+                    id,
+                    DomainGenerators.randomOuName(),
+                    Set.of(DomainGenerators.randomCorporateKey()),
+                    Set.of(),
+                    budget,
+                    Set.of(subId1, subId2));
+
+            // then
+            assertThat(area.subareaIds()).containsExactlyInAnyOrder(subId1, subId2);
+            assertThat(area.loadedSubareas()).isEmpty();
+            assertThat(area.isSubtreeLoaded()).isFalse();
+        }
+
+        @Test
+        @DisplayName("should create Area when non-equally distributed loaded subareas budgets match the Area budget")
         void should_createArea_when_subareasBudgetsMatch_nonEquallyDistributed() {
             // given
             final var areaId = DomainGenerators.randomOuId();
@@ -61,7 +87,7 @@ class AreaTest {
             final var totalBudget = Money.euros(10000.00);
 
             // when
-            final var area = Area.of(
+            final var area = Area.withSubareas(
                     areaId,
                     OuName.of("Software Engineering"),
                     Set.of(DomainGenerators.randomCorporateKey()),
@@ -70,12 +96,14 @@ class AreaTest {
                     Set.of(subarea1, subarea2));
 
             // then
-            assertThat(area.subareas()).containsExactlyInAnyOrder(subarea1, subarea2);
+            assertThat(area.subareaIds()).containsExactlyInAnyOrder(subarea1.id(), subarea2.id());
+            assertThat(area.loadedSubareas()).containsExactlyInAnyOrder(subarea1, subarea2);
             assertThat(area.budget()).isEqualTo(totalBudget);
+            assertThat(area.isSubtreeLoaded()).isTrue();
         }
 
         @Test
-        @DisplayName("should throw AreaBudgetMismatchException when subareas budget sum does not match Area budget")
+        @DisplayName("should throw AreaBudgetMismatchException when loaded subareas budget sum does not match Area budget")
         void should_throwException_when_subareasBudgetSumDoesNotMatch() {
             // given
             final var areaId = DomainGenerators.randomOuId();
@@ -94,7 +122,7 @@ class AreaTest {
             final var declaredBudget = Money.euros(10000.00); // sum is 7000 != 10000
 
             // when / then
-            assertThatThrownBy(() -> Area.of(
+            assertThatThrownBy(() -> Area.withSubareas(
                             areaId,
                             OuName.of("Software Engineering"),
                             Set.of(DomainGenerators.randomCorporateKey()),
@@ -103,6 +131,24 @@ class AreaTest {
                             Set.of(subarea1, subarea2)))
                     .isInstanceOf(AreaBudgetMismatchException.class)
                     .hasMessageContaining("does not match the sum of its subareas' budgets");
+        }
+
+        @Test
+        @DisplayName("should throw InvalidOuException when loaded subareas have IDs not in subareaIds")
+        void should_throwException_when_loadedSubareasNotMatchingSubareaIds() {
+            final var sub1 = DomainGenerators.randomSubarea();
+            final var otherId = DomainGenerators.randomOuId();
+
+            assertThatThrownBy(() -> new Area(
+                            DomainGenerators.randomOuId(),
+                            DomainGenerators.randomOuName(),
+                            Set.of(DomainGenerators.randomCorporateKey()),
+                            Set.of(),
+                            sub1.budget(),
+                            Set.of(otherId), // registered ID is different from sub1.id()
+                            Set.of(sub1)))
+                    .isInstanceOf(InvalidOuException.class)
+                    .hasMessageContaining("not registered in subareaIds");
         }
 
         @Test
@@ -148,17 +194,18 @@ class AreaTest {
         }
 
         @Test
-        @DisplayName("should throw InvalidOuException when subareas set is null")
-        void should_throwException_when_subareasIsNull() {
-            assertThatThrownBy(() -> Area.of(
+        @DisplayName("should throw InvalidOuException when subareaIds set is null")
+        void should_throwException_when_subareaIdsIsNull() {
+            assertThatThrownBy(() -> new Area(
                             DomainGenerators.randomOuId(),
                             DomainGenerators.randomOuName(),
                             Set.of(DomainGenerators.randomCorporateKey()),
                             Set.of(),
                             Money.euros(1000.00),
-                            null))
+                            null,
+                            Set.of()))
                     .isInstanceOf(InvalidOuException.class)
-                    .hasMessageContaining("subareas cannot be null");
+                    .hasMessageContaining("subarea IDs cannot be null");
         }
     }
 

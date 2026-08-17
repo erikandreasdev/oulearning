@@ -2,20 +2,22 @@ package com.example.oulearning.organization.domain;
 
 import com.example.oulearning.shared.domain.Money;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Value object representing an Area (Type 1 Organizational Unit).
- * An Area can contain 0 or more child Subareas.
+ * An Area references child Subareas by their {@link OuId}, and optionally holds {@link Subarea} instances when the subtree is loaded.
  * <p>
- * If the Area contains subareas, the sum of the budgets of all child Subareas must match the Area budget.
+ * If child Subareas are loaded, the sum of their budgets must match the Area budget.
  * </p>
  *
- * @param id        the unique identifier of the area
- * @param name      the name of the area
- * @param owners    the set of corporate keys owning/managing this area
- * @param parentIds the set of parent OU identifiers (0 or more)
- * @param budget    the total assigned budget for this area
- * @param subareas  the set of child Subareas (0 or more)
+ * @param id             the unique identifier of the area
+ * @param name           the name of the area
+ * @param owners         the set of corporate keys owning/managing this area
+ * @param parentIds      the set of parent OU identifiers (0 or more)
+ * @param budget         the total assigned budget for this area
+ * @param subareaIds     the set of child Subarea IDs (0 or more)
+ * @param loadedSubareas the set of loaded child Subareas (empty if subtree is not loaded)
  */
 public record Area(
         OuId id,
@@ -23,11 +25,12 @@ public record Area(
         Set<CorporateKey> owners,
         Set<OuId> parentIds,
         Money budget,
-        Set<Subarea> subareas)
+        Set<OuId> subareaIds,
+        Set<Subarea> loadedSubareas)
         implements OrganizationalUnit {
 
     /**
-     * Compact constructor validating invariants, ensuring immutable sets, and verifying the budget rule.
+     * Compact constructor validating invariants, ensuring immutable sets, and verifying the budget rule when subtree is loaded.
      */
     public Area {
         if (id == null) {
@@ -45,23 +48,35 @@ public record Area(
         if (budget == null) {
             throw new InvalidOuException("Area budget cannot be null");
         }
-        if (subareas == null) {
-            throw new InvalidOuException("Area subareas cannot be null");
+        if (subareaIds == null) {
+            throw new InvalidOuException("Area subarea IDs cannot be null");
+        }
+        if (loadedSubareas == null) {
+            throw new InvalidOuException("Area loaded subareas cannot be null");
         }
 
         owners = Set.copyOf(owners);
         parentIds = Set.copyOf(parentIds);
-        subareas = Set.copyOf(subareas);
+        subareaIds = Set.copyOf(subareaIds);
+        loadedSubareas = Set.copyOf(loadedSubareas);
 
-        if (!subareas.isEmpty()) {
-            final var totalSubareasBudget = subareas.stream()
-                    .map(Subarea::budget)
-                    .reduce(Money.zero(budget.currency()), Money::plus);
+        if (!loadedSubareas.isEmpty()) {
+            final var loadedIds =
+                    loadedSubareas.stream().map(Subarea::id).collect(Collectors.toSet());
+            if (!subareaIds.containsAll(loadedIds)) {
+                throw new InvalidOuException("Loaded subareas contain IDs not registered in subareaIds");
+            }
 
-            if (!totalSubareasBudget.equals(budget)) {
-                throw new AreaBudgetMismatchException(
-                        "Area '%s' budget (%s) does not match the sum of its subareas' budgets (%s)"
-                                .formatted(name.value(), budget, totalSubareasBudget));
+            if (loadedSubareas.size() == subareaIds.size()) {
+                final var totalSubareasBudget = loadedSubareas.stream()
+                        .map(Subarea::budget)
+                        .reduce(Money.zero(budget.currency()), Money::plus);
+
+                if (!totalSubareasBudget.equals(budget)) {
+                    throw new AreaBudgetMismatchException(
+                            "Area '%s' budget (%s) does not match the sum of its subareas' budgets (%s)"
+                                    .formatted(name.value(), budget, totalSubareasBudget));
+                }
             }
         }
     }
@@ -72,15 +87,24 @@ public record Area(
     }
 
     /**
-     * Factory method to create an {@link Area}.
+     * Checks if all child subareas are loaded in this Area instance.
      *
-     * @param id        the unique identifier
-     * @param name      the name
-     * @param owners    the set of corporate keys
-     * @param parentIds the set of parent OU IDs
-     * @param budget    the budget
-     * @param subareas  the set of child Subareas
-     * @return a validated {@link Area}
+     * @return {@code true} if subareaIds is empty or all subarea objects are loaded
+     */
+    public boolean isSubtreeLoaded() {
+        return subareaIds.isEmpty() || loadedSubareas.size() == subareaIds.size();
+    }
+
+    /**
+     * Factory method creating an {@link Area} with child subarea IDs only (subtree not loaded).
+     *
+     * @param id         the area ID
+     * @param name       the area name
+     * @param owners     the set of owner corporate keys
+     * @param parentIds  the set of parent OU IDs
+     * @param budget     the assigned budget
+     * @param subareaIds the set of child subarea IDs
+     * @return an {@link Area} with unloaded subtree
      */
     public static Area of(
             OuId id,
@@ -88,7 +112,32 @@ public record Area(
             Set<CorporateKey> owners,
             Set<OuId> parentIds,
             Money budget,
+            Set<OuId> subareaIds) {
+        return new Area(id, name, owners, parentIds, budget, subareaIds, Set.of());
+    }
+
+    /**
+     * Factory method creating an {@link Area} with loaded child subarea objects (subtree loaded).
+     *
+     * @param id        the area ID
+     * @param name      the area name
+     * @param owners    the set of owner corporate keys
+     * @param parentIds the set of parent OU IDs
+     * @param budget    the assigned budget
+     * @param subareas  the set of child {@link Subarea} objects
+     * @return an {@link Area} with loaded subtree
+     */
+    public static Area withSubareas(
+            OuId id,
+            OuName name,
+            Set<CorporateKey> owners,
+            Set<OuId> parentIds,
+            Money budget,
             Set<Subarea> subareas) {
-        return new Area(id, name, owners, parentIds, budget, subareas);
+        final var ids = subareas == null
+                ? Set.<OuId>of()
+                : subareas.stream().map(Subarea::id).collect(Collectors.toSet());
+        final var loaded = subareas == null ? Set.<Subarea>of() : subareas;
+        return new Area(id, name, owners, parentIds, budget, ids, loaded);
     }
 }

@@ -81,7 +81,7 @@ public final class DomainGenerators {
         final var sub1 = randomSubarea();
         final var sub2 = randomSubarea();
         final var totalBudget = sub1.budget().plus(sub2.budget());
-        return Area.of(
+        return Area.withSubareas(
                 randomOuId(),
                 randomOuName(),
                 Set.of(randomCorporateKey()),
