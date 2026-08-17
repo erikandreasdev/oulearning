@@ -1,0 +1,23 @@
+meta {
+  name: 09 - Distribute Budget (Explicit)
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/v1/budgets/distribute
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "parentOuId": "22222222-2222-2222-2222-222222222222",
+    "strategyType": "EXPLICIT",
+    "explicitAllocations": {
+      "11111111-1111-1111-1111-111111111111": 12000.00,
+      "55555555-5555-5555-5555-555555555555": 8000.00
+    },
+    "currencyCode": "EUR"
+  }
+}

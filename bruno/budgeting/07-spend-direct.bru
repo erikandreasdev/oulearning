@@ -1,0 +1,18 @@
+meta {
+  name: 07 - Direct Spend
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/budgets/44444444-4444-4444-4444-444444444444/spend-direct
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "amount": 1000.00,
+    "currencyCode": "EUR"
+  }
+}

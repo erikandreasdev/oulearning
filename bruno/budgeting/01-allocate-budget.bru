@@ -1,0 +1,20 @@
+meta {
+  name: 01 - Allocate Budget
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/budgets
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "budgetId": "44444444-4444-4444-4444-444444444444",
+    "ouId": "22222222-2222-2222-2222-222222222222",
+    "amount": 20000.00,
+    "currencyCode": "EUR"
+  }
+}

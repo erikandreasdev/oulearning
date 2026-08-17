@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "OU Learning & Budgeting API",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

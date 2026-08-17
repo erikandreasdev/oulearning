@@ -1,0 +1,19 @@
+package com.example.oulearning.budgeting.application;
+
+import java.util.UUID;
+
+/**
+ * Immutable application query for retrieving a Budget.
+ */
+public record GetBudgetQuery(
+        UUID budgetId,
+        UUID ouId) {
+
+    public static GetBudgetQuery byBudgetId(UUID budgetId) {
+        return new GetBudgetQuery(budgetId, null);
+    }
+
+    public static GetBudgetQuery byOuId(UUID ouId) {
+        return new GetBudgetQuery(null, ouId);
+    }
+}

@@ -15,6 +15,7 @@ import com.example.oulearning.organization.domain.unit.OrganizationalUnit;
 import com.example.oulearning.organization.domain.unit.OuId;
 import com.example.oulearning.organization.domain.unit.OuName;
 import com.example.oulearning.organization.domain.unit.OuSearchCriteria;
+import com.example.oulearning.organization.domain.unit.repository.OrganizationalUnitRepository;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -29,15 +30,15 @@ class OrganizationPersistenceAdapterTest {
 
     private OrganizationSnapshotMyBatisMapper snapshotMapper;
     private OrganizationSnapshotEntityMapper entityMapper;
-    private OrganizationalUnitPersistenceAdapter unitAdapter;
+    private OrganizationalUnitRepository unitRepository;
     private OrganizationPersistenceAdapter adapter;
 
     @BeforeEach
     void setUp() {
         snapshotMapper = mock(OrganizationSnapshotMyBatisMapper.class);
         entityMapper = new OrganizationSnapshotEntityMapper();
-        unitAdapter = mock(OrganizationalUnitPersistenceAdapter.class);
-        adapter = new OrganizationPersistenceAdapter(snapshotMapper, entityMapper, unitAdapter);
+        unitRepository = mock(OrganizationalUnitRepository.class);
+        adapter = new OrganizationPersistenceAdapter(snapshotMapper, entityMapper, unitRepository);
     }
 
     private Organization createSampleOrganization(SnapshotId snapshotId, Instant timestamp) {
@@ -63,7 +64,7 @@ class OrganizationPersistenceAdapterTest {
             adapter.save(organization);
 
             verify(snapshotMapper).insertSnapshot(any(OrganizationSnapshotEntity.class));
-            verify(unitAdapter).saveWithSnapshot(organization.rootOu(), snapshotId.toString());
+            verify(unitRepository).save(organization.rootOu());
 
             // findLatest -> served from cache without querying database mapper
             final var latest = adapter.findLatest();
@@ -89,7 +90,7 @@ class OrganizationPersistenceAdapterTest {
                     Set.of());
 
             when(snapshotMapper.findLatestSnapshot()).thenReturn(snapshotEntity);
-            when(unitAdapter.find(OuSearchCriteria.byId(rootOuId, true))).thenReturn(Optional.of(rootOu));
+            when(unitRepository.find(OuSearchCriteria.byId(rootOuId, true))).thenReturn(Optional.of(rootOu));
 
             // First call -> Cache Miss, queries DB
             final var firstCall = adapter.findLatest();
@@ -134,7 +135,7 @@ class OrganizationPersistenceAdapterTest {
                     rootOuId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), Set.of());
 
             when(snapshotMapper.findSnapshotAt(targetTime)).thenReturn(entity);
-            when(unitAdapter.find(OuSearchCriteria.byId(rootOuId, true))).thenReturn(Optional.of(rootOu));
+            when(unitRepository.find(OuSearchCriteria.byId(rootOuId, true))).thenReturn(Optional.of(rootOu));
 
             final var result = adapter.findAt(targetTime);
 
@@ -154,7 +155,7 @@ class OrganizationPersistenceAdapterTest {
                     rootOuId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), Set.of());
 
             when(snapshotMapper.findSnapshotById(snapshotId.toString())).thenReturn(entity);
-            when(unitAdapter.find(OuSearchCriteria.byId(rootOuId, true))).thenReturn(Optional.of(rootOu));
+            when(unitRepository.find(OuSearchCriteria.byId(rootOuId, true))).thenReturn(Optional.of(rootOu));
 
             final var result = adapter.findBySnapshotId(snapshotId);
 
@@ -176,7 +177,7 @@ class OrganizationPersistenceAdapterTest {
                     rootId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), Set.of());
 
             when(snapshotMapper.findAllSnapshots()).thenReturn(List.of(e1, e2));
-            when(unitAdapter.find(OuSearchCriteria.byId(rootId, true))).thenReturn(Optional.of(rootOu));
+            when(unitRepository.find(OuSearchCriteria.byId(rootId, true))).thenReturn(Optional.of(rootOu));
 
             final var history = adapter.findAllHistory();
 

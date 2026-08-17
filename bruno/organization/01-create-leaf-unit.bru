@@ -1,0 +1,22 @@
+meta {
+  name: 01 - Create Leaf Unit
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/organizational-units
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "11111111-1111-1111-1111-111111111111",
+    "name": "Frontend Team",
+    "ouType": "SUBAREA",
+    "ownerCorporateKeys": ["CK0001", "CK0002"],
+    "parentIds": [],
+    "childIds": []
+  }
+}

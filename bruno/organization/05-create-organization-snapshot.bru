@@ -1,0 +1,19 @@
+meta {
+  name: 05 - Create Organization Snapshot
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/organizations/snapshots
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "snapshotId": "33333333-3333-3333-3333-333333333333",
+    "rootOuId": "22222222-2222-2222-2222-222222222222",
+    "createdAt": "2026-08-17T22:00:00Z"
+  }
+}

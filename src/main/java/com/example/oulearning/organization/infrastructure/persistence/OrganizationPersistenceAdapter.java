@@ -5,6 +5,7 @@ import com.example.oulearning.organization.domain.organization.SnapshotId;
 import com.example.oulearning.organization.domain.organization.repository.OrganizationRepository;
 import com.example.oulearning.organization.domain.unit.OuId;
 import com.example.oulearning.organization.domain.unit.OuSearchCriteria;
+import com.example.oulearning.organization.domain.unit.repository.OrganizationalUnitRepository;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,16 +24,16 @@ public class OrganizationPersistenceAdapter implements OrganizationRepository {
 
     private final OrganizationSnapshotMyBatisMapper snapshotMapper;
     private final OrganizationSnapshotEntityMapper entityMapper;
-    private final OrganizationalUnitPersistenceAdapter unitAdapter;
+    private final OrganizationalUnitRepository unitRepository;
     private final AtomicReference<Organization> latestSnapshotCache = new AtomicReference<>();
 
     public OrganizationPersistenceAdapter(
             OrganizationSnapshotMyBatisMapper snapshotMapper,
             OrganizationSnapshotEntityMapper entityMapper,
-            OrganizationalUnitPersistenceAdapter unitAdapter) {
+            OrganizationalUnitRepository unitRepository) {
         this.snapshotMapper = Objects.requireNonNull(snapshotMapper, "OrganizationSnapshotMyBatisMapper cannot be null");
         this.entityMapper = Objects.requireNonNull(entityMapper, "OrganizationSnapshotEntityMapper cannot be null");
-        this.unitAdapter = Objects.requireNonNull(unitAdapter, "OrganizationalUnitPersistenceAdapter cannot be null");
+        this.unitRepository = Objects.requireNonNull(unitRepository, "OrganizationalUnitRepository cannot be null");
     }
 
     @Override
@@ -43,8 +44,8 @@ public class OrganizationPersistenceAdapter implements OrganizationRepository {
         final var snapshotEntity = entityMapper.toEntity(organization, 0L);
         snapshotMapper.insertSnapshot(snapshotEntity);
 
-        // Save root OU and entire hierarchy with snapshot ID association
-        unitAdapter.saveWithSnapshot(organization.rootOu(), snapshotEntity.id());
+        // Save root OU and entire hierarchy
+        unitRepository.save(organization.rootOu());
 
         // Refresh latest snapshot cache
         latestSnapshotCache.set(organization);
@@ -114,7 +115,7 @@ public class OrganizationPersistenceAdapter implements OrganizationRepository {
 
     private Organization hydrateOrganization(OrganizationSnapshotEntity entity) {
         final var rootOuId = OuId.of(entity.rootOuId());
-        final var rootOu = unitAdapter
+        final var rootOu = unitRepository
                 .find(OuSearchCriteria.byId(rootOuId, true))
                 .orElseThrow(() -> new IllegalStateException(
                         "Corrupted organization snapshot '%s': root OU '%s' not found in database"

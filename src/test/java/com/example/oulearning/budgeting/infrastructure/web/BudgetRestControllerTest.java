@@ -1,0 +1,158 @@
+package com.example.oulearning.budgeting.infrastructure.web;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.example.oulearning.budgeting.application.AllocateBudgetUseCase;
+import com.example.oulearning.budgeting.application.ConsumeBudgetFundsUseCase;
+import com.example.oulearning.budgeting.application.DistributeBudgetUseCase;
+import com.example.oulearning.budgeting.application.GetBudgetQuery;
+import com.example.oulearning.budgeting.application.GetBudgetUseCase;
+import com.example.oulearning.budgeting.application.ReleaseBudgetFundsUseCase;
+import com.example.oulearning.budgeting.application.ReserveBudgetFundsUseCase;
+import com.example.oulearning.budgeting.application.SpendDirectBudgetFundsUseCase;
+import com.example.oulearning.budgeting.application.BudgetDistributionResult;
+import com.example.oulearning.budgeting.domain.budget.Budget;
+import com.example.oulearning.budgeting.domain.budget.BudgetId;
+import com.example.oulearning.budgeting.domain.budget.Money;
+import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.shared.infrastructure.web.GlobalRestControllerAdvice;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+@WebMvcTest(BudgetRestController.class)
+@Import(GlobalRestControllerAdvice.class)
+class BudgetRestControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private AllocateBudgetUseCase allocateUseCase;
+
+    @MockitoBean
+    private GetBudgetUseCase getUseCase;
+
+    @MockitoBean
+    private ReserveBudgetFundsUseCase reserveUseCase;
+
+    @MockitoBean
+    private ReleaseBudgetFundsUseCase releaseUseCase;
+
+    @MockitoBean
+    private ConsumeBudgetFundsUseCase consumeUseCase;
+
+    @MockitoBean
+    private SpendDirectBudgetFundsUseCase spendDirectUseCase;
+
+    @MockitoBean
+    private DistributeBudgetUseCase distributeUseCase;
+
+    @Nested
+    @DisplayName("Allocate Budget Endpoints")
+    class AllocateEndpoints {
+
+        @Test
+        @DisplayName("should allocate budget and return 201 Created")
+        void should_allocateBudget_successfully() throws Exception {
+            final var budgetId = UUID.randomUUID();
+            final var ouId = UUID.randomUUID();
+            final var budget = Budget.of(BudgetId.of(budgetId), OuId.of(ouId), Money.euros(10000.00));
+
+            when(allocateUseCase.execute(any())).thenReturn(budgetId);
+            when(getUseCase.execute(any(GetBudgetQuery.class))).thenReturn(Optional.of(budget));
+
+            final var requestJson = """
+                    {
+                        "budgetId": "%s",
+                        "ouId": "%s",
+                        "amount": 10000.00,
+                        "currencyCode": "EUR"
+                    }
+                    """.formatted(budgetId, ouId);
+
+            mockMvc.perform(post("/api/v1/budgets")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestJson))
+                    .andExpect(status().isCreated())
+                    .andExpect(header().string("Location", "/api/v1/budgets/" + budgetId))
+                    .andExpect(jsonPath("$.budgetId").value(budgetId.toString()))
+                    .andExpect(jsonPath("$.allocatedAmount").value(10000.00))
+                    .andExpect(jsonPath("$.availableAmount").value(10000.00));
+        }
+    }
+
+    @Nested
+    @DisplayName("Fund Lifecycle Endpoints")
+    class FundLifecycleEndpoints {
+
+        @Test
+        @DisplayName("should reserve funds successfully")
+        void should_reserveFunds() throws Exception {
+            final var budgetId = UUID.randomUUID();
+            final var ouId = UUID.randomUUID();
+            final var budget = Budget.of(BudgetId.of(budgetId), OuId.of(ouId), Money.euros(10000.00))
+                    .reserve(Money.euros(3000.00));
+
+            when(reserveUseCase.execute(any())).thenReturn(budget);
+
+            final var requestJson = """
+                    {
+                        "amount": 3000.00
+                    }
+                    """;
+
+            mockMvc.perform(post("/api/v1/budgets/{id}/reserve", budgetId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestJson))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.reservedAmount").value(3000.00))
+                    .andExpect(jsonPath("$.availableAmount").value(7000.00));
+        }
+
+        @Test
+        @DisplayName("should distribute budget among child OUs")
+        void should_distributeBudget() throws Exception {
+            final var parentOuId = UUID.randomUUID();
+            final var childOuId1 = UUID.randomUUID();
+            final var childOuId2 = UUID.randomUUID();
+
+            final var parentBudget = Budget.of(BudgetId.of(UUID.randomUUID()), OuId.of(parentOuId), Money.euros(0.00));
+            final var child1 = Budget.of(BudgetId.of(UUID.randomUUID()), OuId.of(childOuId1), Money.euros(5000.00));
+            final var child2 = Budget.of(BudgetId.of(UUID.randomUUID()), OuId.of(childOuId2), Money.euros(5000.00));
+
+            final var result = new BudgetDistributionResult(parentBudget, List.of(child1, child2));
+            when(distributeUseCase.execute(any())).thenReturn(result);
+
+            final var requestJson = """
+                    {
+                        "parentOuId": "%s",
+                        "strategyType": "EQUAL",
+                        "childOuIds": ["%s", "%s"]
+                    }
+                    """.formatted(parentOuId, childOuId1, childOuId2);
+
+            mockMvc.perform(post("/api/v1/budgets/distribute")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestJson))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.childBudgets.length()").value(2))
+                    .andExpect(jsonPath("$.parentBudget.availableAmount").value(0.00));
+        }
+    }
+}
