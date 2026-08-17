@@ -46,7 +46,13 @@ Classification of an organizational unit: `AREA` (Type 1) or `SUBAREA` (Type 2).
 Sealed interface representing an organizational unit within the organization hierarchy. Permitted implementations are `Area` (Type 1) and `Subarea` (Type 2).
 
 ### Area
-A Type 1 organizational unit that contains 0 or more child `Subarea`s and 0 or more parent OU references. When an `Area` contains child `Subarea`s, the sum of all its `Subarea`s' budgets must match the `Area` budget.
+A Type 1 organizational unit that contains 0 or more child `OrganizationalUnit`s (child `Area`s or child `Subarea`s across N hierarchy levels) and 0 or more parent OU references. When an `Area` contains loaded child OUs, the sum of all its child OUs' budgets must match the `Area` budget.
 
 ### Subarea
 A Type 2 organizational unit representing a leaf unit in the organizational hierarchy with no child OUs. Budgets across subareas are not required to be equally distributed.
+
+### SnapshotId
+Strongly-typed identity value object uniquely identifying an immutable snapshot of the organization.
+
+### Organization
+The Aggregate Root representing the entire organizational hierarchy at a specific point in time. It starts from a single root `Area` (Level 1) with no parents and maintains historical snapshots as organization structure evolutions occur. Supports calculating total organization budgets, subtree budgets, and collection budgets.

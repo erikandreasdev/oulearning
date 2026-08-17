@@ -30,7 +30,7 @@ public sealed interface OrganizationalUnit permits Area, Subarea {
     Set<OuId> parentIds();
 
     /**
-     * @return the allocated budget for this organizational unit
+     * @return the assigned budget for this organizational unit
      */
     Money budget();
 
@@ -38,4 +38,25 @@ public sealed interface OrganizationalUnit permits Area, Subarea {
      * @return the type of organizational unit (AREA or SUBAREA)
      */
     OuType type();
+
+    /**
+     * @return the set of child OU identifiers (empty for Subareas)
+     */
+    Set<OuId> childIds();
+
+    /**
+     * Checks if this OU is a root organizational unit (has no parent OUs).
+     *
+     * @return {@code true} if parentIds is empty
+     */
+    default boolean isRoot() {
+        return parentIds().isEmpty();
+    }
+
+    /**
+     * Calculates the total budget of this OU and its entire subtree.
+     *
+     * @return the total subtree {@link Money} budget
+     */
+    Money totalSubtreeBudget();
 }

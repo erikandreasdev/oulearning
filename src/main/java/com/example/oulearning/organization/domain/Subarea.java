@@ -50,6 +50,16 @@ public record Subarea(
         return OuType.SUBAREA;
     }
 
+    @Override
+    public Set<OuId> childIds() {
+        return Set.of();
+    }
+
+    @Override
+    public Money totalSubtreeBudget() {
+        return budget;
+    }
+
     /**
      * Factory method to create a {@link Subarea}.
      *
