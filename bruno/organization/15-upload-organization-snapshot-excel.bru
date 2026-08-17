@@ -1,0 +1,15 @@
+meta {
+  name: 15 - Upload Organization Snapshot (Excel)
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{baseUrl}}/api/v1/organizations/snapshots/upload?managerCorporateKey=CK0001
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(samples/organization.xlsx)
+}

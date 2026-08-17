@@ -1,0 +1,16 @@
+meta {
+  name: 14 - Upload Organization Snapshot (CSV)
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{baseUrl}}/api/v1/organizations/snapshots/upload?managerCorporateKey=CK0001
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(samples/organization.csv)
+  employeeFile: @file(samples/employees.csv)
+}

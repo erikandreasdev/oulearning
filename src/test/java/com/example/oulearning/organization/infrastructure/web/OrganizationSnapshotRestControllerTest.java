@@ -3,6 +3,7 @@ package com.example.oulearning.organization.infrastructure.web;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -13,9 +14,11 @@ import com.example.oulearning.organization.application.GetLatestOrganizationUseC
 import com.example.oulearning.organization.application.GetOrganizationHistoryUseCase;
 import com.example.oulearning.organization.application.GetOrganizationSnapshotQuery;
 import com.example.oulearning.organization.application.GetOrganizationSnapshotUseCase;
+import com.example.oulearning.organization.application.UploadOrganizationSnapshotUseCase;
 import com.example.oulearning.organization.domain.employee.CorporateKey;
 import com.example.oulearning.organization.domain.organization.Organization;
 import com.example.oulearning.organization.domain.organization.SnapshotId;
+import com.example.oulearning.organization.domain.organization.SnapshotStatus;
 import com.example.oulearning.organization.domain.unit.OrganizationalUnit;
 import com.example.oulearning.organization.domain.unit.OuId;
 import com.example.oulearning.organization.domain.unit.OuName;
@@ -32,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -44,6 +48,9 @@ class OrganizationSnapshotRestControllerTest {
 
     @MockitoBean
     private CreateOrganizationSnapshotUseCase createSnapshotUseCase;
+
+    @MockitoBean
+    private UploadOrganizationSnapshotUseCase uploadSnapshotUseCase;
 
     @MockitoBean
     private GetLatestOrganizationUseCase getLatestUseCase;
@@ -60,7 +67,7 @@ class OrganizationSnapshotRestControllerTest {
                 OuName.of("Global Corp"),
                 Set.of(CorporateKey.of("CK0001")),
                 Set.of());
-        return new Organization(SnapshotId.of(snapshotId), rootOu, timestamp);
+        return new Organization(SnapshotId.of(snapshotId), rootOu, SnapshotStatus.ACTIVE, timestamp);
     }
 
     @Nested
@@ -68,7 +75,7 @@ class OrganizationSnapshotRestControllerTest {
     class SnapshotEndpoints {
 
         @Test
-        @DisplayName("should create snapshot and return 201 Created")
+        @DisplayName("should create snapshot from JSON and return 201 Created")
         void should_createSnapshot_successfully() throws Exception {
             final var snapshotId = UUID.randomUUID();
             final var rootOuId = UUID.randomUUID();
@@ -91,7 +98,28 @@ class OrganizationSnapshotRestControllerTest {
                     .andExpect(status().isCreated())
                     .andExpect(header().string("Location", "/api/v1/organizations/snapshots/" + snapshotId))
                     .andExpect(jsonPath("$.snapshotId").value(snapshotId.toString()))
+                    .andExpect(jsonPath("$.status").value("ACTIVE"))
                     .andExpect(jsonPath("$.rootOu.name").value("Global Corp"));
+        }
+
+        @Test
+        @DisplayName("should upload multipart snapshot file and return 201 Created")
+        void should_uploadSnapshot_successfully() throws Exception {
+            final var snapshotId = UUID.randomUUID();
+            final var organization = createSampleOrg(snapshotId, Instant.now());
+
+            when(uploadSnapshotUseCase.execute(any())).thenReturn(snapshotId);
+            when(getSnapshotUseCase.execute(any(GetOrganizationSnapshotQuery.class))).thenReturn(Optional.of(organization));
+
+            final var file = new MockMultipartFile("file", "org.csv", "text/csv", "name,parent\nCEO,\nEngineering,CEO\n".getBytes());
+
+            mockMvc.perform(multipart("/api/v1/organizations/snapshots/upload")
+                            .file(file)
+                            .param("managerCorporateKey", "CK0001"))
+                    .andExpect(status().isCreated())
+                    .andExpect(header().string("Location", "/api/v1/organizations/snapshots/" + snapshotId))
+                    .andExpect(jsonPath("$.snapshotId").value(snapshotId.toString()))
+                    .andExpect(jsonPath("$.status").value("ACTIVE"));
         }
 
         @Test
@@ -104,7 +132,8 @@ class OrganizationSnapshotRestControllerTest {
 
             mockMvc.perform(get("/api/v1/organizations/latest"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.snapshotId").value(snapshotId.toString()));
+                    .andExpect(jsonPath("$.snapshotId").value(snapshotId.toString()))
+                    .andExpect(jsonPath("$.status").value("ACTIVE"));
         }
 
         @Test

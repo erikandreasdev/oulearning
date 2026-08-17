@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import com.example.oulearning.organization.domain.employee.CorporateKey;
 import com.example.oulearning.organization.domain.organization.Organization;
 import com.example.oulearning.organization.domain.organization.SnapshotId;
+import com.example.oulearning.organization.domain.organization.SnapshotStatus;
 import com.example.oulearning.organization.domain.unit.OrganizationalUnit;
 import com.example.oulearning.organization.domain.unit.OuId;
 import com.example.oulearning.organization.domain.unit.OuName;
@@ -47,7 +48,7 @@ class OrganizationPersistenceAdapterTest {
                 OuName.of("Root Org"),
                 Set.of(CorporateKey.of("CK0001")),
                 Set.of());
-        return new Organization(snapshotId, rootOu, timestamp);
+        return new Organization(snapshotId, rootOu, SnapshotStatus.ACTIVE, timestamp);
     }
 
     @Nested
@@ -55,14 +56,15 @@ class OrganizationPersistenceAdapterTest {
     class LatestSnapshotCachingMechanics {
 
         @Test
-        @DisplayName("should cache latest snapshot on save and serve subsequent findLatest calls from cache")
+        @DisplayName("should cache latest snapshot on save, archive previous ones, and serve subsequent findLatest calls from cache")
         void should_cacheLatestSnapshot_onSave() {
             final var snapshotId = SnapshotId.of(UUID.randomUUID());
             final var organization = createSampleOrganization(snapshotId, Instant.now());
 
-            // Save organization -> updates cache
+            // Save organization -> archives previous active and updates cache
             adapter.save(organization);
 
+            verify(snapshotMapper).archivePreviousSnapshots();
             verify(snapshotMapper).insertSnapshot(any(OrganizationSnapshotEntity.class));
             verify(unitRepository).save(organization.rootOu());
 
@@ -81,7 +83,7 @@ class OrganizationPersistenceAdapterTest {
             final var timestamp = Instant.now();
 
             final var snapshotEntity = new OrganizationSnapshotEntity(
-                    snapshotIdStr, rootOuId.toString(), timestamp, 0L);
+                    snapshotIdStr, rootOuId.toString(), "ACTIVE", timestamp, 0L);
 
             final var rootOu = OrganizationalUnit.leaf(
                     rootOuId,
@@ -130,7 +132,7 @@ class OrganizationPersistenceAdapterTest {
             final var rootOuId = OuId.of(UUID.randomUUID());
 
             final var entity = new OrganizationSnapshotEntity(
-                    snapshotIdStr, rootOuId.toString(), targetTime, 0L);
+                    snapshotIdStr, rootOuId.toString(), "ARCHIVED", targetTime, 0L);
             final var rootOu = OrganizationalUnit.leaf(
                     rootOuId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), Set.of());
 
@@ -150,7 +152,7 @@ class OrganizationPersistenceAdapterTest {
             final var rootOuId = OuId.of(UUID.randomUUID());
 
             final var entity = new OrganizationSnapshotEntity(
-                    snapshotId.toString(), rootOuId.toString(), Instant.now(), 0L);
+                    snapshotId.toString(), rootOuId.toString(), "ACTIVE", Instant.now(), 0L);
             final var rootOu = OrganizationalUnit.leaf(
                     rootOuId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), Set.of());
 
@@ -170,8 +172,8 @@ class OrganizationPersistenceAdapterTest {
             final var id2 = UUID.randomUUID().toString();
             final var rootId = OuId.of(UUID.randomUUID());
 
-            final var e1 = new OrganizationSnapshotEntity(id1, rootId.toString(), Instant.now().minusSeconds(100), 0L);
-            final var e2 = new OrganizationSnapshotEntity(id2, rootId.toString(), Instant.now(), 0L);
+            final var e1 = new OrganizationSnapshotEntity(id1, rootId.toString(), "ARCHIVED", Instant.now().minusSeconds(100), 0L);
+            final var e2 = new OrganizationSnapshotEntity(id2, rootId.toString(), "ACTIVE", Instant.now(), 0L);
 
             final var rootOu = OrganizationalUnit.leaf(
                     rootId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), Set.of());

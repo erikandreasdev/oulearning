@@ -3,6 +3,7 @@ package com.example.oulearning.organization.infrastructure.web;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -14,6 +15,8 @@ import com.example.oulearning.organization.application.GetEmployeesByOuQuery;
 import com.example.oulearning.organization.application.GetEmployeesByOuUseCase;
 import com.example.oulearning.organization.application.RegisterEmployeeCommand;
 import com.example.oulearning.organization.application.RegisterEmployeeUseCase;
+import com.example.oulearning.organization.application.UploadEmployeesCommand;
+import com.example.oulearning.organization.application.UploadEmployeesUseCase;
 import com.example.oulearning.organization.domain.employee.CorporateKey;
 import com.example.oulearning.organization.domain.employee.Email;
 import com.example.oulearning.organization.domain.employee.Employee;
@@ -33,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -45,6 +49,9 @@ class EmployeeRestControllerTest {
 
     @MockitoBean
     private RegisterEmployeeUseCase registerEmployeeUseCase;
+
+    @MockitoBean
+    private UploadEmployeesUseCase uploadEmployeesUseCase;
 
     @MockitoBean
     private GetEmployeeUseCase getEmployeeUseCase;
@@ -74,6 +81,20 @@ class EmployeeRestControllerTest {
                         .content(requestJson))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/v1/employees/CK0001"));
+    }
+
+    @Test
+    @DisplayName("should upload employee file and return 200 OK")
+    void should_uploadEmployees_return200() throws Exception {
+        when(uploadEmployeesUseCase.execute(any(UploadEmployeesCommand.class))).thenReturn(5);
+
+        final var file = new MockMultipartFile("file", "employees.csv", "text/csv", "ck,firstName,lastName,email,role,ouName\nCK0001,Alice,Smith,alice@example.com,MANAGER,Engineering\n".getBytes());
+
+        mockMvc.perform(multipart("/api/v1/employees/upload")
+                        .file(file)
+                        .param("managerCorporateKey", "CK0001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.importedCount").value(5));
     }
 
     @Test

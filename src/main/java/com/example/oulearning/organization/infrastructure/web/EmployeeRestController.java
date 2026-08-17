@@ -6,6 +6,8 @@ import com.example.oulearning.organization.application.GetEmployeesByOuQuery;
 import com.example.oulearning.organization.application.GetEmployeesByOuUseCase;
 import com.example.oulearning.organization.application.RegisterEmployeeCommand;
 import com.example.oulearning.organization.application.RegisterEmployeeUseCase;
+import com.example.oulearning.organization.application.UploadEmployeesCommand;
+import com.example.oulearning.organization.application.UploadEmployeesUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -16,8 +18,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import org.springframework.http.MediaType;
@@ -29,25 +33,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
- * REST Controller for managing Employees and querying OU memberships with subtree capabilities.
+ * REST Controller for managing Employees, batch file uploads, and querying OU memberships.
  */
 @RestController
 @RequestMapping(path = "/api/v1/employees", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Employees", description = "Endpoints for employee registration and organizational unit membership lookups")
+@Tag(name = "Employees", description = "Endpoints for employee registration, file uploads, and organizational unit membership lookups")
 public class EmployeeRestController {
 
     private final RegisterEmployeeUseCase registerEmployeeUseCase;
+    private final UploadEmployeesUseCase uploadEmployeesUseCase;
     private final GetEmployeeUseCase getEmployeeUseCase;
     private final GetEmployeesByOuUseCase getEmployeesByOuUseCase;
 
     public EmployeeRestController(
             RegisterEmployeeUseCase registerEmployeeUseCase,
+            UploadEmployeesUseCase uploadEmployeesUseCase,
             GetEmployeeUseCase getEmployeeUseCase,
             GetEmployeesByOuUseCase getEmployeesByOuUseCase) {
         this.registerEmployeeUseCase = Objects.requireNonNull(registerEmployeeUseCase, "RegisterEmployeeUseCase cannot be null");
+        this.uploadEmployeesUseCase = Objects.requireNonNull(uploadEmployeesUseCase, "UploadEmployeesUseCase cannot be null");
         this.getEmployeeUseCase = Objects.requireNonNull(getEmployeeUseCase, "GetEmployeeUseCase cannot be null");
         this.getEmployeesByOuUseCase = Objects.requireNonNull(getEmployeesByOuUseCase, "GetEmployeesByOuUseCase cannot be null");
     }
@@ -86,6 +95,32 @@ public class EmployeeRestController {
         final var location = URI.create("/api/v1/employees/" + corporateKey);
 
         return ResponseEntity.created(location).build();
+    }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload and assign employees from CSV or Excel file",
+               description = "Parses an employee list and links them to the active organization snapshot's units")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Employees successfully uploaded and assigned"),
+        @ApiResponse(responseCode = "400", description = "Invalid file or parameters",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
+        @ApiResponse(responseCode = "422", description = "Domain validation failed",
+                content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+    })
+    public ResponseEntity<Map<String, Object>> uploadEmployees(
+            @Parameter(description = "CSV or Excel file containing the employee list")
+            @RequestPart("file") MultipartFile employeeFile,
+
+            @Parameter(description = "Corporate key of the authorized manager performing the upload")
+            @RequestParam(value = "managerCorporateKey", required = false) String managerCorporateKey) throws IOException {
+
+        final var empBytes = employeeFile.getBytes();
+        final var filename = employeeFile.getOriginalFilename() != null ? employeeFile.getOriginalFilename() : "employees.csv";
+
+        final var command = new UploadEmployeesCommand(managerCorporateKey, empBytes, filename);
+        final var count = uploadEmployeesUseCase.execute(command);
+
+        return ResponseEntity.ok(Map.of("importedCount", count, "message", "Successfully imported %d employees".formatted(count)));
     }
 
     @GetMapping("/{corporateKey}")

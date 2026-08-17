@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Persistence adapter implementing {@link OrganizationRepository} with MyBatis, {@link OrganizationSnapshotEntityMapper},
- * and in-memory caching for high-performance latest snapshot retrieval.
+ * archiving previous active snapshots upon new active snapshot creation, and in-memory caching for latest snapshot retrieval.
  */
 @Repository
 public class OrganizationPersistenceAdapter implements OrganizationRepository {
@@ -41,6 +41,11 @@ public class OrganizationPersistenceAdapter implements OrganizationRepository {
     public void save(Organization organization) {
         Objects.requireNonNull(organization, "Organization cannot be null");
 
+        // 1. Archive previous active snapshots if saving an ACTIVE snapshot
+        if (organization.isActive()) {
+            snapshotMapper.archivePreviousSnapshots();
+        }
+
         final var snapshotEntity = entityMapper.toEntity(organization, 0L);
         snapshotMapper.insertSnapshot(snapshotEntity);
 
@@ -48,7 +53,9 @@ public class OrganizationPersistenceAdapter implements OrganizationRepository {
         unitRepository.save(organization.rootOu());
 
         // Refresh latest snapshot cache
-        latestSnapshotCache.set(organization);
+        if (organization.isActive()) {
+            latestSnapshotCache.set(organization);
+        }
     }
 
     @Override

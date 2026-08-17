@@ -12,15 +12,18 @@ import java.util.Set;
 
 /**
  * Aggregate root representing the entire Organization at a specific point in time (Snapshot).
- * <p>
- * The organization hierarchy has N levels, starting with a single root OrganizationalUnit (Level 1) with no parents.
- * </p>
+ * Tracks whether this snapshot is currently ACTIVE or ARCHIVED for audit purposes.
  *
  * @param snapshotId the unique identifier of this organization snapshot
  * @param rootOu     the single root OrganizationalUnit representing the Organization itself
+ * @param status     the status lifecycle (ACTIVE or ARCHIVED)
  * @param createdAt  the timestamp when this organization snapshot was created
  */
-public record Organization(SnapshotId snapshotId, OrganizationalUnit rootOu, Instant createdAt) {
+public record Organization(
+        SnapshotId snapshotId,
+        OrganizationalUnit rootOu,
+        SnapshotStatus status,
+        Instant createdAt) {
 
     public Organization {
         if (snapshotId == null) {
@@ -28,6 +31,9 @@ public record Organization(SnapshotId snapshotId, OrganizationalUnit rootOu, Ins
         }
         if (rootOu == null) {
             throw new InvalidOrganizationException("Root OrganizationalUnit cannot be null");
+        }
+        if (status == null) {
+            throw new InvalidOrganizationException("SnapshotStatus cannot be null");
         }
         if (createdAt == null) {
             throw new InvalidOrganizationException("CreatedAt timestamp cannot be null");
@@ -40,6 +46,22 @@ public record Organization(SnapshotId snapshotId, OrganizationalUnit rootOu, Ins
 
         // Validate tree integrity (no cycles)
         validateTreeIntegrity(rootOu);
+    }
+
+    public Organization(SnapshotId snapshotId, OrganizationalUnit rootOu, Instant createdAt) {
+        this(snapshotId, rootOu, SnapshotStatus.ACTIVE, createdAt);
+    }
+
+    public static Organization active(SnapshotId snapshotId, OrganizationalUnit rootOu, Instant createdAt) {
+        return new Organization(snapshotId, rootOu, SnapshotStatus.ACTIVE, createdAt);
+    }
+
+    public Organization archive() {
+        return new Organization(snapshotId, rootOu, SnapshotStatus.ARCHIVED, createdAt);
+    }
+
+    public boolean isActive() {
+        return status == SnapshotStatus.ACTIVE;
     }
 
     private static void validateTreeIntegrity(OrganizationalUnit root) {

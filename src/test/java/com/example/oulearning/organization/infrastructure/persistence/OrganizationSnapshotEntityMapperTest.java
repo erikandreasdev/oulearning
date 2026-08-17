@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.example.oulearning.organization.domain.employee.CorporateKey;
 import com.example.oulearning.organization.domain.organization.Organization;
 import com.example.oulearning.organization.domain.organization.SnapshotId;
+import com.example.oulearning.organization.domain.organization.SnapshotStatus;
 import com.example.oulearning.organization.domain.unit.OrganizationalUnit;
 import com.example.oulearning.organization.domain.unit.OuId;
 import com.example.oulearning.organization.domain.unit.OuName;
@@ -35,12 +36,13 @@ class OrganizationSnapshotEntityMapperTest {
                     Set.of(CorporateKey.of("CK0001")),
                     Set.of());
             final var createdAt = Instant.now();
-            final var domain = new Organization(snapshotId, rootOu, createdAt);
+            final var domain = new Organization(snapshotId, rootOu, SnapshotStatus.ACTIVE, createdAt);
 
             final var entity = mapper.toEntity(domain, 3L);
 
             assertThat(entity.id()).isEqualTo(snapshotId.toString());
             assertThat(entity.rootOuId()).isEqualTo(rootId.toString());
+            assertThat(entity.status()).isEqualTo("ACTIVE");
             assertThat(entity.createdAt()).isEqualTo(createdAt);
             assertThat(entity.version()).isEqualTo(3L);
         }
@@ -65,7 +67,7 @@ class OrganizationSnapshotEntityMapperTest {
             final var createdAt = Instant.now();
 
             final var entity = new OrganizationSnapshotEntity(
-                    snapshotId.toString(), rootId.toString(), createdAt, 1L);
+                    snapshotId.toString(), rootId.toString(), "ACTIVE", createdAt, 1L);
 
             final var rootOu = OrganizationalUnit.leaf(
                     rootId,
@@ -77,6 +79,7 @@ class OrganizationSnapshotEntityMapperTest {
 
             assertThat(domain.snapshotId().value()).isEqualTo(snapshotId);
             assertThat(domain.rootOu()).isEqualTo(rootOu);
+            assertThat(domain.status()).isEqualTo(SnapshotStatus.ACTIVE);
             assertThat(domain.createdAt()).isEqualTo(createdAt);
         }
     }
