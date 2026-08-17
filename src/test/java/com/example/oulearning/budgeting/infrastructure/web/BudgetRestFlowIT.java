@@ -82,9 +82,11 @@ class BudgetRestFlowIT {
                 .andExpect(jsonPath("$.childBudgets.length()").value(2))
                 .andExpect(jsonPath("$.childBudgets[0].allocatedAmount").value(10000.00));
 
-        // 3. Query Child 1 Budget by OU ID
-        final var child1Result = mockMvc.perform(get("/api/v1/budgets/ou/{ouId}", childOu1Id))
+        // 3. Query Child 1 Budget by OU ID and FiscalYear
+        final var child1Result = mockMvc.perform(get("/api/v1/budgets/ou/{ouId}", childOu1Id)
+                        .param("fiscalYear", "2026"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fiscalYear").value(2026))
                 .andExpect(jsonPath("$.allocatedAmount").value(10000.00))
                 .andExpect(jsonPath("$.availableAmount").value(10000.00))
                 .andReturn();

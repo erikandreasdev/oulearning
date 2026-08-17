@@ -4,6 +4,8 @@ import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.Money;
 import com.example.oulearning.budgeting.domain.budget.repository.BudgetRepository;
+import com.example.oulearning.shared.domain.fiscal.FiscalYear;
+import java.time.Clock;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import javax.money.Monetary;
@@ -18,9 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReserveBudgetFundsService implements ReserveBudgetFundsUseCase {
 
     private final BudgetRepository repository;
+    private final Clock clock;
 
-    public ReserveBudgetFundsService(BudgetRepository repository) {
+    public ReserveBudgetFundsService(BudgetRepository repository, Clock clock) {
         this.repository = Objects.requireNonNull(repository, "BudgetRepository cannot be null");
+        this.clock = Objects.requireNonNull(clock, "Clock cannot be null");
     }
 
     @Override
@@ -36,7 +40,7 @@ public class ReserveBudgetFundsService implements ReserveBudgetFundsUseCase {
                 : budget.allocated().currency();
         final var amountToReserve = Money.of(command.amount(), currency);
 
-        final var updatedBudget = budget.reserve(amountToReserve);
+        final var updatedBudget = budget.reserve(amountToReserve, FiscalYear.current(clock));
         repository.save(updatedBudget);
 
         return updatedBudget;

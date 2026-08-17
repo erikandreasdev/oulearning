@@ -65,7 +65,7 @@ public final class DomainGenerators {
     }
 
     public static Employee randomEmployee() {
-        return Employee.of(randomCorporateKey(), randomFullName(), randomEmail(), randomEmployeeRole());
+        return Employee.of(randomCorporateKey(), randomFullName(), randomEmail(), randomPhone(), randomEmployeeRole(), randomOuId());
     }
 
     public static OuId randomOuId() {

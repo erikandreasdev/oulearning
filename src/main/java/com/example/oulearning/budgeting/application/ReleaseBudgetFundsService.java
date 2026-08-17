@@ -4,6 +4,8 @@ import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.Money;
 import com.example.oulearning.budgeting.domain.budget.repository.BudgetRepository;
+import com.example.oulearning.shared.domain.fiscal.FiscalYear;
+import java.time.Clock;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import javax.money.Monetary;
@@ -11,16 +13,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service orchestrating release of reserved funds.
+ * Service orchestrating budget release.
  */
 @Service
 @Transactional
 public class ReleaseBudgetFundsService implements ReleaseBudgetFundsUseCase {
 
     private final BudgetRepository repository;
+    private final Clock clock;
 
-    public ReleaseBudgetFundsService(BudgetRepository repository) {
+    public ReleaseBudgetFundsService(BudgetRepository repository, Clock clock) {
         this.repository = Objects.requireNonNull(repository, "BudgetRepository cannot be null");
+        this.clock = Objects.requireNonNull(clock, "Clock cannot be null");
     }
 
     @Override
@@ -36,7 +40,7 @@ public class ReleaseBudgetFundsService implements ReleaseBudgetFundsUseCase {
                 : budget.allocated().currency();
         final var amountToRelease = Money.of(command.amount(), currency);
 
-        final var updatedBudget = budget.releaseReservation(amountToRelease);
+        final var updatedBudget = budget.releaseReservation(amountToRelease, FiscalYear.current(clock));
         repository.save(updatedBudget);
 
         return updatedBudget;

@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 public record BudgetEntity(
         String id,
         String ouId,
+        Integer fiscalYear,
         BigDecimal allocatedAmount,
         String allocatedCurrency,
         BigDecimal reservedAmount,

@@ -1,0 +1,29 @@
+meta {
+  name: Submit Training Request with Custom Purpose
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/training-requests
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "ouId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "requesterCorporateKey": "CK0001",
+    "name": "Generative AI Agents in Production Workshop",
+    "costAmount": 3000.00,
+    "costCurrency": "EUR",
+    "purposeType": "OTHER",
+    "purposeCustomText": "Specialized departmental engineering workflow automation and fine-tuning",
+    "trainingHours": 32,
+    "availableAtOrgUniversity": false,
+    "assistantCorporateKeys": [
+      "CK0001",
+      "CK0002"
+    ]
+  }
+}

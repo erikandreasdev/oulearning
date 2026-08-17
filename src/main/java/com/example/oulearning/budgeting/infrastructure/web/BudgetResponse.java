@@ -16,6 +16,9 @@ public record BudgetResponse(
         @Schema(description = "Associated organizational unit UUID", example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
         UUID ouId,
 
+        @Schema(description = "Fiscal year of the budget", example = "2026")
+        Integer fiscalYear,
+
         @Schema(description = "Total allocated amount", example = "25000.00")
         BigDecimal allocatedAmount,
 
@@ -39,6 +42,7 @@ public record BudgetResponse(
         return new BudgetResponse(
                 budget.id().value(),
                 budget.ouId().value(),
+                budget.fiscalYear().value(),
                 budget.allocated().amount(),
                 budget.reserved().amount(),
                 budget.spent().amount(),

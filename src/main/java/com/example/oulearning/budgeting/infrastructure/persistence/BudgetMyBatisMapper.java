@@ -16,10 +16,10 @@ public interface BudgetMyBatisMapper {
 
     @Insert("""
             INSERT INTO budgets (
-                id, ou_id, allocated_amount, allocated_currency,
+                id, ou_id, fiscal_year, allocated_amount, allocated_currency,
                 reserved_amount, reserved_currency, spent_amount, spent_currency, version
             ) VALUES (
-                #{id}, #{ouId}, #{allocatedAmount}, #{allocatedCurrency},
+                #{id}, #{ouId}, #{fiscalYear}, #{allocatedAmount}, #{allocatedCurrency},
                 #{reservedAmount}, #{reservedCurrency}, #{spentAmount}, #{spentCurrency}, #{version}
             )
             """)
@@ -39,7 +39,7 @@ public interface BudgetMyBatisMapper {
     int updateBudget(BudgetEntity entity);
 
     @Select("""
-            SELECT id, ou_id AS ouId,
+            SELECT id, ou_id AS ouId, fiscal_year AS fiscalYear,
                    allocated_amount AS allocatedAmount, allocated_currency AS allocatedCurrency,
                    reserved_amount AS reservedAmount, reserved_currency AS reservedCurrency,
                    spent_amount AS spentAmount, spent_currency AS spentCurrency,
@@ -50,19 +50,53 @@ public interface BudgetMyBatisMapper {
     BudgetEntity findBudgetById(@Param("id") String id);
 
     @Select("""
-            SELECT id, ou_id AS ouId,
+            SELECT id, ou_id AS ouId, fiscal_year AS fiscalYear,
+                   allocated_amount AS allocatedAmount, allocated_currency AS allocatedCurrency,
+                   reserved_amount AS reservedAmount, reserved_currency AS reservedCurrency,
+                   spent_amount AS spentAmount, spent_currency AS spentCurrency,
+                   version
+            FROM budgets
+            WHERE ou_id = #{ouId} AND fiscal_year = #{fiscalYear}
+            """)
+    BudgetEntity findBudgetByOuIdAndFiscalYear(
+            @Param("ouId") String ouId,
+            @Param("fiscalYear") int fiscalYear);
+
+    @Select("""
+            SELECT id, ou_id AS ouId, fiscal_year AS fiscalYear,
                    allocated_amount AS allocatedAmount, allocated_currency AS allocatedCurrency,
                    reserved_amount AS reservedAmount, reserved_currency AS reservedCurrency,
                    spent_amount AS spentAmount, spent_currency AS spentCurrency,
                    version
             FROM budgets
             WHERE ou_id = #{ouId}
+            ORDER BY fiscal_year DESC
+            FETCH FIRST 1 ROWS ONLY
             """)
     BudgetEntity findBudgetByOuId(@Param("ouId") String ouId);
 
     @Select("""
             <script>
-            SELECT id, ou_id AS ouId,
+            SELECT id, ou_id AS ouId, fiscal_year AS fiscalYear,
+                   allocated_amount AS allocatedAmount, allocated_currency AS allocatedCurrency,
+                   reserved_amount AS reservedAmount, reserved_currency AS reservedCurrency,
+                   spent_amount AS spentAmount, spent_currency AS spentCurrency,
+                   version
+            FROM budgets
+            WHERE fiscal_year = #{fiscalYear}
+              AND ou_id IN
+            <foreach item='ouId' collection='ouIds' open='(' separator=',' close=')'>
+                #{ouId}
+            </foreach>
+            </script>
+            """)
+    List<BudgetEntity> findAllBudgetsByOuIdsAndFiscalYear(
+            @Param("ouIds") Collection<String> ouIds,
+            @Param("fiscalYear") int fiscalYear);
+
+    @Select("""
+            <script>
+            SELECT id, ou_id AS ouId, fiscal_year AS fiscalYear,
                    allocated_amount AS allocatedAmount, allocated_currency AS allocatedCurrency,
                    reserved_amount AS reservedAmount, reserved_currency AS reservedCurrency,
                    spent_amount AS spentAmount, spent_currency AS spentCurrency,

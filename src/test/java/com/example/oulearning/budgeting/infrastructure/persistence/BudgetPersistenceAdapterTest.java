@@ -11,6 +11,7 @@ import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.Money;
 import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.shared.domain.fiscal.FiscalYear;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -46,6 +47,7 @@ class BudgetPersistenceAdapterTest {
             final var entity = new BudgetEntity(
                     budgetId.toString(),
                     ouId.toString(),
+                    2026,
                     new BigDecimal("10000.00"), "EUR",
                     new BigDecimal("2000.00"), "EUR",
                     new BigDecimal("1000.00"), "EUR",
@@ -59,6 +61,7 @@ class BudgetPersistenceAdapterTest {
             final var budget = result.get();
             assertThat(budget.id()).isEqualTo(budgetId);
             assertThat(budget.ouId()).isEqualTo(ouId);
+            assertThat(budget.fiscalYear()).isEqualTo(FiscalYear.of(2026));
             assertThat(budget.allocated()).isEqualTo(Money.euros(10000.00));
             assertThat(budget.reserved()).isEqualTo(Money.euros(2000.00));
             assertThat(budget.spent()).isEqualTo(Money.euros(1000.00));
@@ -74,6 +77,7 @@ class BudgetPersistenceAdapterTest {
             final var entity = new BudgetEntity(
                     budgetId.toString(),
                     ouId.toString(),
+                    2026,
                     new BigDecimal("5000.00"), "EUR",
                     new BigDecimal("0.00"), "EUR",
                     new BigDecimal("0.00"), "EUR",
@@ -88,19 +92,42 @@ class BudgetPersistenceAdapterTest {
         }
 
         @Test
+        @DisplayName("should find budget by OU ID and FiscalYear")
+        void should_findBudgetByOuIdAndFiscalYear() {
+            final var budgetId = BudgetId.of(UUID.randomUUID());
+            final var ouId = OuId.of(UUID.randomUUID());
+
+            final var entity = new BudgetEntity(
+                    budgetId.toString(),
+                    ouId.toString(),
+                    2025,
+                    new BigDecimal("7000.00"), "EUR",
+                    new BigDecimal("0.00"), "EUR",
+                    new BigDecimal("0.00"), "EUR",
+                    0L);
+
+            when(mapper.findBudgetByOuIdAndFiscalYear(ouId.toString(), 2025)).thenReturn(entity);
+
+            final var result = adapter.findByOuIdAndFiscalYear(ouId, FiscalYear.of(2025));
+
+            assertThat(result).isPresent();
+            assertThat(result.get().fiscalYear()).isEqualTo(FiscalYear.of(2025));
+        }
+
+        @Test
         @DisplayName("should batch query budgets for a collection of OU IDs")
         void should_batchQueryBudgets_byOuIds() {
             final var ouId1 = OuId.of(UUID.randomUUID());
             final var ouId2 = OuId.of(UUID.randomUUID());
 
             final var e1 = new BudgetEntity(
-                    UUID.randomUUID().toString(), ouId1.toString(),
+                    UUID.randomUUID().toString(), ouId1.toString(), 2026,
                     new BigDecimal("3000.00"), "EUR",
                     new BigDecimal("0.00"), "EUR",
                     new BigDecimal("0.00"), "EUR", 0L);
 
             final var e2 = new BudgetEntity(
-                    UUID.randomUUID().toString(), ouId2.toString(),
+                    UUID.randomUUID().toString(), ouId2.toString(), 2026,
                     new BigDecimal("4000.00"), "EUR",
                     new BigDecimal("0.00"), "EUR",
                     new BigDecimal("0.00"), "EUR", 0L);
@@ -133,7 +160,7 @@ class BudgetPersistenceAdapterTest {
         void should_insertBudget_when_doesNotExist() {
             final var budgetId = BudgetId.of(UUID.randomUUID());
             final var ouId = OuId.of(UUID.randomUUID());
-            final var budget = Budget.of(budgetId, ouId, Money.euros(15000.00));
+            final var budget = Budget.of(budgetId, ouId, FiscalYear.of(2026), Money.euros(15000.00));
 
             when(mapper.findBudgetById(budgetId.toString())).thenReturn(null);
 
@@ -147,10 +174,10 @@ class BudgetPersistenceAdapterTest {
         void should_updateBudget_when_exists() {
             final var budgetId = BudgetId.of(UUID.randomUUID());
             final var ouId = OuId.of(UUID.randomUUID());
-            final var budget = Budget.of(budgetId, ouId, Money.euros(15000.00));
+            final var budget = Budget.of(budgetId, ouId, FiscalYear.of(2026), Money.euros(15000.00));
 
             final var existing = new BudgetEntity(
-                    budgetId.toString(), ouId.toString(),
+                    budgetId.toString(), ouId.toString(), 2026,
                     new BigDecimal("10000.00"), "EUR",
                     BigDecimal.ZERO, "EUR",
                     BigDecimal.ZERO, "EUR", 1L);
@@ -168,10 +195,10 @@ class BudgetPersistenceAdapterTest {
         void should_throwException_when_updateFailsDueToVersionConflict() {
             final var budgetId = BudgetId.of(UUID.randomUUID());
             final var ouId = OuId.of(UUID.randomUUID());
-            final var budget = Budget.of(budgetId, ouId, Money.euros(15000.00));
+            final var budget = Budget.of(budgetId, ouId, FiscalYear.of(2026), Money.euros(15000.00));
 
             final var existing = new BudgetEntity(
-                    budgetId.toString(), ouId.toString(),
+                    budgetId.toString(), ouId.toString(), 2026,
                     new BigDecimal("10000.00"), "EUR",
                     BigDecimal.ZERO, "EUR",
                     BigDecimal.ZERO, "EUR", 1L);

@@ -18,6 +18,9 @@ public record AllocateBudgetRequest(
         @Schema(description = "UUID of the organizational unit receiving the budget", example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
         UUID ouId,
 
+        @Schema(description = "Fiscal Year (defaults to current fiscal year if omitted)", example = "2026", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        Integer fiscalYear,
+
         @NotNull(message = "Amount cannot be null")
         @DecimalMin(value = "0.00", message = "Amount must be greater than or equal to 0.00")
         @Schema(description = "Allocated amount", example = "25000.00")

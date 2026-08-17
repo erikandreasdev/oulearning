@@ -4,6 +4,8 @@ import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.Money;
 import com.example.oulearning.budgeting.domain.budget.repository.BudgetRepository;
+import com.example.oulearning.shared.domain.fiscal.FiscalYear;
+import java.time.Clock;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import javax.money.Monetary;
@@ -11,16 +13,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service orchestrating direct spend from allocated budget.
+ * Service orchestrating direct fund spending without prior reservation.
  */
 @Service
 @Transactional
 public class SpendDirectBudgetFundsService implements SpendDirectBudgetFundsUseCase {
 
     private final BudgetRepository repository;
+    private final Clock clock;
 
-    public SpendDirectBudgetFundsService(BudgetRepository repository) {
+    public SpendDirectBudgetFundsService(BudgetRepository repository, Clock clock) {
         this.repository = Objects.requireNonNull(repository, "BudgetRepository cannot be null");
+        this.clock = Objects.requireNonNull(clock, "Clock cannot be null");
     }
 
     @Override
@@ -36,7 +40,7 @@ public class SpendDirectBudgetFundsService implements SpendDirectBudgetFundsUseC
                 : budget.allocated().currency();
         final var amountToSpend = Money.of(command.amount(), currency);
 
-        final var updatedBudget = budget.spendDirect(amountToSpend);
+        final var updatedBudget = budget.spendDirect(amountToSpend, FiscalYear.current(clock));
         repository.save(updatedBudget);
 
         return updatedBudget;

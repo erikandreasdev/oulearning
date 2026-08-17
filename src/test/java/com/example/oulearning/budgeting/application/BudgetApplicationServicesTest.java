@@ -10,6 +10,7 @@ import com.example.oulearning.budgeting.domain.budget.exception.InsufficientBudg
 import com.example.oulearning.budgeting.domain.budget.repository.BudgetRepository;
 import com.example.oulearning.organization.domain.unit.OuId;
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,16 +32,19 @@ class BudgetApplicationServicesTest {
     private SpendDirectBudgetFundsService spendDirectService;
     private DistributeBudgetService distributeService;
 
+    private Clock clock;
+
     @BeforeEach
     void setUp() {
         repository = new InMemoryBudgetRepository();
+        clock = Clock.fixed(java.time.Instant.parse("2026-08-17T12:00:00Z"), java.time.ZoneId.of("UTC"));
 
-        allocateService = new AllocateBudgetService(repository);
+        allocateService = new AllocateBudgetService(repository, clock);
         getService = new GetBudgetService(repository);
-        reserveService = new ReserveBudgetFundsService(repository);
-        releaseService = new ReleaseBudgetFundsService(repository);
-        consumeService = new ConsumeBudgetFundsService(repository);
-        spendDirectService = new SpendDirectBudgetFundsService(repository);
+        reserveService = new ReserveBudgetFundsService(repository, clock);
+        releaseService = new ReleaseBudgetFundsService(repository, clock);
+        consumeService = new ConsumeBudgetFundsService(repository, clock);
+        spendDirectService = new SpendDirectBudgetFundsService(repository, clock);
         distributeService = new DistributeBudgetService(repository);
     }
 
@@ -137,11 +141,30 @@ class BudgetApplicationServicesTest {
         }
 
         @Override
+        public Optional<Budget> findByOuIdAndFiscalYear(OuId ouId, com.example.oulearning.shared.domain.fiscal.FiscalYear fiscalYear) {
+            return store.values().stream()
+                    .filter(b -> b.ouId().equals(ouId) && b.fiscalYear().equals(fiscalYear))
+                    .findFirst();
+        }
+
+        @Override
         public List<Budget> findAllByOuIds(java.util.Collection<OuId> ouIds) {
             if (ouIds == null || ouIds.isEmpty()) {
                 return List.of();
             }
             return store.values().stream().filter(b -> ouIds.contains(b.ouId())).toList();
+        }
+
+        @Override
+        public List<Budget> findAllByOuIdsAndFiscalYear(
+                java.util.Collection<OuId> ouIds,
+                com.example.oulearning.shared.domain.fiscal.FiscalYear fiscalYear) {
+            if (ouIds == null || ouIds.isEmpty()) {
+                return List.of();
+            }
+            return store.values().stream()
+                    .filter(b -> ouIds.contains(b.ouId()) && b.fiscalYear().equals(fiscalYear))
+                    .toList();
         }
 
         @Override

@@ -3,6 +3,7 @@ package com.example.oulearning.budgeting.domain.budget.repository;
 import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.shared.domain.fiscal.FiscalYear;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -18,5 +19,9 @@ public interface BudgetRepository {
 
     Optional<Budget> findByOuId(OuId ouId);
 
+    Optional<Budget> findByOuIdAndFiscalYear(OuId ouId, FiscalYear fiscalYear);
+
     List<Budget> findAllByOuIds(Collection<OuId> ouIds);
+
+    List<Budget> findAllByOuIdsAndFiscalYear(Collection<OuId> ouIds, FiscalYear fiscalYear);
 }

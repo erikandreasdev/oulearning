@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @MapperScan(basePackages = {
     "com.example.oulearning.organization.infrastructure.persistence",
-    "com.example.oulearning.budgeting.infrastructure.persistence"
+    "com.example.oulearning.budgeting.infrastructure.persistence",
+    "com.example.oulearning.training.infrastructure.persistence"
 })
 public class MyBatisConfig {}

@@ -1,0 +1,18 @@
+meta {
+  name: 05 - Approve Training Request
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/training-requests/{{trainingRequestId}}/approve
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "managerCorporateKey": "CK0001",
+    "managerNotes": "Approved for Q3 Engineering initiative"
+  }
+}

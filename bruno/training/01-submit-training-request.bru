@@ -1,0 +1,28 @@
+meta {
+  name: Submit Training Request
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/training-requests
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "ouId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "requesterCorporateKey": "CK0001",
+    "name": "Advanced Domain-Driven Design and Clean Architecture",
+    "costAmount": 1500.00,
+    "costCurrency": "EUR",
+    "purposeType": "UPSKILLING",
+    "trainingHours": 40,
+    "availableAtOrgUniversity": true,
+    "assistantCorporateKeys": [
+      "CK0001",
+      "CK0002"
+    ]
+  }
+}

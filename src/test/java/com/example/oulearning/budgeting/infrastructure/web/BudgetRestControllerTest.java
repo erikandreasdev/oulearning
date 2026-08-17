@@ -92,8 +92,30 @@ class BudgetRestControllerTest {
                     .andExpect(status().isCreated())
                     .andExpect(header().string("Location", "/api/v1/budgets/" + budgetId))
                     .andExpect(jsonPath("$.budgetId").value(budgetId.toString()))
+                    .andExpect(jsonPath("$.fiscalYear").value(2026))
                     .andExpect(jsonPath("$.allocatedAmount").value(10000.00))
                     .andExpect(jsonPath("$.availableAmount").value(10000.00));
+        }
+
+        @Test
+        @DisplayName("should get budget by OU ID and FiscalYear")
+        void should_getBudgetByOuIdAndFiscalYear() throws Exception {
+            final var budgetId = UUID.randomUUID();
+            final var ouId = UUID.randomUUID();
+            final var budget = Budget.of(
+                    BudgetId.of(budgetId),
+                    OuId.of(ouId),
+                    com.example.oulearning.shared.domain.fiscal.FiscalYear.of(2025),
+                    Money.euros(15000.00));
+
+            when(getUseCase.execute(new GetBudgetQuery(null, ouId, 2025))).thenReturn(Optional.of(budget));
+
+            mockMvc.perform(get("/api/v1/budgets/ou/{ouId}", ouId)
+                            .param("fiscalYear", "2025"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.budgetId").value(budgetId.toString()))
+                    .andExpect(jsonPath("$.fiscalYear").value(2025))
+                    .andExpect(jsonPath("$.allocatedAmount").value(15000.00));
         }
     }
 

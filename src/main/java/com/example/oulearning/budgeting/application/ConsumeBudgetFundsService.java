@@ -4,6 +4,8 @@ import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.Money;
 import com.example.oulearning.budgeting.domain.budget.repository.BudgetRepository;
+import com.example.oulearning.shared.domain.fiscal.FiscalYear;
+import java.time.Clock;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import javax.money.Monetary;
@@ -11,16 +13,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service orchestrating consumption of reserved funds.
+ * Service orchestrating reserved funds consumption.
  */
 @Service
 @Transactional
 public class ConsumeBudgetFundsService implements ConsumeBudgetFundsUseCase {
 
     private final BudgetRepository repository;
+    private final Clock clock;
 
-    public ConsumeBudgetFundsService(BudgetRepository repository) {
+    public ConsumeBudgetFundsService(BudgetRepository repository, Clock clock) {
         this.repository = Objects.requireNonNull(repository, "BudgetRepository cannot be null");
+        this.clock = Objects.requireNonNull(clock, "Clock cannot be null");
     }
 
     @Override
@@ -36,7 +40,7 @@ public class ConsumeBudgetFundsService implements ConsumeBudgetFundsUseCase {
                 : budget.allocated().currency();
         final var amountToConsume = Money.of(command.amount(), currency);
 
-        final var updatedBudget = budget.consumeReserved(amountToConsume);
+        final var updatedBudget = budget.consumeReserved(amountToConsume, FiscalYear.current(clock));
         repository.save(updatedBudget);
 
         return updatedBudget;

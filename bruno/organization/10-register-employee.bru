@@ -1,0 +1,27 @@
+meta {
+  name: 10 - Register Employee
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/api/v1/employees
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "corporateKey": "CK0100",
+    "firstName": "Grace",
+    "lastName": "Hopper",
+    "email": "grace.hopper@oulearning.com",
+    "phone": "+34911223344",
+    "role": "MANAGER",
+    "ouId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+  }
+}

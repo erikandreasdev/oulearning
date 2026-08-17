@@ -4,6 +4,7 @@ import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.Money;
 import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.shared.domain.fiscal.FiscalYear;
 import java.util.Objects;
 import javax.money.Monetary;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ public class BudgetEntityMapper {
         return new BudgetEntity(
                 domain.id().toString(),
                 domain.ouId().toString(),
+                domain.fiscalYear().value(),
                 domain.allocated().amount(),
                 domain.allocated().currency().getCurrencyCode(),
                 domain.reserved().amount(),
@@ -47,6 +49,7 @@ public class BudgetEntityMapper {
 
         final var budgetId = BudgetId.of(entity.id());
         final var ouId = OuId.of(entity.ouId());
+        final var fiscalYear = FiscalYear.of(entity.fiscalYear() != null ? entity.fiscalYear() : 2026);
 
         final var allocatedCurrency = Monetary.getCurrency(entity.allocatedCurrency());
         final var reservedCurrency = Monetary.getCurrency(entity.reservedCurrency());
@@ -56,6 +59,6 @@ public class BudgetEntityMapper {
         final var reserved = Money.of(entity.reservedAmount(), reservedCurrency);
         final var spent = Money.of(entity.spentAmount(), spentCurrency);
 
-        return new Budget(budgetId, ouId, allocated, reserved, spent);
+        return new Budget(budgetId, ouId, fiscalYear, allocated, reserved, spent);
     }
 }

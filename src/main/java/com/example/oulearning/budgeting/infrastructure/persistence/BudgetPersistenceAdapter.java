@@ -4,6 +4,7 @@ import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.repository.BudgetRepository;
 import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.shared.domain.fiscal.FiscalYear;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -78,6 +79,20 @@ public class BudgetPersistenceAdapter implements BudgetRepository {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<Budget> findByOuIdAndFiscalYear(OuId ouId, FiscalYear fiscalYear) {
+        Objects.requireNonNull(ouId, "OuId cannot be null");
+        Objects.requireNonNull(fiscalYear, "FiscalYear cannot be null");
+
+        final var entity = mapper.findBudgetByOuIdAndFiscalYear(ouId.toString(), fiscalYear.value());
+        if (entity == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(entityMapper.toDomain(entity));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Budget> findAllByOuIds(Collection<OuId> ouIds) {
         if (ouIds == null || ouIds.isEmpty()) {
             return List.of();
@@ -85,6 +100,29 @@ public class BudgetPersistenceAdapter implements BudgetRepository {
 
         final var idStrings = ouIds.stream().map(OuId::toString).toList();
         final var entities = mapper.findAllBudgetsByOuIds(idStrings);
+
+        if (entities == null || entities.isEmpty()) {
+            return List.of();
+        }
+
+        final var result = new ArrayList<Budget>(entities.size());
+        for (final var entity : entities) {
+            result.add(entityMapper.toDomain(entity));
+        }
+
+        return List.copyOf(result);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Budget> findAllByOuIdsAndFiscalYear(Collection<OuId> ouIds, FiscalYear fiscalYear) {
+        if (ouIds == null || ouIds.isEmpty()) {
+            return List.of();
+        }
+        Objects.requireNonNull(fiscalYear, "FiscalYear cannot be null");
+
+        final var idStrings = ouIds.stream().map(OuId::toString).toList();
+        final var entities = mapper.findAllBudgetsByOuIdsAndFiscalYear(idStrings, fiscalYear.value());
 
         if (entities == null || entities.isEmpty()) {
             return List.of();

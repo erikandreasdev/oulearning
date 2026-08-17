@@ -1,0 +1,11 @@
+meta {
+  name: 07 - Filter Training Requests (Manager View)
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v1/training-requests?ouNames=Engineering&status=DRAFT&fiscalYear=2026
+  body: none
+  auth: none
+}

@@ -1,0 +1,19 @@
+meta {
+  name: 06 - Reject Training Request
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/training-requests/{{trainingRequestId}}/reject
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "managerCorporateKey": "CK0001",
+    "rejectionReason": "Cost exceeds department budget allocation for this quarter",
+    "managerNotes": "Consider internal OrgUniversity course instead"
+  }
+}

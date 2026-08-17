@@ -7,6 +7,7 @@ import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.Money;
 import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.shared.domain.fiscal.FiscalYear;
 import java.math.BigDecimal;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -26,13 +27,14 @@ class BudgetEntityMapperTest {
         void should_mapDomainToEntity() {
             final var budgetId = BudgetId.of(UUID.randomUUID());
             final var ouId = OuId.of(UUID.randomUUID());
-            final var domain = Budget.of(budgetId, ouId, Money.euros(10000.00))
+            final var domain = Budget.of(budgetId, ouId, FiscalYear.of(2026), Money.euros(10000.00))
                     .reserve(Money.euros(2000.00));
 
             final var entity = mapper.toEntity(domain, 5L);
 
             assertThat(entity.id()).isEqualTo(budgetId.toString());
             assertThat(entity.ouId()).isEqualTo(ouId.toString());
+            assertThat(entity.fiscalYear()).isEqualTo(2026);
             assertThat(entity.allocatedAmount()).isEqualByComparingTo(new BigDecimal("10000.00"));
             assertThat(entity.allocatedCurrency()).isEqualTo("EUR");
             assertThat(entity.reservedAmount()).isEqualByComparingTo(new BigDecimal("2000.00"));
@@ -48,11 +50,13 @@ class BudgetEntityMapperTest {
             final var domain = Budget.of(
                     BudgetId.of(UUID.randomUUID()),
                     OuId.of(UUID.randomUUID()),
+                    FiscalYear.of(2026),
                     Money.euros(5000.00));
 
             final var entity = mapper.toEntity(domain, null);
 
             assertThat(entity.version()).isEqualTo(0L);
+            assertThat(entity.fiscalYear()).isEqualTo(2026);
         }
 
         @Test
@@ -76,6 +80,7 @@ class BudgetEntityMapperTest {
             final var entity = new BudgetEntity(
                     budgetId.toString(),
                     ouId.toString(),
+                    2026,
                     new BigDecimal("12000.50"), "EUR",
                     new BigDecimal("2000.00"), "EUR",
                     new BigDecimal("1500.25"), "EUR",
@@ -85,6 +90,7 @@ class BudgetEntityMapperTest {
 
             assertThat(domain.id().value()).isEqualTo(budgetId);
             assertThat(domain.ouId().value()).isEqualTo(ouId);
+            assertThat(domain.fiscalYear().value()).isEqualTo(2026);
             assertThat(domain.allocated()).isEqualTo(Money.euros(12000.50));
             assertThat(domain.reserved()).isEqualTo(Money.euros(2000.00));
             assertThat(domain.spent()).isEqualTo(Money.euros(1500.25));

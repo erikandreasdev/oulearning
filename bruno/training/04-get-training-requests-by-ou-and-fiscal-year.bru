@@ -1,0 +1,16 @@
+meta {
+  name: Get Training Requests by OU and Fiscal Year
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/training-requests?ouId=a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11&fiscalYear=2026
+  body: none
+  auth: none
+}
+
+params:query {
+  ouId: a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
+  fiscalYear: 2026
+}

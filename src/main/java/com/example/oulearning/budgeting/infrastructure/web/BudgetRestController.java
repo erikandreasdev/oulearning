@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -69,7 +70,7 @@ public class BudgetRestController {
     }
 
     @PostMapping
-    @Operation(summary = "Allocate initial budget", description = "Allocates a new budget to an organizational unit")
+    @Operation(summary = "Allocate initial budget", description = "Allocates a new budget to an organizational unit for a specific fiscal year")
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Budget allocated successfully"),
         @ApiResponse(responseCode = "400", description = "Validation failed",
@@ -81,6 +82,7 @@ public class BudgetRestController {
         final var command = new AllocateBudgetCommand(
                 request.budgetId(),
                 request.ouId(),
+                request.fiscalYear(),
                 request.amount(),
                 request.currencyCode());
 
@@ -107,15 +109,18 @@ public class BudgetRestController {
     }
 
     @GetMapping("/ou/{ouId}")
-    @Operation(summary = "Get budget by OU ID", description = "Retrieves the budget assigned to a specific organizational unit")
+    @Operation(summary = "Get budget by OU ID and optional Fiscal Year", description = "Retrieves the budget assigned to a specific organizational unit for a given fiscal year")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Budget found"),
         @ApiResponse(responseCode = "404", description = "Budget not found for given OU",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<BudgetResponse> getByOuId(
-            @Parameter(description = "UUID of the organizational unit") @PathVariable UUID ouId) {
-        final var budget = getUseCase.execute(GetBudgetQuery.byOuId(ouId))
+            @Parameter(description = "UUID of the organizational unit") @PathVariable UUID ouId,
+            @Parameter(description = "Fiscal year (e.g. 2026)", example = "2026")
+            @RequestParam(name = "fiscalYear", required = false) Integer fiscalYear) {
+        final var query = new GetBudgetQuery(null, ouId, fiscalYear);
+        final var budget = getUseCase.execute(query)
                 .orElseThrow(() -> new NoSuchElementException("Budget for OU '%s' not found".formatted(ouId)));
 
         return ResponseEntity.ok(BudgetResponse.fromDomain(budget));
@@ -127,7 +132,7 @@ public class BudgetRestController {
         @ApiResponse(responseCode = "200", description = "Funds reserved successfully"),
         @ApiResponse(responseCode = "404", description = "Budget not found",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-        @ApiResponse(responseCode = "422", description = "Insufficient available funds",
+        @ApiResponse(responseCode = "422", description = "Insufficient available funds or expired fiscal year",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<BudgetResponse> reserve(
@@ -144,7 +149,7 @@ public class BudgetRestController {
         @ApiResponse(responseCode = "200", description = "Funds released successfully"),
         @ApiResponse(responseCode = "404", description = "Budget not found",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-        @ApiResponse(responseCode = "422", description = "Insufficient reserved funds",
+        @ApiResponse(responseCode = "422", description = "Insufficient reserved funds or expired fiscal year",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<BudgetResponse> release(
@@ -161,7 +166,7 @@ public class BudgetRestController {
         @ApiResponse(responseCode = "200", description = "Funds consumed successfully"),
         @ApiResponse(responseCode = "404", description = "Budget not found",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-        @ApiResponse(responseCode = "422", description = "Insufficient reserved funds",
+        @ApiResponse(responseCode = "422", description = "Insufficient reserved funds or expired fiscal year",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<BudgetResponse> consume(
@@ -178,7 +183,7 @@ public class BudgetRestController {
         @ApiResponse(responseCode = "200", description = "Direct spend completed successfully"),
         @ApiResponse(responseCode = "404", description = "Budget not found",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-        @ApiResponse(responseCode = "422", description = "Insufficient available funds",
+        @ApiResponse(responseCode = "422", description = "Insufficient available funds or expired fiscal year",
                 content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<BudgetResponse> spendDirect(

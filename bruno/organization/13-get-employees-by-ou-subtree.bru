@@ -1,0 +1,15 @@
+meta {
+  name: 13 - Get Employees by OU Subtree
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{baseUrl}}/api/v1/employees/ou/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11?includeSubtree=true
+  body: none
+  auth: none
+}
+
+params:query {
+  includeSubtree: true
+}
