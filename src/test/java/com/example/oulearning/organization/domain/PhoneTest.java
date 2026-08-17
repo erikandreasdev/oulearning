@@ -3,13 +3,17 @@ package com.example.oulearning.organization.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.instancio.Instancio;
+import org.instancio.junit.Given;
+import org.instancio.junit.InstancioExtension;
+import org.instancio.junit.InstancioSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
+@ExtendWith(InstancioExtension.class)
 class PhoneTest {
 
     @Nested
@@ -17,22 +21,16 @@ class PhoneTest {
     class CreationAndValidation {
 
         @ParameterizedTest
-        @CsvSource({
-            "'+1 (555) 123-4567', '+15551234567'",
-            "'+44 20 7183 8750', '+442071838750'",
-            "'15551234567', '15551234567'",
-            "'555-1234', '5551234'",
-            "'  +34.912.345.678  ', '+34912345678'",
-            "'+123456789012345', '+123456789012345'"
-        })
-        @DisplayName("should create and normalize phone when valid format provided")
-        void should_createAndNormalizePhone_when_validFormatProvided(String input, String expectedNormalized) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should create phone when valid dynamically generated phone provided via InstancioSource")
+        void should_createAndNormalizePhone_when_validFormatProvided(
+                @Given(DomainGivenProviders.ValidPhoneProvider.class) final String rawPhone) {
             // when
-            Phone phone = Phone.of(input);
+            final var phone = Phone.of(rawPhone);
 
             // then
-            assertThat(phone.value()).isEqualTo(expectedNormalized);
-            assertThat(phone.toString()).isEqualTo(expectedNormalized);
+            assertThat(phone.value()).isEqualTo(rawPhone);
+            assertThat(phone.toString()).isEqualTo(rawPhone);
         }
 
         @Test
@@ -45,9 +43,10 @@ class PhoneTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " ", "   ", "\t\n"})
-        @DisplayName("should throw InvalidPhoneException when phone is blank")
-        void should_throwException_when_phoneIsBlank(String blankPhone) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should throw InvalidPhoneException when phone is blank via InstancioSource")
+        void should_throwException_when_phoneIsBlank(
+                @Given(DomainGivenProviders.BlankStringProvider.class) final String blankPhone) {
             // when / then
             assertThatThrownBy(() -> new Phone(blankPhone))
                     .isInstanceOf(InvalidPhoneException.class)
@@ -55,19 +54,10 @@ class PhoneTest {
         }
 
         @ParameterizedTest
-        @ValueSource(
-                strings = {
-                    "123456", // 6 digits - too short (<7)
-                    "+1234567890123456", // 16 digits - too long (>15)
-                    "+0123456789", // leading zero after +
-                    "0123456", // leading zero
-                    "1-800-FLOWERS", // letters
-                    "+1 555 ABC-DEFG", // letters
-                    "++15551234567", // double +
-                    "+1-555-123-456@" // invalid symbols
-                })
-        @DisplayName("should throw InvalidPhoneException when format is invalid")
-        void should_throwException_when_formatIsInvalid(String invalidPhone) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should throw InvalidPhoneException when format is invalid via InstancioSource")
+        void should_throwException_when_formatIsInvalid(
+                @Given(DomainGivenProviders.InvalidPhoneProvider.class) final String invalidPhone) {
             // when / then
             assertThatThrownBy(() -> Phone.of(invalidPhone))
                     .isInstanceOfSatisfying(
@@ -77,15 +67,16 @@ class PhoneTest {
     }
 
     @Nested
-    @DisplayName("Value Object Semantics")
-    class ValueObjectSemantics {
+    @DisplayName("Value Object Semantics & Immutability")
+    class ValueObjectSemanticsAndImmutability {
 
         @Test
         @DisplayName("should be equal when values are identical after normalization")
         void should_beEqual_when_valuesAreIdenticalAfterNormalization() {
             // given
-            Phone phone1 = Phone.of("+1 (555) 123-4567");
-            Phone phone2 = Phone.of("+15551234567");
+            final var number = Instancio.gen().longs().range(1000000000L, 9999999999L).get();
+            final var phone1 = Phone.of("+ %d".formatted(number));
+            final var phone2 = Phone.of("+%d".formatted(number));
 
             // then
             assertThat(phone1).isEqualTo(phone2);
@@ -96,11 +87,22 @@ class PhoneTest {
         @DisplayName("should not be equal when phone numbers differ")
         void should_notBeEqual_when_phoneNumbersDiffer() {
             // given
-            Phone phone1 = Phone.of("+15551234567");
-            Phone phone2 = Phone.of("+15559876543");
+            final var phone1 = DomainGenerators.randomPhone();
+            final var phone2 = Phone.of(phone1.value() + "1");
 
             // then
             assertThat(phone1).isNotEqualTo(phone2);
+        }
+
+        @Test
+        @DisplayName("should maintain immutability and record semantics")
+        void should_maintainImmutability() {
+            // given
+            final var phone = DomainGenerators.randomPhone();
+
+            // then
+            assertThat(phone.getClass().isRecord()).isTrue();
+            assertThat(phone.value()).isEqualTo(phone.toString());
         }
     }
 }

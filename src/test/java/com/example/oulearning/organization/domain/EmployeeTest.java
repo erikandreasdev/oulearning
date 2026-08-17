@@ -3,10 +3,16 @@ package com.example.oulearning.organization.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.instancio.junit.Given;
+import org.instancio.junit.InstancioExtension;
+import org.instancio.junit.InstancioSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
 
+@ExtendWith(InstancioExtension.class)
 class EmployeeTest {
 
     @Nested
@@ -17,52 +23,65 @@ class EmployeeTest {
         @DisplayName("should create employee from typed value objects")
         void should_createEmployee_from_typedObjects() {
             // given
-            CorporateKey key = CorporateKey.of("CK1234");
-            FullName fullName = FullName.of("Jane", "Doe");
-            Email email = Email.of("jane.doe@company.com");
-            EmployeeRole role = EmployeeRole.MANAGER;
+            final var key = DomainGenerators.randomCorporateKey();
+            final var fullName = DomainGenerators.randomFullName();
+            final var email = DomainGenerators.randomEmail();
+            final var role = DomainGenerators.randomEmployeeRole();
 
             // when
-            Employee employee = Employee.of(key, fullName, email, role);
+            final var employee = Employee.of(key, fullName, email, role);
 
             // then
             assertThat(employee.corporateKey()).isEqualTo(key);
             assertThat(employee.fullName()).isEqualTo(fullName);
             assertThat(employee.email()).isEqualTo(email);
-            assertThat(employee.role()).isEqualTo(EmployeeRole.MANAGER);
+            assertThat(employee.role()).isEqualTo(role);
         }
 
-        @Test
-        @DisplayName("should create employee from convenience factory method with enum role")
-        void should_createEmployee_from_convenienceFactory() {
+        @ParameterizedTest
+        @InstancioSource(samples = 5)
+        @DisplayName("should create employee from convenience factory method with enum role via InstancioSource")
+        void should_createEmployee_from_convenienceFactory(
+                @Given(DomainGivenProviders.ValidCorporateKeyProvider.class) final String keyStr,
+                @Given(DomainGivenProviders.ValidNameProvider.class) final String nameStr,
+                @Given(DomainGivenProviders.ValidSurnameProvider.class) final String surnameStr,
+                @Given(DomainGivenProviders.ValidEmailProvider.class) final String emailStr) {
+            // given
+            final var role = EmployeeRole.EMPLOYEE;
+
             // when
-            Employee employee = Employee.of("ck1234", "Jane", "Doe", "jane.doe@company.com", EmployeeRole.EMPLOYEE);
+            final var employee = Employee.of(keyStr, nameStr, surnameStr, emailStr, role);
 
             // then
-            assertThat(employee.corporateKey().value()).isEqualTo("CK1234");
-            assertThat(employee.fullName().formatted()).isEqualTo("Jane Doe");
-            assertThat(employee.email().value()).isEqualTo("jane.doe@company.com");
-            assertThat(employee.role()).isEqualTo(EmployeeRole.EMPLOYEE);
+            assertThat(employee.corporateKey().value()).isEqualTo(keyStr.strip().toUpperCase());
+            assertThat(employee.fullName().formatted()).isEqualTo("%s %s".formatted(nameStr.strip(), surnameStr.strip()));
+            assertThat(employee.email().value()).isEqualTo(emailStr.strip().toLowerCase());
+            assertThat(employee.role()).isEqualTo(role);
         }
 
-        @Test
-        @DisplayName("should create employee from convenience factory method with string role")
-        void should_createEmployee_from_convenienceFactory_withStringRole() {
+        @ParameterizedTest
+        @InstancioSource(samples = 5)
+        @DisplayName("should create employee from convenience factory method with string role via InstancioSource")
+        void should_createEmployee_from_convenienceFactory_withStringRole(
+                @Given(DomainGivenProviders.ValidCorporateKeyProvider.class) final String keyStr,
+                @Given(DomainGivenProviders.ValidNameProvider.class) final String nameStr,
+                @Given(DomainGivenProviders.ValidSurnameProvider.class) final String surnameStr,
+                @Given(DomainGivenProviders.ValidEmailProvider.class) final String emailStr) {
             // when
-            Employee employee = Employee.of("ck1234", "Jane", "Doe", "jane.doe@company.com", "manager");
+            final var employee = Employee.of(keyStr, nameStr, surnameStr, emailStr, "manager");
 
             // then
-            assertThat(employee.corporateKey().value()).isEqualTo("CK1234");
-            assertThat(employee.fullName().formatted()).isEqualTo("Jane Doe");
-            assertThat(employee.email().value()).isEqualTo("jane.doe@company.com");
+            assertThat(employee.corporateKey().value()).isEqualTo(keyStr.strip().toUpperCase());
+            assertThat(employee.fullName().formatted()).isEqualTo("%s %s".formatted(nameStr.strip(), surnameStr.strip()));
+            assertThat(employee.email().value()).isEqualTo(emailStr.strip().toLowerCase());
             assertThat(employee.role()).isEqualTo(EmployeeRole.MANAGER);
         }
 
         @Test
         @DisplayName("should throw InvalidEmployeeException when corporate key is null")
         void should_throwException_when_corporateKeyIsNull() {
-            FullName fullName = FullName.of("Jane", "Doe");
-            Email email = Email.of("jane.doe@company.com");
+            final var fullName = DomainGenerators.randomFullName();
+            final var email = DomainGenerators.randomEmail();
 
             assertThatThrownBy(() -> new Employee(null, fullName, email, EmployeeRole.EMPLOYEE))
                     .isInstanceOf(InvalidEmployeeException.class)
@@ -72,8 +91,8 @@ class EmployeeTest {
         @Test
         @DisplayName("should throw InvalidEmployeeException when full name is null")
         void should_throwException_when_fullNameIsNull() {
-            CorporateKey key = CorporateKey.of("CK1234");
-            Email email = Email.of("jane.doe@company.com");
+            final var key = DomainGenerators.randomCorporateKey();
+            final var email = DomainGenerators.randomEmail();
 
             assertThatThrownBy(() -> new Employee(key, null, email, EmployeeRole.EMPLOYEE))
                     .isInstanceOf(InvalidEmployeeException.class)
@@ -83,8 +102,8 @@ class EmployeeTest {
         @Test
         @DisplayName("should throw InvalidEmployeeException when email is null")
         void should_throwException_when_emailIsNull() {
-            CorporateKey key = CorporateKey.of("CK1234");
-            FullName fullName = FullName.of("Jane", "Doe");
+            final var key = DomainGenerators.randomCorporateKey();
+            final var fullName = DomainGenerators.randomFullName();
 
             assertThatThrownBy(() -> new Employee(key, fullName, null, EmployeeRole.EMPLOYEE))
                     .isInstanceOf(InvalidEmployeeException.class)
@@ -94,9 +113,9 @@ class EmployeeTest {
         @Test
         @DisplayName("should throw InvalidEmployeeException when role is null")
         void should_throwException_when_roleIsNull() {
-            CorporateKey key = CorporateKey.of("CK1234");
-            FullName fullName = FullName.of("Jane", "Doe");
-            Email email = Email.of("jane.doe@company.com");
+            final var key = DomainGenerators.randomCorporateKey();
+            final var fullName = DomainGenerators.randomFullName();
+            final var email = DomainGenerators.randomEmail();
 
             assertThatThrownBy(() -> new Employee(key, fullName, email, null))
                     .isInstanceOf(InvalidEmployeeException.class)
@@ -105,15 +124,20 @@ class EmployeeTest {
     }
 
     @Nested
-    @DisplayName("Value Object Semantics")
-    class ValueObjectSemantics {
+    @DisplayName("Value Object Semantics & Immutability")
+    class ValueObjectSemanticsAndImmutability {
 
         @Test
         @DisplayName("should be equal when all fields match")
         void should_beEqual_when_allFieldsMatch() {
             // given
-            Employee emp1 = Employee.of("CK1234", "Jane", "Doe", "jane.doe@company.com", EmployeeRole.TRAINER);
-            Employee emp2 = Employee.of("ck1234", "Jane", "Doe", "jane.doe@company.com", EmployeeRole.TRAINER);
+            final var key = DomainGenerators.randomCorporateKey();
+            final var fullName = DomainGenerators.randomFullName();
+            final var email = DomainGenerators.randomEmail();
+            final var role = DomainGenerators.randomEmployeeRole();
+
+            final var emp1 = Employee.of(key, fullName, email, role);
+            final var emp2 = Employee.of(key, fullName, email, role);
 
             // then
             assertThat(emp1).isEqualTo(emp2);
@@ -124,11 +148,21 @@ class EmployeeTest {
         @DisplayName("should not be equal when fields differ")
         void should_notBeEqual_when_fieldsDiffer() {
             // given
-            Employee emp1 = Employee.of("CK1234", "Jane", "Doe", "jane.doe@company.com", EmployeeRole.TRAINER);
-            Employee emp2 = Employee.of("CK5678", "Jane", "Doe", "jane.doe@company.com", EmployeeRole.TRAINER);
+            final var emp1 = DomainGenerators.randomEmployee();
+            final var emp2 = DomainGenerators.randomEmployee();
 
             // then
             assertThat(emp1).isNotEqualTo(emp2);
+        }
+
+        @Test
+        @DisplayName("should maintain immutability and record semantics")
+        void should_maintainImmutability() {
+            // given
+            final var employee = DomainGenerators.randomEmployee();
+
+            // then
+            assertThat(employee.getClass().isRecord()).isTrue();
         }
     }
 }

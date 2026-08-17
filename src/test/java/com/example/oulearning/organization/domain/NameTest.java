@@ -3,13 +3,17 @@ package com.example.oulearning.organization.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.instancio.Instancio;
+import org.instancio.junit.Given;
+import org.instancio.junit.InstancioExtension;
+import org.instancio.junit.InstancioSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
+@ExtendWith(InstancioExtension.class)
 class NameTest {
 
     @Nested
@@ -17,24 +21,16 @@ class NameTest {
     class CreationAndValidation {
 
         @ParameterizedTest
-        @CsvSource({
-            "'John', 'John'",
-            "'  Mary-Jane  ', 'Mary-Jane'",
-            "'Jean-Luc', 'Jean-Luc'",
-            "'José', 'José'",
-            "'Renée', 'Renée'",
-            "'Anne Marie', 'Anne Marie'",
-            "'Anne   Marie', 'Anne Marie'",
-            "'O''Connor', 'O''Connor'"
-        })
-        @DisplayName("should create and normalize name when valid name provided")
-        void should_createAndNormalizeName_when_validNameProvided(String input, String expectedNormalized) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should create name when valid dynamically generated name provided via InstancioSource")
+        void should_createName_when_generatedAlphabeticNameProvided(
+                @Given(DomainGivenProviders.ValidNameProvider.class) final String generatedName) {
             // when
-            Name name = Name.of(input);
+            final var name = Name.of(generatedName);
 
             // then
-            assertThat(name.value()).isEqualTo(expectedNormalized);
-            assertThat(name.toString()).isEqualTo(expectedNormalized);
+            assertThat(name.value()).isEqualTo(generatedName);
+            assertThat(name.toString()).isEqualTo(generatedName);
         }
 
         @Test
@@ -47,9 +43,10 @@ class NameTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " ", "   ", "\t\n"})
-        @DisplayName("should throw InvalidNameException when name is blank")
-        void should_throwException_when_nameIsBlank(String blankName) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should throw InvalidNameException when name is blank via InstancioSource")
+        void should_throwException_when_nameIsBlank(
+                @Given(DomainGivenProviders.BlankStringProvider.class) final String blankName) {
             // when / then
             assertThatThrownBy(() -> new Name(blankName))
                     .isInstanceOf(InvalidNameException.class)
@@ -57,19 +54,10 @@ class NameTest {
         }
 
         @ParameterizedTest
-        @ValueSource(
-                strings = {
-                    "John123",
-                    "Mary_Jane",
-                    "John@Doe",
-                    "John!",
-                    "-John",
-                    "John-",
-                    "'John",
-                    "John'"
-                })
-        @DisplayName("should throw InvalidNameException when format is invalid")
-        void should_throwException_when_formatIsInvalid(String invalidName) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should throw InvalidNameException when format is invalid via InstancioSource")
+        void should_throwException_when_formatIsInvalid(
+                @Given(DomainGivenProviders.InvalidNameProvider.class) final String invalidName) {
             // when / then
             assertThatThrownBy(() -> Name.of(invalidName))
                     .isInstanceOfSatisfying(
@@ -81,7 +69,7 @@ class NameTest {
         @DisplayName("should throw InvalidNameException when name exceeds max length")
         void should_throwException_when_nameExceedsMaxLength() {
             // given
-            String longName = "A".repeat(101);
+            final var longName = Instancio.gen().string().mixedCase().length(101, 120).get();
 
             // when / then
             assertThatThrownBy(() -> Name.of(longName))
@@ -91,15 +79,16 @@ class NameTest {
     }
 
     @Nested
-    @DisplayName("Value Object Semantics")
-    class ValueObjectSemantics {
+    @DisplayName("Value Object Semantics & Immutability")
+    class ValueObjectSemanticsAndImmutability {
 
         @Test
         @DisplayName("should be equal when values are identical after normalization")
         void should_beEqual_when_valuesAreIdenticalAfterNormalization() {
             // given
-            Name name1 = Name.of("  John   Paul  ");
-            Name name2 = Name.of("John Paul");
+            final var base = Instancio.gen().string().mixedCase().length(5, 10).get();
+            final var name1 = Name.of("  %s  ".formatted(base));
+            final var name2 = Name.of(base);
 
             // then
             assertThat(name1).isEqualTo(name2);
@@ -110,11 +99,22 @@ class NameTest {
         @DisplayName("should not be equal when names differ")
         void should_notBeEqual_when_namesDiffer() {
             // given
-            Name name1 = Name.of("John");
-            Name name2 = Name.of("Jane");
+            final var name1 = DomainGenerators.randomName();
+            final var name2 = Name.of(name1.value() + "Z");
 
             // then
             assertThat(name1).isNotEqualTo(name2);
+        }
+
+        @Test
+        @DisplayName("should maintain immutability and record semantics")
+        void should_maintainImmutability() {
+            // given
+            final var name = DomainGenerators.randomName();
+
+            // then
+            assertThat(name.getClass().isRecord()).isTrue();
+            assertThat(name.value()).isEqualTo(name.toString());
         }
     }
 }

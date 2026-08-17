@@ -3,13 +3,17 @@ package com.example.oulearning.organization.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.instancio.Instancio;
+import org.instancio.junit.Given;
+import org.instancio.junit.InstancioExtension;
+import org.instancio.junit.InstancioSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
+@ExtendWith(InstancioExtension.class)
 class SurnameTest {
 
     @Nested
@@ -17,23 +21,16 @@ class SurnameTest {
     class CreationAndValidation {
 
         @ParameterizedTest
-        @CsvSource({
-            "'Smith', 'Smith'",
-            "'  Van der Bilt  ', 'Van der Bilt'",
-            "'García Márquez', 'García Márquez'",
-            "'O''Neill', 'O''Neill'",
-            "'Saint-Germain', 'Saint-Germain'",
-            "'Müller', 'Müller'"
-        })
-        @DisplayName("should create and normalize surname when valid surname provided")
-        void should_createAndNormalizeSurname_when_validSurnameProvided(
-                String input, String expectedNormalized) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should create surname when valid dynamically generated surname provided via InstancioSource")
+        void should_createSurname_when_generatedAlphabeticSurnameProvided(
+                @Given(DomainGivenProviders.ValidSurnameProvider.class) final String generatedSurname) {
             // when
-            Surname surname = Surname.of(input);
+            final var surname = Surname.of(generatedSurname);
 
             // then
-            assertThat(surname.value()).isEqualTo(expectedNormalized);
-            assertThat(surname.toString()).isEqualTo(expectedNormalized);
+            assertThat(surname.value()).isEqualTo(generatedSurname);
+            assertThat(surname.toString()).isEqualTo(generatedSurname);
         }
 
         @Test
@@ -46,9 +43,10 @@ class SurnameTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " ", "   ", "\t\n"})
-        @DisplayName("should throw InvalidSurnameException when surname is blank")
-        void should_throwException_when_surnameIsBlank(String blankSurname) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should throw InvalidSurnameException when surname is blank via InstancioSource")
+        void should_throwException_when_surnameIsBlank(
+                @Given(DomainGivenProviders.BlankStringProvider.class) final String blankSurname) {
             // when / then
             assertThatThrownBy(() -> new Surname(blankSurname))
                     .isInstanceOf(InvalidSurnameException.class)
@@ -56,19 +54,10 @@ class SurnameTest {
         }
 
         @ParameterizedTest
-        @ValueSource(
-                strings = {
-                    "Smith123",
-                    "Van_der_Bilt",
-                    "Smith@Doe",
-                    "Smith!",
-                    "-Smith",
-                    "Smith-",
-                    "'Smith",
-                    "Smith'"
-                })
-        @DisplayName("should throw InvalidSurnameException when format is invalid")
-        void should_throwException_when_formatIsInvalid(String invalidSurname) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should throw InvalidSurnameException when format is invalid via InstancioSource")
+        void should_throwException_when_formatIsInvalid(
+                @Given(DomainGivenProviders.InvalidSurnameProvider.class) final String invalidSurname) {
             // when / then
             assertThatThrownBy(() -> Surname.of(invalidSurname))
                     .isInstanceOfSatisfying(
@@ -80,7 +69,7 @@ class SurnameTest {
         @DisplayName("should throw InvalidSurnameException when surname exceeds max length")
         void should_throwException_when_surnameExceedsMaxLength() {
             // given
-            String longSurname = "B".repeat(101);
+            final var longSurname = Instancio.gen().string().mixedCase().length(101, 120).get();
 
             // when / then
             assertThatThrownBy(() -> Surname.of(longSurname))
@@ -90,15 +79,16 @@ class SurnameTest {
     }
 
     @Nested
-    @DisplayName("Value Object Semantics")
-    class ValueObjectSemantics {
+    @DisplayName("Value Object Semantics & Immutability")
+    class ValueObjectSemanticsAndImmutability {
 
         @Test
         @DisplayName("should be equal when values are identical after normalization")
         void should_beEqual_when_valuesAreIdenticalAfterNormalization() {
             // given
-            Surname surname1 = Surname.of("  García   Márquez  ");
-            Surname surname2 = Surname.of("García Márquez");
+            final var base = Instancio.gen().string().mixedCase().length(5, 10).get();
+            final var surname1 = Surname.of("  %s  ".formatted(base));
+            final var surname2 = Surname.of(base);
 
             // then
             assertThat(surname1).isEqualTo(surname2);
@@ -109,11 +99,22 @@ class SurnameTest {
         @DisplayName("should not be equal when surnames differ")
         void should_notBeEqual_when_surnamesDiffer() {
             // given
-            Surname surname1 = Surname.of("Smith");
-            Surname surname2 = Surname.of("Jones");
+            final var surname1 = DomainGenerators.randomSurname();
+            final var surname2 = Surname.of(surname1.value() + "Z");
 
             // then
             assertThat(surname1).isNotEqualTo(surname2);
+        }
+
+        @Test
+        @DisplayName("should maintain immutability and record semantics")
+        void should_maintainImmutability() {
+            // given
+            final var surname = DomainGenerators.randomSurname();
+
+            // then
+            assertThat(surname.getClass().isRecord()).isTrue();
+            assertThat(surname.value()).isEqualTo(surname.toString());
         }
     }
 }

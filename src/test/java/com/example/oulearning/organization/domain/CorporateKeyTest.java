@@ -3,13 +3,17 @@ package com.example.oulearning.organization.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.instancio.Instancio;
+import org.instancio.junit.Given;
+import org.instancio.junit.InstancioExtension;
+import org.instancio.junit.InstancioSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
+@ExtendWith(InstancioExtension.class)
 class CorporateKeyTest {
 
     @Nested
@@ -17,22 +21,16 @@ class CorporateKeyTest {
     class CreationAndValidation {
 
         @ParameterizedTest
-        @CsvSource({
-            "'CK0001', 'CK0001'",
-            "'CK1234', 'CK1234'",
-            "'CK9999', 'CK9999'",
-            "'ck1234', 'CK1234'",
-            "'  ck0042  ', 'CK0042'"
-        })
-        @DisplayName("should create and normalize corporate key when valid format provided")
-        void should_createAndNormalizeCorporateKey_when_validFormatProvided(
-                String input, String expectedNormalized) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should create corporate key when valid dynamically generated key provided via InstancioSource")
+        void should_createCorporateKey_when_generatedKeyProvided(
+                @Given(DomainGivenProviders.ValidCorporateKeyProvider.class) final String rawKey) {
             // when
-            CorporateKey key = CorporateKey.of(input);
+            final var key = CorporateKey.of(rawKey);
 
             // then
-            assertThat(key.value()).isEqualTo(expectedNormalized);
-            assertThat(key.toString()).isEqualTo(expectedNormalized);
+            assertThat(key.value()).isEqualTo(rawKey.strip().toUpperCase());
+            assertThat(key.toString()).isEqualTo(rawKey.strip().toUpperCase());
         }
 
         @Test
@@ -45,9 +43,10 @@ class CorporateKeyTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " ", "   ", "\t\n"})
-        @DisplayName("should throw InvalidCorporateKeyException when corporate key is blank")
-        void should_throwException_when_corporateKeyIsBlank(String blankKey) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should throw InvalidCorporateKeyException when corporate key is blank via InstancioSource")
+        void should_throwException_when_corporateKeyIsBlank(
+                @Given(DomainGivenProviders.BlankStringProvider.class) final String blankKey) {
             // when / then
             assertThatThrownBy(() -> new CorporateKey(blankKey))
                     .isInstanceOf(InvalidCorporateKeyException.class)
@@ -55,19 +54,10 @@ class CorporateKeyTest {
         }
 
         @ParameterizedTest
-        @ValueSource(
-                strings = {
-                    "CK123", // 3 digits - too short
-                    "CK12345", // 5 digits - too long
-                    "AK1234", // wrong prefix
-                    "1234CK", // wrong structure
-                    "CKABCD", // letters instead of digits
-                    "CK12A4", // mixed alphanumeric
-                    "CK 1234", // space in between
-                    "CK-1234" // hyphen in between
-                })
-        @DisplayName("should throw InvalidCorporateKeyException when format is invalid")
-        void should_throwException_when_formatIsInvalid(String invalidKey) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should throw InvalidCorporateKeyException when format is invalid via InstancioSource")
+        void should_throwException_when_formatIsInvalid(
+                @Given(DomainGivenProviders.InvalidCorporateKeyProvider.class) final String invalidKey) {
             // when / then
             assertThatThrownBy(() -> CorporateKey.of(invalidKey))
                     .isInstanceOfSatisfying(
@@ -77,15 +67,16 @@ class CorporateKeyTest {
     }
 
     @Nested
-    @DisplayName("Value Object Semantics")
-    class ValueObjectSemantics {
+    @DisplayName("Value Object Semantics & Immutability")
+    class ValueObjectSemanticsAndImmutability {
 
         @Test
         @DisplayName("should be equal when values match after normalization")
         void should_beEqual_when_valuesMatchAfterNormalization() {
             // given
-            CorporateKey key1 = CorporateKey.of("ck1234");
-            CorporateKey key2 = CorporateKey.of("CK1234");
+            final var number = Instancio.gen().ints().range(0, 9999).get();
+            final var key1 = CorporateKey.of("ck%04d".formatted(number));
+            final var key2 = CorporateKey.of("CK%04d".formatted(number));
 
             // then
             assertThat(key1).isEqualTo(key2);
@@ -96,11 +87,22 @@ class CorporateKeyTest {
         @DisplayName("should not be equal when corporate keys differ")
         void should_notBeEqual_when_keysDiffer() {
             // given
-            CorporateKey key1 = CorporateKey.of("CK0001");
-            CorporateKey key2 = CorporateKey.of("CK0002");
+            final var key1 = CorporateKey.of("CK0001");
+            final var key2 = CorporateKey.of("CK0002");
 
             // then
             assertThat(key1).isNotEqualTo(key2);
+        }
+
+        @Test
+        @DisplayName("should maintain immutability and record semantics")
+        void should_maintainImmutability() {
+            // given
+            final var key = DomainGenerators.randomCorporateKey();
+
+            // then
+            assertThat(key.getClass().isRecord()).isTrue();
+            assertThat(key.value()).isEqualTo(key.toString());
         }
     }
 }

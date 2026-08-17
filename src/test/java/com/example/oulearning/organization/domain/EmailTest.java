@@ -3,12 +3,17 @@ package com.example.oulearning.organization.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.instancio.Instancio;
+import org.instancio.junit.Given;
+import org.instancio.junit.InstancioExtension;
+import org.instancio.junit.InstancioSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
+@ExtendWith(InstancioExtension.class)
 class EmailTest {
 
     @Nested
@@ -16,18 +21,12 @@ class EmailTest {
     class CreationAndValidation {
 
         @ParameterizedTest
-        @ValueSource(
-                strings = {
-                    "user@example.com",
-                    "USER@EXAMPLE.COM",
-                    "  user.name@domain.co.uk  ",
-                    "user+tag@sub.domain.org",
-                    "first_last@service.net"
-                })
-        @DisplayName("should create email when valid format provided")
-        void should_createEmail_when_validFormatProvided(String rawEmail) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should create email when valid dynamically generated email provided via InstancioSource")
+        void should_createEmail_when_validFormatProvided(
+                @Given(DomainGivenProviders.ValidEmailProvider.class) final String rawEmail) {
             // when
-            Email email = Email.of(rawEmail);
+            final var email = Email.of(rawEmail);
 
             // then
             assertThat(email.value()).isEqualTo(rawEmail.strip().toLowerCase());
@@ -44,9 +43,10 @@ class EmailTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " ", "   ", "\t\n"})
-        @DisplayName("should throw InvalidEmailException when email is blank")
-        void should_throwException_when_emailIsBlank(String blankEmail) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should throw InvalidEmailException when email is blank via InstancioSource")
+        void should_throwException_when_emailIsBlank(
+                @Given(DomainGivenProviders.BlankStringProvider.class) final String blankEmail) {
             // when / then
             assertThatThrownBy(() -> new Email(blankEmail))
                     .isInstanceOf(InvalidEmailException.class)
@@ -54,21 +54,10 @@ class EmailTest {
         }
 
         @ParameterizedTest
-        @ValueSource(
-                strings = {
-                    "plainaddress",
-                    "@missingusername.com",
-                    "username@.com",
-                    "username@domain..com",
-                    "username@domain.c",
-                    "user@domain",
-                    "user space@domain.com",
-                    "user..name@domain.com",
-                    ".user@domain.com",
-                    "user.@domain.com"
-                })
-        @DisplayName("should throw InvalidEmailException when format is invalid")
-        void should_throwException_when_formatIsInvalid(String invalidEmail) {
+        @InstancioSource(samples = 5)
+        @DisplayName("should throw InvalidEmailException when format is invalid via InstancioSource")
+        void should_throwException_when_formatIsInvalid(
+                @Given(DomainGivenProviders.InvalidEmailProvider.class) final String invalidEmail) {
             // when / then
             assertThatThrownBy(() -> Email.of(invalidEmail))
                     .isInstanceOfSatisfying(
@@ -78,15 +67,17 @@ class EmailTest {
     }
 
     @Nested
-    @DisplayName("Value Object Semantics")
-    class ValueObjectSemantics {
+    @DisplayName("Value Object Semantics & Immutability")
+    class ValueObjectSemanticsAndImmutability {
 
         @Test
         @DisplayName("should be equal when values are identical after normalization")
         void should_beEqual_when_valuesAreIdenticalAfterNormalization() {
             // given
-            Email email1 = Email.of("Test.User@Example.COM");
-            Email email2 = Email.of("test.user@example.com");
+            final var local = Instancio.gen().string().lowerCase().length(4, 8).get();
+            final var domain = Instancio.gen().string().lowerCase().length(4, 8).get();
+            final var email1 = Email.of("  %s@%s.com  ".formatted(local.toUpperCase(), domain.toLowerCase()));
+            final var email2 = Email.of("%s@%s.com".formatted(local.toLowerCase(), domain.toLowerCase()));
 
             // then
             assertThat(email1).isEqualTo(email2);
@@ -97,11 +88,22 @@ class EmailTest {
         @DisplayName("should not be equal when emails differ")
         void should_notBeEqual_when_emailsDiffer() {
             // given
-            Email email1 = Email.of("user1@example.com");
-            Email email2 = Email.of("user2@example.com");
+            final var email1 = DomainGenerators.randomEmail();
+            final var email2 = Email.of("different." + email1.value());
 
             // then
             assertThat(email1).isNotEqualTo(email2);
+        }
+
+        @Test
+        @DisplayName("should maintain immutability and record semantics")
+        void should_maintainImmutability() {
+            // given
+            final var email = DomainGenerators.randomEmail();
+
+            // then
+            assertThat(email.getClass().isRecord()).isTrue();
+            assertThat(email.value()).isEqualTo(email.toString());
         }
     }
 }
