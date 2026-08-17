@@ -1,16 +1,21 @@
 package com.example.oulearning.organization.domain;
 
 /**
- * Enumeration of organizational unit types within the organizational hierarchy.
+ * Organizational unit type classification.
  */
 public enum OuType {
     /**
-     * Type 1 OU: Represents an Area that contains 0 or more child Subareas.
+     * Top-level organization unit (Level 1 root).
+     */
+    ORGANIZATION,
+
+    /**
+     * Intermediate organizational unit (contains child organizational units).
      */
     AREA,
 
     /**
-     * Type 2 OU: Represents a Subarea that has no child OUs.
+     * Leaf organizational unit (contains no child organizational units).
      */
     SUBAREA
 }

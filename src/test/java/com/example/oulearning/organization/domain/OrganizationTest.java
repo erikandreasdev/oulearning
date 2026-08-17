@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.shared.domain.Money;
-import com.example.oulearning.shared.domain.OuId;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
@@ -25,13 +24,13 @@ class OrganizationTest {
         @DisplayName("should create valid Organization snapshot with N-level hierarchy")
         void should_createOrganization_withNLevelHierarchy() {
             // Level 3
-            final var frontendSub = Subarea.of(
+            final var frontendSub = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Frontend"),
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(2000.00));
-            final var backendSub = Subarea.of(
+            final var backendSub = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Backend"),
                     Set.of(DomainGenerators.randomCorporateKey()),
@@ -39,15 +38,16 @@ class OrganizationTest {
                     Money.euros(3000.00));
 
             // Level 2
-            final var engineeringArea = Area.withChildren(
+            final var engineeringArea = OrganizationalUnit.withChildren(
                     DomainGenerators.randomOuId(),
                     OuName.of("Engineering"),
+                    OuType.AREA,
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(5000.00),
                     Set.of(frontendSub, backendSub));
 
-            final var salesSub = Subarea.of(
+            final var salesSub = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Sales"),
                     Set.of(DomainGenerators.randomCorporateKey()),
@@ -55,9 +55,10 @@ class OrganizationTest {
                     Money.euros(5000.00));
 
             // Level 1 Root
-            final var rootArea = Area.withChildren(
+            final var rootOu = OrganizationalUnit.withChildren(
                     DomainGenerators.randomOuId(),
                     OuName.of("Acme Corp"),
+                    OuType.ORGANIZATION,
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(), // root has no parents
                     Money.euros(10000.00),
@@ -67,11 +68,11 @@ class OrganizationTest {
             final var timestamp = Instant.now();
 
             // when
-            final var organization = new Organization(snapshotId, rootArea, timestamp);
+            final var organization = new Organization(snapshotId, rootOu, timestamp);
 
             // then
             assertThat(organization.snapshotId()).isEqualTo(snapshotId);
-            assertThat(organization.rootArea()).isEqualTo(rootArea);
+            assertThat(organization.rootOu()).isEqualTo(rootOu);
             assertThat(organization.createdAt()).isEqualTo(timestamp);
             assertThat(organization.totalOusCount()).isEqualTo(5);
             assertThat(organization.depth()).isEqualTo(3);
@@ -79,17 +80,16 @@ class OrganizationTest {
         }
 
         @Test
-        @DisplayName("should throw InvalidOrganizationException when root Area has parent IDs")
-        void should_throwException_when_rootAreaHasParents() {
-            final var invalidRootArea = Area.of(
+        @DisplayName("should throw InvalidOrganizationException when root OU has parent IDs")
+        void should_throwException_when_rootOuHasParents() {
+            final var invalidRootOu = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Root"),
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(DomainGenerators.randomOuId()), // Has a parent!
-                    Money.euros(1000.00),
-                    Set.of());
+                    Money.euros(1000.00));
 
-            assertThatThrownBy(() -> new Organization(DomainGenerators.randomSnapshotId(), invalidRootArea, Instant.now()))
+            assertThatThrownBy(() -> new Organization(DomainGenerators.randomSnapshotId(), invalidRootOu, Instant.now()))
                     .isInstanceOf(InvalidOrganizationException.class)
                     .hasMessageContaining("must have no parent IDs");
         }
@@ -97,39 +97,37 @@ class OrganizationTest {
         @Test
         @DisplayName("should throw InvalidOrganizationException when snapshotId is null")
         void should_throwException_when_snapshotIdIsNull() {
-            final var rootArea = Area.of(
+            final var rootOu = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Root"),
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
-                    Money.euros(1000.00),
-                    Set.of());
+                    Money.euros(1000.00));
 
-            assertThatThrownBy(() -> new Organization(null, rootArea, Instant.now()))
+            assertThatThrownBy(() -> new Organization(null, rootOu, Instant.now()))
                     .isInstanceOf(InvalidOrganizationException.class)
                     .hasMessageContaining("SnapshotId cannot be null");
         }
 
         @Test
-        @DisplayName("should throw InvalidOrganizationException when rootArea is null")
-        void should_throwException_when_rootAreaIsNull() {
+        @DisplayName("should throw InvalidOrganizationException when rootOu is null")
+        void should_throwException_when_rootOuIsNull() {
             assertThatThrownBy(() -> new Organization(DomainGenerators.randomSnapshotId(), null, Instant.now()))
                     .isInstanceOf(InvalidOrganizationException.class)
-                    .hasMessageContaining("Root Area cannot be null");
+                    .hasMessageContaining("Root OrganizationalUnit cannot be null");
         }
 
         @Test
         @DisplayName("should throw InvalidOrganizationException when createdAt is null")
         void should_throwException_when_createdAtIsNull() {
-            final var rootArea = Area.of(
+            final var rootOu = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Root"),
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
-                    Money.euros(1000.00),
-                    Set.of());
+                    Money.euros(1000.00));
 
-            assertThatThrownBy(() -> new Organization(DomainGenerators.randomSnapshotId(), rootArea, null))
+            assertThatThrownBy(() -> new Organization(DomainGenerators.randomSnapshotId(), rootOu, null))
                     .isInstanceOf(InvalidOrganizationException.class)
                     .hasMessageContaining("CreatedAt timestamp cannot be null");
         }
@@ -143,22 +141,23 @@ class OrganizationTest {
         @DisplayName("should find OU by ID in multi-level hierarchy")
         void should_findOuById() {
             final var subareaId = DomainGenerators.randomOuId();
-            final var subarea = Subarea.of(
+            final var subarea = OrganizationalUnit.leaf(
                     subareaId,
                     OuName.of("DevOps"),
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(3000.00));
 
-            final var rootArea = Area.withChildren(
+            final var rootOu = OrganizationalUnit.withChildren(
                     DomainGenerators.randomOuId(),
                     OuName.of("Company"),
+                    OuType.ORGANIZATION,
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(3000.00),
                     Set.of(subarea));
 
-            final var organization = new Organization(DomainGenerators.randomSnapshotId(), rootArea, Instant.now());
+            final var organization = new Organization(DomainGenerators.randomSnapshotId(), rootOu, Instant.now());
 
             final var found = organization.findOu(subareaId);
             assertThat(found).contains(subarea);
@@ -167,22 +166,23 @@ class OrganizationTest {
         @Test
         @DisplayName("should find OU by Name in hierarchy")
         void should_findOuByName() {
-            final var subarea = Subarea.of(
+            final var subarea = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("QA Team"),
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(2500.00));
 
-            final var rootArea = Area.withChildren(
+            final var rootOu = OrganizationalUnit.withChildren(
                     DomainGenerators.randomOuId(),
                     OuName.of("Company"),
+                    OuType.ORGANIZATION,
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(2500.00),
                     Set.of(subarea));
 
-            final var organization = new Organization(DomainGenerators.randomSnapshotId(), rootArea, Instant.now());
+            final var organization = new Organization(DomainGenerators.randomSnapshotId(), rootOu, Instant.now());
 
             final var found = organization.findOu(OuName.of("QA Team"));
             assertThat(found).contains(subarea);
@@ -205,13 +205,13 @@ class OrganizationTest {
         @Test
         @DisplayName("should calculate total budget of a specific list of OUs")
         void should_calculateTotalBudget_ofOUsList() {
-            final var ou1 = Subarea.of(
+            final var ou1 = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("OU1"),
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(1500.00));
-            final var ou2 = Subarea.of(
+            final var ou2 = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("OU2"),
                     Set.of(DomainGenerators.randomCorporateKey()),
@@ -227,13 +227,13 @@ class OrganizationTest {
         @Test
         @DisplayName("should calculate subtree budget of a specific Area")
         void should_calculateSubtreeBudget_ofSpecificArea() {
-            final var sub1 = Subarea.of(
+            final var sub1 = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Sub1"),
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(3000.00));
-            final var sub2 = Subarea.of(
+            final var sub2 = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Sub2"),
                     Set.of(DomainGenerators.randomCorporateKey()),
@@ -241,30 +241,32 @@ class OrganizationTest {
                     Money.euros(4000.00));
 
             final var engineeringId = DomainGenerators.randomOuId();
-            final var engineeringArea = Area.withChildren(
+            final var engineeringArea = OrganizationalUnit.withChildren(
                     engineeringId,
                     OuName.of("Engineering"),
+                    OuType.AREA,
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(7000.00),
                     Set.of(sub1, sub2));
 
-            final var salesSub = Subarea.of(
+            final var salesSub = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Sales"),
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(3000.00));
 
-            final var rootArea = Area.withChildren(
+            final var rootOu = OrganizationalUnit.withChildren(
                     DomainGenerators.randomOuId(),
                     OuName.of("HQ"),
+                    OuType.ORGANIZATION,
                     Set.of(DomainGenerators.randomCorporateKey()),
                     Set.of(),
                     Money.euros(10000.00),
                     Set.of(engineeringArea, salesSub));
 
-            final var organization = new Organization(DomainGenerators.randomSnapshotId(), rootArea, Instant.now());
+            final var organization = new Organization(DomainGenerators.randomSnapshotId(), rootOu, Instant.now());
 
             final var engineeringSubtreeBudget = organization.subtreeBudgetOf(engineeringId);
             assertThat(engineeringSubtreeBudget).isEqualTo(Money.euros(7000.00));
@@ -293,11 +295,11 @@ class OrganizationTest {
         @DisplayName("should be equal when all fields match")
         void should_beEqual_when_allFieldsMatch() {
             final var snapshotId = DomainGenerators.randomSnapshotId();
-            final var rootArea = DomainGenerators.randomOrganization().rootArea();
+            final var rootOu = DomainGenerators.randomOrganization().rootOu();
             final var timestamp = Instant.now();
 
-            final var org1 = new Organization(snapshotId, rootArea, timestamp);
-            final var org2 = new Organization(snapshotId, rootArea, timestamp);
+            final var org1 = new Organization(snapshotId, rootOu, timestamp);
+            final var org2 = new Organization(snapshotId, rootOu, timestamp);
 
             assertThat(org1).isEqualTo(org2);
             assertThat(org1.hashCode()).isEqualTo(org2.hashCode());

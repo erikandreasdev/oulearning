@@ -74,8 +74,8 @@ public final class DomainGenerators {
         return SnapshotId.of(UUID.randomUUID());
     }
 
-    public static Subarea randomSubarea() {
-        return Subarea.of(
+    public static OrganizationalUnit randomLeafOu() {
+        return OrganizationalUnit.leaf(
                 randomOuId(),
                 randomOuName(),
                 Set.of(randomCorporateKey()),
@@ -83,40 +83,42 @@ public final class DomainGenerators {
                 randomMoney());
     }
 
-    public static Area randomArea() {
-        final var sub1 = randomSubarea();
-        final var sub2 = randomSubarea();
-        final var totalBudget = sub1.budget().plus(sub2.budget());
-        return Area.withChildren(
+    public static OrganizationalUnit randomOrganizationalUnit() {
+        final var child1 = randomLeafOu();
+        final var child2 = randomLeafOu();
+        final var totalBudget = child1.budget().plus(child2.budget());
+        return OrganizationalUnit.withChildren(
                 randomOuId(),
                 randomOuName(),
+                OuType.AREA,
                 Set.of(randomCorporateKey()),
                 Set.of(randomOuId()),
                 totalBudget,
-                Set.of(sub1, sub2));
+                Set.of(child1, child2));
     }
 
     public static Organization randomOrganization() {
-        final var rootAreaId = randomOuId();
-        final var sub1 = Subarea.of(
+        final var rootOuId = randomOuId();
+        final var sub1 = OrganizationalUnit.leaf(
                 randomOuId(),
                 randomOuName(),
                 Set.of(randomCorporateKey()),
-                Set.of(rootAreaId),
+                Set.of(rootOuId),
                 Money.euros(5000.00));
-        final var sub2 = Subarea.of(
+        final var sub2 = OrganizationalUnit.leaf(
                 randomOuId(),
                 randomOuName(),
                 Set.of(randomCorporateKey()),
-                Set.of(rootAreaId),
+                Set.of(rootOuId),
                 Money.euros(5000.00));
-        final var rootArea = Area.withChildren(
-                rootAreaId,
+        final var rootOu = OrganizationalUnit.withChildren(
+                rootOuId,
                 OuName.of("Headquarters"),
+                OuType.ORGANIZATION,
                 Set.of(randomCorporateKey()),
                 Set.of(), // root has no parents
                 Money.euros(10000.00),
                 Set.of(sub1, sub2));
-        return new Organization(randomSnapshotId(), rootArea, Instant.now());
+        return new Organization(randomSnapshotId(), rootOu, Instant.now());
     }
 }

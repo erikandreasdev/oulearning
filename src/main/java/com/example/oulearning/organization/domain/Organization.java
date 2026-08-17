@@ -13,14 +13,14 @@ import java.util.Set;
 /**
  * Aggregate root representing the entire Organization at a specific point in time (Snapshot).
  * <p>
- * The organization hierarchy has N levels, starting with a single root Area (Level 1) with no parents.
+ * The organization hierarchy has N levels, starting with a single root OrganizationalUnit (Level 1) with no parents.
  * </p>
  *
  * @param snapshotId the unique identifier of this organization snapshot
- * @param rootArea   the single root Area representing the Organization itself
+ * @param rootOu     the single root OrganizationalUnit representing the Organization itself
  * @param createdAt  the timestamp when this organization snapshot was created
  */
-public record Organization(SnapshotId snapshotId, Area rootArea, Instant createdAt) {
+public record Organization(SnapshotId snapshotId, OrganizationalUnit rootOu, Instant createdAt) {
 
     /**
      * Compact constructor enforcing non-null fields, single root invariant, and tree structure integrity.
@@ -29,23 +29,23 @@ public record Organization(SnapshotId snapshotId, Area rootArea, Instant created
         if (snapshotId == null) {
             throw new InvalidOrganizationException("SnapshotId cannot be null");
         }
-        if (rootArea == null) {
-            throw new InvalidOrganizationException("Root Area cannot be null");
+        if (rootOu == null) {
+            throw new InvalidOrganizationException("Root OrganizationalUnit cannot be null");
         }
         if (createdAt == null) {
             throw new InvalidOrganizationException("CreatedAt timestamp cannot be null");
         }
-        if (!rootArea.isRoot()) {
+        if (!rootOu.isRoot()) {
             throw new InvalidOrganizationException(
-                    "Organization root Area '%s' must have no parent IDs (actual: %s)"
-                            .formatted(rootArea.name().value(), rootArea.parentIds()));
+                    "Organization root OU '%s' must have no parent IDs (actual: %s)"
+                            .formatted(rootOu.name().value(), rootOu.parentIds()));
         }
 
         // Validate tree integrity (no cycles)
-        validateTreeIntegrity(rootArea);
+        validateTreeIntegrity(rootOu);
     }
 
-    private static void validateTreeIntegrity(Area root) {
+    private static void validateTreeIntegrity(OrganizationalUnit root) {
         final var visited = new HashSet<OuId>();
         final var queue = new ArrayDeque<OrganizationalUnit>();
         queue.add(root);
@@ -58,9 +58,7 @@ public record Organization(SnapshotId snapshotId, Area rootArea, Instant created
                                 .formatted(current.name().value(), current.id()));
             }
 
-            if (current instanceof Area area) {
-                queue.addAll(area.loadedChildren());
-            }
+            queue.addAll(current.loadedChildren());
         }
     }
 
@@ -98,14 +96,12 @@ public record Organization(SnapshotId snapshotId, Area rootArea, Instant created
     public Set<OrganizationalUnit> allOus() {
         final var result = new HashSet<OrganizationalUnit>();
         final var queue = new ArrayDeque<OrganizationalUnit>();
-        queue.add(rootArea);
+        queue.add(rootOu);
 
         while (!queue.isEmpty()) {
             final var current = queue.poll();
             result.add(current);
-            if (current instanceof Area area) {
-                queue.addAll(area.loadedChildren());
-            }
+            queue.addAll(current.loadedChildren());
         }
 
         return Set.copyOf(result);
@@ -124,13 +120,13 @@ public record Organization(SnapshotId snapshotId, Area rootArea, Instant created
      * @return the maximum hierarchy depth
      */
     public int depth() {
-        return calculateDepth(rootArea);
+        return calculateDepth(rootOu);
     }
 
     private int calculateDepth(OrganizationalUnit unit) {
-        if (unit instanceof Area area && !area.loadedChildren().isEmpty()) {
+        if (!unit.loadedChildren().isEmpty()) {
             return 1
-                    + area.loadedChildren().stream()
+                    + unit.loadedChildren().stream()
                             .mapToInt(this::calculateDepth)
                             .max()
                             .orElse(0);
@@ -139,10 +135,10 @@ public record Organization(SnapshotId snapshotId, Area rootArea, Instant created
     }
 
     /**
-     * @return the total assigned budget of the organization (the root area's budget)
+     * @return the total assigned budget of the organization (the root OU's budget)
      */
     public Money totalBudget() {
-        return rootArea.budget();
+        return rootOu.budget();
     }
 
     /**
@@ -151,7 +147,7 @@ public record Organization(SnapshotId snapshotId, Area rootArea, Instant created
      * @param ous the collection of organizational units
      * @return the combined {@link Money} budget
      */
-    public Money totalBudgetOf(Collection<? extends OrganizationalUnit> ous) {
+    public Money totalBudgetOf(Collection<OrganizationalUnit> ous) {
         if (ous == null || ous.isEmpty()) {
             return Money.zero(totalBudget().currency());
         }
