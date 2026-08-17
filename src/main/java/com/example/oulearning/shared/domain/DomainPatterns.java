@@ -19,4 +19,7 @@ public final class DomainPatterns {
 
     public static final Pattern NAME_PATTERN =
             Pattern.compile("^[\\p{L}]+(?:[\\s'-][\\p{L}]+)*$");
+
+    public static final Pattern CORPORATE_KEY_PATTERN =
+            Pattern.compile("^CK\\d{4}$");
 }

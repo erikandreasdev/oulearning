@@ -2,7 +2,7 @@
 
 This document captures the Ubiquitous Language for the domain model.
 
-## Value Objects
+## Organization Bounded Context
 
 ### Email
 An electronic mail address used for communication and identification. It is normalized (trimmed and lowercased) and validated against standard email format constraints.
@@ -18,3 +18,12 @@ A person's family/last name. Normalized and validated to contain valid Unicode l
 
 ### FullName
 A composite value object combining a `Name` and a `Surname` to represent a person's complete name.
+
+### CorporateKey
+A unique organizational identifier assigned to an employee, adhering to the format `CK` followed by 4 numeric digits (e.g. `CK0001`, `CK1234`).
+
+### EmployeeRole
+The organizational functional role assigned to an employee (e.g. `EMPLOYEE`, `MANAGER`, `TRAINER`, `ADMIN`).
+
+### Employee
+A value object representing an employee in the organization, composed of their `CorporateKey`, `FullName`, `Email`, and `EmployeeRole`.
