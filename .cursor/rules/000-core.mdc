@@ -1,0 +1,47 @@
+---
+description: Core project rules — DDD + Clean Architecture Java/Spring. Always loaded.
+globs:
+alwaysApply: true
+---
+
+# Core rules (always apply)
+
+## Stack
+- Java 21, Spring Boot 3.x, Maven wrapper (`./mvnw`), JPA/Hibernate + Flyway, JUnit 5 / AssertJ / Mockito / Testcontainers / ArchUnit.
+- Spring is an infrastructure detail, not the architecture.
+
+## Architecture — dependencies point inward only
+```
+domain <- application <- infrastructure (adapters) <- bootstrap (Spring config)
+```
+- Package by bounded context first, then layer: `com.acme.ordering.domain.order`, `com.acme.ordering.application.placeorder`, `com.acme.ordering.infrastructure.persistence`.
+- Bounded contexts never import each other's domain classes. Integrate via events, ACLs, or explicit APIs.
+- ArchUnit tests enforce this and must pass. Add rules when adding packages.
+
+## Coding conventions
+- Immutability by default: `final` fields, records, `List.copyOf`.
+- Constructor injection only. Never `@Autowired` on fields, never static mutable state.
+- No `null` in public domain/application APIs: `Optional` for returns, guards for params. No `Optional` fields/params.
+- No Lombok in `domain`. Elsewhere only `@Slf4j`/`@RequiredArgsConstructor`; prefer records.
+- Exceptions are specific and domain-named (`InsufficientStockException extends DomainException`). Never swallow generic `Exception`.
+- Naming follows the ubiquitous language in `docs/glossary.md`. If a term is missing, ask or add it — do not invent domain concepts silently.
+- Google Java Style, 4 spaces, 120 cols. Run `./mvnw spotless:apply`.
+- Comments explain why, not what.
+
+## Workflow
+1. Read the bounded context README/glossary and existing aggregate before adding behavior. Reuse existing value objects and use cases.
+2. For non-trivial changes, outline the affected layers (domain → application → adapters → tests) and confirm before implementing when invariants or public APIs change.
+3. Implement inside-out: domain + unit tests → use case → adapters → wiring.
+4. Small, focused diffs. No unrelated refactoring "while here".
+5. Run `./mvnw spotless:apply verify` before claiming done. Report actual results.
+6. No new dependencies without stating why. Never in `domain`.
+7. Never delete/weaken/`@Disabled` tests to go green.
+8. No hardcoded secrets; config via `application-*.yml` + env vars.
+
+## Never do
+- Framework annotations (`@Entity`, `@Component`, `@JsonProperty`, …) on domain classes.
+- Expose JPA entities or aggregates from controllers.
+- Public setters / public no-arg constructors on aggregates.
+- Repository or business logic in controllers.
+- H2 in integration tests; `ddl-auto=update` anywhere.
+- Conventional Commits are required: `feat(ordering): …`, `fix(billing): …`, `refactor`, `test`, `chore`, `docs`.

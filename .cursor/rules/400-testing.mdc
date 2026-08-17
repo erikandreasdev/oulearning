@@ -1,0 +1,18 @@
+---
+description: Testing rules for all test sources.
+globs: **/src/test/**/*.java
+alwaysApply: false
+---
+
+# Testing
+
+- Pyramid: many domain unit tests → application tests with fakes → few adapter/integration tests → very few e2e.
+- Naming: `should_<expected>_when_<condition>` or `@DisplayName`; structure given/when/then.
+- Test data via object mothers/builders (`OrderMother.confirmedOrder()`), never duplicated setup.
+- Prefer fakes over mocks; mock only true external side effects. Never mock the class under test or value objects.
+- Assertions with AssertJ; assert on behavior/state, not on internal interactions unless the interaction is the contract.
+- Integration tests use Testcontainers with the real DB/broker. No H2, no embedded substitutes.
+- Every bug fix ships with a regression test written first.
+- ArchUnit suite (`architecture` package) is mandatory; extend it when adding packages or contexts.
+- Never `@Disabled` without an issue link and reason. Never lower coverage gates to pass.
+- Done means `./mvnw verify` is green.

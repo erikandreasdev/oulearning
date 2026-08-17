@@ -1,0 +1,19 @@
+---
+description: Domain layer rules — aggregates, value objects, events, repository ports.
+globs: **/domain/**/*.java
+alwaysApply: false
+---
+
+# Domain layer
+
+- Pure Java. Zero framework imports (no Spring, JPA, Jackson, Lombok, validation annotations).
+- Aggregates own and enforce invariants. No public setters; state changes via intention-revealing methods (`order.confirm()`), which validate and may register domain events.
+- Value objects are immutable `record`s with validation in the compact constructor. Use them for every domain concept (`Money`, `Email`, `Quantity`), never raw primitives.
+- Identity is a typed VO (`record OrderId(UUID value)`), never bare `UUID`/`Long`/`String`.
+- Domain events: immutable records, past tense (`OrderConfirmed`), carry ids and relevant data, not whole aggregates. Aggregates register events (`pullDomainEvents()`); they never publish.
+- Repository interfaces (ports) live here, speak in aggregates, one per aggregate root: `Optional<Order> findById(OrderId)`, `void save(Order)`. No query-method zoo — read models belong to application/infra.
+- Domain services only for logic spanning aggregates; stateless; take/return domain types.
+- Domain exceptions extend the sealed `DomainException`, are specific, and carry context.
+- Collections returned unmodifiable; constructors private/package-private + static factories (`Order.place(...)`) or a reconstitution factory for persistence mapping.
+- Entities/aggregates use `equals`/`hashCode` on identity only; value objects on all fields (records do this).
+- Tests for this layer: pure JUnit + AssertJ, no Spring context, no mocks; test behavior through the public API.

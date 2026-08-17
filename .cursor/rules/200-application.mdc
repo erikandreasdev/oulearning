@@ -1,0 +1,18 @@
+---
+description: Application layer rules — use cases, commands/queries, ports, transactions.
+globs: **/application/**/*.java
+alwaysApply: false
+---
+
+# Application layer
+
+- One class per use case. Interface `<Verb><Noun>UseCase` (input port) + implementation `<Verb><Noun>Service`.
+- Commands and queries are immutable records with primitive/VO fields; no domain objects in commands. Results are small DTO records or ids.
+- A use case orchestrates only: load aggregate via port → call domain behavior → save → publish events. Business rules live in the domain, never here.
+- Transaction boundary = one use case = one aggregate mutated. Cross-aggregate consistency via domain events (outbox pattern in infra), not one big transaction.
+- Depends on `domain` only. Allowed Spring: `@Transactional`, optionally `@Service`. Constructor injection.
+- Output ports (interfaces) for anything external: `OrderRepository`, `PaymentGateway`, `DomainEventPublisher`, `Clock`. Never call adapters directly.
+- Queries (CQRS-lite): read-only, may use dedicated read ports/DTOs and bypass aggregates. Never mutate.
+- Inject `java.time.Clock` / an id generator port; never call `Instant.now()`/`UUID.randomUUID()` inline.
+- Application exceptions (`OrderNotFoundException`) are specific; let domain exceptions propagate.
+- Tests: JUnit + in-memory fakes for ports (`InMemoryOrderRepository`); Mockito only for external side effects. No Spring context.
