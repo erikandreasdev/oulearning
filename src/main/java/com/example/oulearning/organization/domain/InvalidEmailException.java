@@ -1,7 +1,9 @@
-package com.example.oulearning.shared.domain;
+package com.example.oulearning.organization.domain;
+
+import com.example.oulearning.shared.domain.DomainException;
 
 /**
- * Domain exception thrown when an email value does not meet domain validation rules.
+ * Domain exception thrown when an email value does not meet organization domain validation rules.
  */
 public final class InvalidEmailException extends DomainException {
 

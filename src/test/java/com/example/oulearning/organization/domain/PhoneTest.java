@@ -1,4 +1,4 @@
-package com.example.oulearning.shared.domain;
+package com.example.oulearning.organization.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

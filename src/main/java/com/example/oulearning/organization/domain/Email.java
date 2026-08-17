@@ -1,9 +1,9 @@
-package com.example.oulearning.shared.domain;
+package com.example.oulearning.organization.domain;
 
 import static com.example.oulearning.shared.domain.DomainPatterns.EMAIL_PATTERN;
 
 /**
- * Value object representing an electronic mail address.
+ * Value object representing an electronic mail address within the organization context.
  * <p>
  * Ensures the email is normalized (trimmed and converted to lowercase) and validated against standard email format
  * constraints.
@@ -28,7 +28,7 @@ public record Email(String value) {
         }
 
         if (!EMAIL_PATTERN.matcher(value).matches()) {
-            throw new InvalidEmailException(value, "Invalid email format: " + value);
+            throw new InvalidEmailException(value, "Invalid email format: %s".formatted(value));
         }
     }
 

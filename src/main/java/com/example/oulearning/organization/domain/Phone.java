@@ -1,9 +1,9 @@
-package com.example.oulearning.shared.domain;
+package com.example.oulearning.organization.domain;
 
 import static com.example.oulearning.shared.domain.DomainPatterns.PHONE_PATTERN;
 
 /**
- * Value object representing a telephone number.
+ * Value object representing a telephone number within the organization context.
  * <p>
  * Ensures the phone number is normalized (stripping formatting characters such as spaces, hyphens, dots,
  * and parentheses) and validated against E.164-compatible telephone format constraints (7 to 15 digits with optional
@@ -31,7 +31,7 @@ public record Phone(String value) {
         value = trimmed.replaceAll("[\\s\\-\\(\\)\\.]", "");
 
         if (!PHONE_PATTERN.matcher(value).matches()) {
-            throw new InvalidPhoneException(value, "Invalid phone number format: " + trimmed);
+            throw new InvalidPhoneException(value, "Invalid phone number format: %s".formatted(trimmed));
         }
     }
 

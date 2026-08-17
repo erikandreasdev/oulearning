@@ -16,4 +16,7 @@ public final class DomainPatterns {
 
     public static final Pattern PHONE_PATTERN =
             Pattern.compile("^\\+?[1-9]\\d{6,14}$");
+
+    public static final Pattern NAME_PATTERN =
+            Pattern.compile("^[\\p{L}]+(?:[\\s'-][\\p{L}]+)*$");
 }

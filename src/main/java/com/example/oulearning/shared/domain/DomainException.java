@@ -1,10 +1,9 @@
 package com.example.oulearning.shared.domain;
 
 /**
- * Base sealed exception for all domain-specific business rule and invariant violations.
+ * Base exception for all domain-specific business rule and invariant violations across bounded contexts.
  */
-public abstract sealed class DomainException extends RuntimeException
-        permits InvalidEmailException, InvalidPhoneException {
+public abstract class DomainException extends RuntimeException {
 
     protected DomainException(String message) {
         super(message);
