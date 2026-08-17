@@ -1,8 +1,19 @@
 package com.example.oulearning.organization.domain;
 
-import com.example.oulearning.shared.domain.Money;
-import com.example.oulearning.shared.domain.OuId;
-import java.math.BigDecimal;
+import com.example.oulearning.organization.domain.employee.CorporateKey;
+import com.example.oulearning.organization.domain.employee.Email;
+import com.example.oulearning.organization.domain.employee.Employee;
+import com.example.oulearning.organization.domain.employee.EmployeeRole;
+import com.example.oulearning.organization.domain.employee.FullName;
+import com.example.oulearning.organization.domain.employee.Name;
+import com.example.oulearning.organization.domain.employee.Phone;
+import com.example.oulearning.organization.domain.employee.Surname;
+import com.example.oulearning.organization.domain.organization.Organization;
+import com.example.oulearning.organization.domain.organization.SnapshotId;
+import com.example.oulearning.organization.domain.unit.OrganizationalUnit;
+import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.organization.domain.unit.OuName;
+import com.example.oulearning.organization.domain.unit.OuType;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
@@ -57,11 +68,6 @@ public final class DomainGenerators {
         return Employee.of(randomCorporateKey(), randomFullName(), randomEmail(), randomEmployeeRole());
     }
 
-    public static Money randomMoney() {
-        final var amount = BigDecimal.valueOf(Instancio.gen().doubles().range(100.0, 10000.0).get());
-        return Money.euros(amount);
-    }
-
     public static OuId randomOuId() {
         return OuId.of(UUID.randomUUID());
     }
@@ -79,21 +85,18 @@ public final class DomainGenerators {
                 randomOuId(),
                 randomOuName(),
                 Set.of(randomCorporateKey()),
-                Set.of(randomOuId()),
-                randomMoney());
+                Set.of(randomOuId()));
     }
 
     public static OrganizationalUnit randomOrganizationalUnit() {
         final var child1 = randomLeafOu();
         final var child2 = randomLeafOu();
-        final var totalBudget = child1.budget().plus(child2.budget());
         return OrganizationalUnit.withChildren(
                 randomOuId(),
                 randomOuName(),
                 OuType.AREA,
                 Set.of(randomCorporateKey()),
                 Set.of(randomOuId()),
-                totalBudget,
                 Set.of(child1, child2));
     }
 
@@ -103,21 +106,18 @@ public final class DomainGenerators {
                 randomOuId(),
                 randomOuName(),
                 Set.of(randomCorporateKey()),
-                Set.of(rootOuId),
-                Money.euros(5000.00));
+                Set.of(rootOuId));
         final var sub2 = OrganizationalUnit.leaf(
                 randomOuId(),
                 randomOuName(),
                 Set.of(randomCorporateKey()),
-                Set.of(rootOuId),
-                Money.euros(5000.00));
+                Set.of(rootOuId));
         final var rootOu = OrganizationalUnit.withChildren(
                 rootOuId,
                 OuName.of("Headquarters"),
                 OuType.ORGANIZATION,
                 Set.of(randomCorporateKey()),
                 Set.of(), // root has no parents
-                Money.euros(10000.00),
                 Set.of(sub1, sub2));
         return new Organization(randomSnapshotId(), rootOu, Instant.now());
     }

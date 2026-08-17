@@ -4,13 +4,13 @@ This document captures the Ubiquitous Language for the domain model.
 
 ## Shared Domain
 
-### Money
-An immutable value object representing a monetary amount backed by the Moneta library (JSR 354 reference implementation), using EUR as the default currency across the project.
-
-### OuId
-Strongly-typed identity value object uniquely identifying an organizational unit across bounded contexts using a `UUID`.
+### DomainException
+The sealed base class for all domain-specific exceptions across bounded contexts.
 
 ## Organization Bounded Context
+
+### OuId
+Strongly-typed identity value object uniquely identifying an organizational unit using a `UUID`. Package: `com.example.oulearning.organization.domain.unit`.
 
 ### Email
 An electronic mail address used for communication and identification. It is normalized (trimmed and lowercased) and validated against standard email format constraints.
@@ -42,25 +42,40 @@ A value object representing the normalized name of an organizational unit (1 to 
 ### OuType
 Classification of an organizational unit: `ORGANIZATION` (root), `AREA` (composite/intermediate), or `SUBAREA` (leaf).
 
+### OuSearchCriteria
+Value object encapsulating search parameters (`OuId`, `OuName`, `includeSubtree`) for locating organizational units.
+
 ### OrganizationalUnit
-The unified domain model representing an organizational unit within the organization hierarchy across N levels. It encapsulates its identity, name, type classification, owners, parent references, assigned budget, child references, and loaded child instances.
+The domain model representing an organizational unit within the organization hierarchy across N levels. It encapsulates its identity, name, type classification, owners, parent references, child references, and loaded child instances.
 - **Root Unit**: `isRoot() == true` (`parentIds.isEmpty()`).
 - **Leaf Unit**: `isLeaf() == true` (`childIds.isEmpty()`).
-- **Child Budget Consistency**: When an OU's child units are loaded, the sum of all its direct child budgets must equal the OU's budget.
+- **Subtree Loaded**: `isSubtreeLoaded() == true` (`childIds.isEmpty() || loadedChildren.size() == childIds.size()`).
+
+### OrganizationalUnitRepository
+Domain repository port interface for finding and persisting `OrganizationalUnit` instances. Package: `com.example.oulearning.organization.domain.unit.repository`.
 
 ### SnapshotId
 Strongly-typed identity value object uniquely identifying an immutable snapshot of the organization.
 
 ### Organization
-The Aggregate Root representing the entire organizational hierarchy at a specific point in time. It starts from a single root `OrganizationalUnit` (Level 1) with no parents and maintains historical snapshots as organization structure evolutions occur. Supports calculating total organization budgets, subtree budgets, and collection budgets.
+The Aggregate Root representing the entire organizational hierarchy at a specific point in time. It starts from a single root `OrganizationalUnit` (Level 1) with no parents and maintains historical snapshots as organization structure evolutions occur. Supports querying total units count, tree depth, and finding units by ID or Name.
+
+### OrganizationRepository
+Domain repository port interface for persisting and querying historical `Organization` snapshots. Package: `com.example.oulearning.organization.domain.organization.repository`.
 
 ## Budgeting Bounded Context
+
+### Money
+An immutable value object representing a monetary amount backed by the Moneta library (JSR 354 reference implementation), using EUR as the default currency across the project. Package: `com.example.oulearning.budgeting.domain.budget`.
 
 ### BudgetId
 Strongly-typed identity value object uniquely identifying a `Budget` aggregate using a `UUID`.
 
 ### Budget
 The Aggregate Root in the budgeting context representing the financial allocation and lifecycle for an organizational unit (`OuId`). Tracks allocated, reserved, and spent funds, and computes the currently available balance.
+
+### BudgetRepository
+Domain repository port interface for persisting and querying `Budget` aggregates. Package: `com.example.oulearning.budgeting.domain.budget.repository`.
 
 ### Allocated
 The total monetary budget assigned to an organizational unit. Defaults to zero if no budget has been assigned.
@@ -79,3 +94,6 @@ A domain strategy defining how a parent organizational unit distributes its allo
 - **`ExclusiveAllocation`**: Funds stay exclusively on the parent OU without cascading.
 - **`EqualDistribution`**: Funds are divided equally among all child OUs (with exact cent remainder handling).
 - **`ExplicitDistribution`**: Custom specific amounts are allocated to designated child OUs.
+
+### BudgetDistributionService
+Domain Service for executing budget distribution strategies across child organizational units.
