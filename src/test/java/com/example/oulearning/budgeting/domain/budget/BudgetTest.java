@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.budgeting.domain.budget.exception.InsufficientBudgetException;
 import com.example.oulearning.budgeting.domain.budget.exception.InvalidBudgetException;
-import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.training.domain.request.vo.identity.OuId;
 import com.example.oulearning.shared.domain.fiscal.FiscalYear;
 import java.util.UUID;
 import org.instancio.junit.InstancioExtension;

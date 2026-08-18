@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.organization.domain.DomainGenerators;
-import com.example.oulearning.organization.domain.employee.CorporateKey;
+import com.example.oulearning.organization.domain.employee.vo.identity.CorporateKey;
 import com.example.oulearning.organization.domain.unit.exception.InvalidOuException;
 import java.util.Set;
 import org.instancio.junit.InstancioExtension;

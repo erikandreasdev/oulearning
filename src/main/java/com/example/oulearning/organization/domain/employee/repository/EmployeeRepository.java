@@ -1,6 +1,6 @@
 package com.example.oulearning.organization.domain.employee.repository;
 
-import com.example.oulearning.organization.domain.employee.CorporateKey;
+import com.example.oulearning.organization.domain.employee.vo.identity.CorporateKey;
 import com.example.oulearning.organization.domain.employee.Employee;
 import com.example.oulearning.organization.domain.unit.OuId;
 import java.util.Collection;

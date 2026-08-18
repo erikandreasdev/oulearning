@@ -2,7 +2,7 @@ package com.example.oulearning.budgeting.domain.distribution;
 
 import com.example.oulearning.budgeting.domain.budget.Money;
 import com.example.oulearning.budgeting.domain.budget.exception.InvalidBudgetException;
-import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.training.domain.request.vo.identity.OuId;
 import java.util.Map;
 
 /**

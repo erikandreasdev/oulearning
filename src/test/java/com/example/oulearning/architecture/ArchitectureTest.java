@@ -38,11 +38,41 @@ class ArchitectureTest {
             .resideInAPackage("org.springframework..");
 
     @ArchTest
-    static final ArchRule controllers_should_only_reside_in_web_infrastructure = classes()
+    static final ArchRule controllers_should_only_reside_in_web_controller = classes()
             .that()
             .haveSimpleNameEndingWith("Controller")
             .should()
-            .resideInAPackage("..infrastructure.web..");
+            .resideInAPackage("..infrastructure.web.controller..");
+
+    @ArchTest
+    static final ArchRule use_cases_should_reside_in_application_port_in = classes()
+            .that()
+            .haveSimpleNameEndingWith("UseCase")
+            .should()
+            .resideInAPackage("..application.port.in.usecase..");
+
+    @ArchTest
+    static final ArchRule commands_should_reside_in_application_port_in_command = classes()
+            .that()
+            .haveSimpleNameEndingWith("Command")
+            .should()
+            .resideInAPackage("..application.port.in.command..");
+
+    @ArchTest
+    static final ArchRule queries_should_reside_in_application_port_in_query = classes()
+            .that()
+            .haveSimpleNameEndingWith("Query")
+            .should()
+            .resideInAPackage("..application.port.in.query..");
+
+    @ArchTest
+    static final ArchRule services_in_application_should_reside_in_application_service = classes()
+            .that()
+            .haveSimpleNameEndingWith("Service")
+            .and()
+            .resideInAPackage("..application..")
+            .should()
+            .resideInAPackage("..application.service..");
 
     @ArchTest
     static final ArchRule repositories_should_be_named_correctly = classes()
@@ -50,4 +80,18 @@ class ArchitectureTest {
             .haveSimpleNameEndingWith("Repository")
             .should()
             .resideInAnyPackage("..domain..", "..infrastructure.persistence..");
+
+    @ArchTest
+    static final ArchRule entities_should_reside_in_infrastructure_persistence = classes()
+            .that()
+            .haveSimpleNameEndingWith("Entity")
+            .should()
+            .resideInAPackage("..infrastructure.persistence..");
+
+    @ArchTest
+    static final ArchRule responses_should_reside_in_web_response = classes()
+            .that()
+            .haveSimpleNameEndingWith("Response")
+            .should()
+            .resideInAPackage("..infrastructure.web.response..");
 }

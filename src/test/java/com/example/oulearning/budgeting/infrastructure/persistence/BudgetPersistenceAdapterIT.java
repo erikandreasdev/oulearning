@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.Money;
-import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.training.domain.request.vo.identity.OuId;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;

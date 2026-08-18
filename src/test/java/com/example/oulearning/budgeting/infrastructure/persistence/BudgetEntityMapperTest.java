@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.Money;
-import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.training.domain.request.vo.identity.OuId;
 import com.example.oulearning.shared.domain.fiscal.FiscalYear;
 import java.math.BigDecimal;
 import java.util.UUID;

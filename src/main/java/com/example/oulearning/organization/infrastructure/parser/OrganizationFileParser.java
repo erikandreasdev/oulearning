@@ -1,6 +1,6 @@
 package com.example.oulearning.organization.infrastructure.parser;
 
-import com.example.oulearning.organization.domain.employee.CorporateKey;
+import com.example.oulearning.organization.domain.employee.vo.identity.CorporateKey;
 import com.example.oulearning.organization.domain.organization.exception.InvalidFileFormatException;
 import com.example.oulearning.organization.domain.organization.exception.InvalidOrganizationTreeException;
 import com.example.oulearning.organization.domain.unit.OrganizationalUnit;

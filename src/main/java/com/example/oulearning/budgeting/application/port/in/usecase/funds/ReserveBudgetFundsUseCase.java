@@ -1,0 +1,19 @@
+package com.example.oulearning.budgeting.application.port.in.usecase.funds;
+
+import com.example.oulearning.budgeting.domain.budget.Budget;
+import com.example.oulearning.budgeting.domain.budget.BudgetId;
+import com.example.oulearning.budgeting.domain.budget.Money;
+import com.example.oulearning.budgeting.domain.budget.repository.BudgetRepository;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import javax.money.Monetary;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.example.oulearning.budgeting.application.port.in.command.ReserveFundsCommand;
+
+/**
+ * Use case input port for reserving funds from a budget.
+ */
+public interface ReserveBudgetFundsUseCase {
+    Budget execute(ReserveFundsCommand command);
+}

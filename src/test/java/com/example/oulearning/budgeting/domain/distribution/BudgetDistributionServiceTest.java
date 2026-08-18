@@ -7,7 +7,7 @@ import com.example.oulearning.budgeting.domain.budget.Budget;
 import com.example.oulearning.budgeting.domain.budget.BudgetId;
 import com.example.oulearning.budgeting.domain.budget.Money;
 import com.example.oulearning.budgeting.domain.distribution.exception.BudgetDistributionException;
-import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.training.domain.request.vo.identity.OuId;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;

@@ -1,8 +1,13 @@
 package com.example.oulearning.organization.domain.employee;
+import com.example.oulearning.organization.domain.employee.vo.contact.Email;
 
 import com.example.oulearning.organization.domain.employee.exception.InvalidEmployeeException;
 import com.example.oulearning.organization.domain.unit.OuId;
 import java.util.Optional;
+import com.example.oulearning.organization.domain.employee.vo.contact.Phone;
+import com.example.oulearning.organization.domain.employee.vo.identity.EmployeeRole;
+import com.example.oulearning.organization.domain.employee.vo.name.FullName;
+import com.example.oulearning.organization.domain.employee.vo.identity.CorporateKey;
 
 /**
  * Entity/Aggregate representing an Employee and their OU membership.

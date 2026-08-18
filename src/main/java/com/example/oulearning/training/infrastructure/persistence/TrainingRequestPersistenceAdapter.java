@@ -1,11 +1,11 @@
 package com.example.oulearning.training.infrastructure.persistence;
 
 import com.example.oulearning.shared.domain.fiscal.FiscalYear;
-import com.example.oulearning.training.domain.OuId;
-import com.example.oulearning.training.domain.TrainingRequest;
-import com.example.oulearning.training.domain.TrainingRequestId;
-import com.example.oulearning.training.domain.repository.TrainingRequestRepository;
-import com.example.oulearning.training.domain.repository.TrainingRequestSearchCriteria;
+import com.example.oulearning.training.domain.request.vo.identity.OuId;
+import com.example.oulearning.training.domain.request.TrainingRequest;
+import com.example.oulearning.training.domain.request.vo.identity.TrainingRequestId;
+import com.example.oulearning.training.domain.request.repository.TrainingRequestRepository;
+import com.example.oulearning.training.domain.request.repository.TrainingRequestSearchCriteria;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

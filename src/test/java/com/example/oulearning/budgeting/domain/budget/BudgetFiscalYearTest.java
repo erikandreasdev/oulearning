@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.budgeting.domain.budget.exception.BudgetFiscalYearExpiredException;
-import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.training.domain.request.vo.identity.OuId;
 import com.example.oulearning.shared.domain.fiscal.FiscalYear;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;

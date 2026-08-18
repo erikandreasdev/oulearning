@@ -2,6 +2,7 @@ package com.example.oulearning.organization.domain.unit;
 
 import com.example.oulearning.organization.domain.unit.exception.InvalidOuException;
 import java.util.Optional;
+import com.example.oulearning.organization.domain.unit.OuId;
 
 /**
  * Value object encapsulating search parameters for finding organizational units.

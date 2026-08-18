@@ -1,13 +1,13 @@
 package com.example.oulearning.organization.domain;
+import com.example.oulearning.organization.domain.employee.vo.contact.Email;
 
-import com.example.oulearning.organization.domain.employee.CorporateKey;
-import com.example.oulearning.organization.domain.employee.Email;
+import com.example.oulearning.organization.domain.employee.vo.identity.CorporateKey;
 import com.example.oulearning.organization.domain.employee.Employee;
-import com.example.oulearning.organization.domain.employee.EmployeeRole;
-import com.example.oulearning.organization.domain.employee.FullName;
-import com.example.oulearning.organization.domain.employee.Name;
-import com.example.oulearning.organization.domain.employee.Phone;
-import com.example.oulearning.organization.domain.employee.Surname;
+import com.example.oulearning.organization.domain.employee.vo.identity.EmployeeRole;
+import com.example.oulearning.organization.domain.employee.vo.name.FullName;
+import com.example.oulearning.organization.domain.employee.vo.name.Name;
+import com.example.oulearning.organization.domain.employee.vo.contact.Phone;
+import com.example.oulearning.organization.domain.employee.vo.name.Surname;
 import com.example.oulearning.organization.domain.organization.Organization;
 import com.example.oulearning.organization.domain.organization.SnapshotId;
 import com.example.oulearning.organization.domain.unit.OrganizationalUnit;

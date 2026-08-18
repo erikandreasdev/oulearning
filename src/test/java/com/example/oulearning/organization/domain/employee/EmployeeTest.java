@@ -1,4 +1,5 @@
 package com.example.oulearning.organization.domain.employee;
+import com.example.oulearning.organization.domain.employee.vo.contact.Email;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import com.example.oulearning.organization.domain.employee.vo.contact.Phone;
+import com.example.oulearning.organization.domain.employee.vo.identity.EmployeeRole;
 
 @ExtendWith(InstancioExtension.class)
 class EmployeeTest {

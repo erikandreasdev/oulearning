@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.oracle.OracleContainer;
+import com.example.oulearning.organization.infrastructure.web.response.EmployeeResponse;
 
 @Testcontainers(disabledWithoutDocker = true)
 @SpringBootTest

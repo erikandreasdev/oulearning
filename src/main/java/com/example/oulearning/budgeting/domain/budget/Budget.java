@@ -3,7 +3,7 @@ package com.example.oulearning.budgeting.domain.budget;
 import com.example.oulearning.budgeting.domain.budget.exception.BudgetFiscalYearExpiredException;
 import com.example.oulearning.budgeting.domain.budget.exception.InsufficientBudgetException;
 import com.example.oulearning.budgeting.domain.budget.exception.InvalidBudgetException;
-import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.training.domain.request.vo.identity.OuId;
 import com.example.oulearning.shared.domain.fiscal.FiscalYear;
 import java.util.Objects;
 

@@ -2,7 +2,7 @@ package com.example.oulearning.training.infrastructure.adapters;
 
 import com.example.oulearning.budgeting.domain.budget.Money;
 import com.example.oulearning.budgeting.domain.budget.repository.BudgetRepository;
-import com.example.oulearning.organization.domain.unit.OuId;
+import com.example.oulearning.training.domain.request.vo.identity.OuId;
 import com.example.oulearning.shared.domain.fiscal.FiscalYear;
 import com.example.oulearning.training.application.port.out.TrainingBudgetPort;
 import java.math.BigDecimal;

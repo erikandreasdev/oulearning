@@ -1,0 +1,4 @@
+corporateKey,firstName,lastName,email,phone,role,ouName
+CK0001,Alice,Manager,alice@acme.com,+1234567890,MANAGER,Acme Corp
+CK0002,Bob,TechLead,bob@acme.com,+1234567891,EMPLOYEE,Engineering
+CK0003,Charlie,Dev,charlie@acme.com,+1234567892,EMPLOYEE,Backend Team

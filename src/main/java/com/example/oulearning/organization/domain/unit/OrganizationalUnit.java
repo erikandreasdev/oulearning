@@ -1,9 +1,10 @@
 package com.example.oulearning.organization.domain.unit;
 
-import com.example.oulearning.organization.domain.employee.CorporateKey;
+import com.example.oulearning.organization.domain.employee.vo.identity.CorporateKey;
 import com.example.oulearning.organization.domain.unit.exception.InvalidOuException;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.example.oulearning.organization.domain.unit.OuId;
 
 /**
  * Domain model representing an Organizational Unit within the organization hierarchy.

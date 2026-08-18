@@ -1,7 +1,7 @@
 package com.example.oulearning.organization.domain;
 
-import com.example.oulearning.organization.domain.employee.CorporateKey;
-import com.example.oulearning.organization.domain.employee.EmployeeRole;
+import com.example.oulearning.organization.domain.employee.vo.identity.CorporateKey;
+import com.example.oulearning.organization.domain.employee.vo.identity.EmployeeRole;
 import java.util.stream.Stream;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.Named;
