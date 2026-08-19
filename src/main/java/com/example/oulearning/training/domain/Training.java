@@ -7,9 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Domain object representing a Training request.
- */
+
 public final class Training {
 
     private final TrainingId id;

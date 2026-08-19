@@ -1,6 +1,6 @@
 package com.example.oulearning.organization.domain.hierarchy.exception;
 
-/** Exception thrown when an organizational unit or identifier violates domain invariants. */
+
 public final class InvalidOuException extends HierarchyException {
 
     public InvalidOuException(final String message) {

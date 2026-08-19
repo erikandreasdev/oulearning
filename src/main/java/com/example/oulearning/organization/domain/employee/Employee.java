@@ -2,9 +2,7 @@ package com.example.oulearning.organization.domain.employee;
 
 import java.util.Objects;
 
-/**
- * Domain object representing an Employee.
- */
+
 public final class Employee {
 
     private final EmployeeId id;

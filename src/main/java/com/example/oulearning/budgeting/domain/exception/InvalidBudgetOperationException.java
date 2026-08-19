@@ -1,6 +1,6 @@
 package com.example.oulearning.budgeting.domain.exception;
 
-/** Exception thrown when a budget operation violates domain invariants. */
+
 public final class InvalidBudgetOperationException extends BudgetingException {
 
     public InvalidBudgetOperationException(final String message) {

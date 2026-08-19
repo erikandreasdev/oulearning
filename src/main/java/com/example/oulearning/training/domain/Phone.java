@@ -3,11 +3,7 @@ package com.example.oulearning.training.domain;
 import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import java.util.regex.Pattern;
 
-/**
- * Value object representing a valid phone number.
- *
- * @param value the normalized phone number string
- */
+
 public record Phone(String value) {
 
     private static final Pattern PATTERN = Pattern.compile(TrainingConstants.PHONE_REGEX);

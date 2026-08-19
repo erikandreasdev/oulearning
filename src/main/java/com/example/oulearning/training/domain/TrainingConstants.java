@@ -1,8 +1,6 @@
 package com.example.oulearning.training.domain;
 
-/**
- * Constants for the training bounded context.
- */
+
 public final class TrainingConstants {
 
     public static final String DEFAULT_CURRENCY = "EUR";

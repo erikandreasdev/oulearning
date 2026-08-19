@@ -19,13 +19,13 @@ class HoursTest {
         @Test
         @DisplayName("given positive integer from TrainingTestFactory, when creating Hours, then create successfully")
         void givenPositiveInteger_whenCreatingHours_thenCreateSuccessfully() {
-            // given
+
             final var val = TrainingTestFactory.randomHoursValue();
 
-            // when
+
             final var hours = Hours.of(val);
 
-            // then
+
             assertThat(hours.value()).isEqualTo(val);
             assertThat(hours.toString()).isEqualTo(String.valueOf(val));
         }
@@ -34,11 +34,11 @@ class HoursTest {
         @ValueSource(ints = {0, -1, -50})
         @DisplayName("given non-positive integer, when creating Hours, then throw InvalidTrainingOperationException")
         void givenNonPositiveInteger_whenCreatingHours_thenThrowInvalidTrainingOperationException(final int invalidVal) {
-            // given
 
-            // when
 
-            // then
+
+
+
             assertThatThrownBy(() -> Hours.of(invalidVal))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("strictly positive");
@@ -52,14 +52,14 @@ class HoursTest {
         @Test
         @DisplayName("given identical hours, when comparing Hours, then they are equal")
         void givenIdenticalHours_whenComparingHours_thenTheyAreEqual() {
-            // given
+
             final var val = TrainingTestFactory.randomHoursValue();
             final var h1 = Hours.of(val);
             final var h2 = Hours.of(val);
 
-            // when
 
-            // then
+
+
             assertThat(h1).isEqualTo(h2);
             assertThat(h1.hashCode()).isEqualTo(h2.hashCode());
         }
@@ -67,13 +67,13 @@ class HoursTest {
         @Test
         @DisplayName("given different hours, when comparing Hours, then they are not equal")
         void givenDifferentHours_whenComparingHours_thenTheyAreNotEqual() {
-            // given
+
             final var h1 = TrainingTestFactory.randomHours();
             final var h2 = Hours.of(h1.value() + 10);
 
-            // when
 
-            // then
+
+
             assertThat(h1).isNotEqualTo(h2);
         }
     }

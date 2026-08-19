@@ -3,12 +3,7 @@ package com.example.oulearning.training.domain;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-/**
- * Value object representing training cost.
- *
- * @param amount the numeric cost amount
- * @param currency the ISO currency code
- */
+
 public record Cost(BigDecimal amount, String currency) {
 
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;

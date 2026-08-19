@@ -19,14 +19,14 @@ class FullNameTest {
         @Test
         @DisplayName("given Name and Surname objects, when creating FullName, then create successfully")
         void givenNameAndSurnameObjects_whenCreatingFullName_thenCreateSuccessfully() {
-            // given
+
             final var name = EmployeeTestFactory.randomName();
             final var surname = EmployeeTestFactory.randomSurname();
 
-            // when
+
             final var fullName = FullName.of(name, surname);
 
-            // then
+
             assertThat(fullName.name()).isEqualTo(name);
             assertThat(fullName.surname()).isEqualTo(surname);
             assertThat(fullName.formatted()).isEqualTo("%s %s".formatted(name.value(), surname.value()));
@@ -36,14 +36,14 @@ class FullNameTest {
         @Test
         @DisplayName("given raw strings with padding, when creating FullName, then trim and create successfully")
         void givenRawStringsWithPadding_whenCreatingFullName_thenTrimAndCreateSuccessfully() {
-            // given
+
             final var rawName = EmployeeTestFactory.randomName().value();
             final var rawSurname = EmployeeTestFactory.randomSurname().value();
 
-            // when
+
             final var fullName = FullName.of(" %s ".formatted(rawName), " %s ".formatted(rawSurname));
 
-            // then
+
             assertThat(fullName.name().value()).isEqualTo(rawName);
             assertThat(fullName.surname().value()).isEqualTo(rawSurname);
             assertThat(fullName.formatted()).isEqualTo("%s %s".formatted(rawName, rawSurname));
@@ -52,13 +52,13 @@ class FullNameTest {
         @Test
         @DisplayName("given null name or surname, when creating FullName, then throw InvalidEmployeeException")
         void givenNullComponents_whenCreatingFullName_thenThrowInvalidEmployeeException() {
-            // given
+
             final var surname = EmployeeTestFactory.randomSurname();
             final var name = EmployeeTestFactory.randomName();
 
-            // when
 
-            // then
+
+
             assertThatThrownBy(() -> new FullName(null, surname))
                     .isInstanceOf(InvalidEmployeeException.class)
                     .hasMessageContaining("First name cannot be null");
@@ -72,11 +72,11 @@ class FullNameTest {
         @ValueSource(strings = {"", "   ", "\t\n"})
         @DisplayName("given blank name or surname string, when creating, then throw InvalidEmployeeException")
         void givenBlankComponents_whenCreating_thenThrowInvalidEmployeeException(final String blank) {
-            // given
 
-            // when
 
-            // then
+
+
+
             assertThatThrownBy(() -> Name.of(blank))
                     .isInstanceOf(InvalidEmployeeException.class)
                     .hasMessageContaining("cannot be blank");
@@ -89,12 +89,12 @@ class FullNameTest {
         @Test
         @DisplayName("given name or surname exceeding max length, when creating, then throw InvalidEmployeeException")
         void givenLengthExceeded_whenCreating_thenThrowInvalidEmployeeException() {
-            // given
+
             final var longName = "A".repeat(51);
 
-            // when
 
-            // then
+
+
             assertThatThrownBy(() -> Name.of(longName))
                     .isInstanceOf(InvalidEmployeeException.class)
                     .hasMessageContaining("Name length must be between");
@@ -112,15 +112,15 @@ class FullNameTest {
         @Test
         @DisplayName("given identical names and surnames, when comparing FullName, then they are equal")
         void givenIdenticalNamesAndSurnames_whenComparingFullName_thenTheyAreEqual() {
-            // given
+
             final var name = EmployeeTestFactory.randomName();
             final var surname = EmployeeTestFactory.randomSurname();
             final var fn1 = FullName.of(name, surname);
             final var fn2 = FullName.of(name, surname);
 
-            // when
 
-            // then
+
+
             assertThat(fn1).isEqualTo(fn2);
             assertThat(fn1.hashCode()).isEqualTo(fn2.hashCode());
         }
@@ -128,13 +128,13 @@ class FullNameTest {
         @Test
         @DisplayName("given different names or surnames, when comparing FullName, then they are not equal")
         void givenDifferentNamesOrSurnames_whenComparingFullName_thenTheyAreNotEqual() {
-            // given
+
             final var fn1 = EmployeeTestFactory.randomFullName();
             final var fn2 = EmployeeTestFactory.randomFullName();
 
-            // when
 
-            // then
+
+
             assertThat(fn1).isNotEqualTo(fn2);
         }
     }

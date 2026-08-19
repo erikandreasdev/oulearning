@@ -1,10 +1,6 @@
 package com.example.oulearning.organization.domain.hierarchy;
 
-/**
- * Value object representing an organizational unit name.
- *
- * @param value the non-blank name string
- */
+
 public record Name(String value) {
 
     public Name {

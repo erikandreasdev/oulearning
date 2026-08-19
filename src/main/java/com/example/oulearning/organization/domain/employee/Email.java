@@ -3,11 +3,7 @@ package com.example.oulearning.organization.domain.employee;
 import com.example.oulearning.organization.domain.employee.exception.InvalidEmailException;
 import java.util.regex.Pattern;
 
-/**
- * Value object representing a valid employee email address.
- *
- * @param value the normalized email address string
- */
+
 public record Email(String value) {
 
     private static final Pattern PATTERN = Pattern.compile(EmployeeConstants.EMAIL_REGEX);

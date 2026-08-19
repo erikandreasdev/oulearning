@@ -1,10 +1,6 @@
 package com.example.oulearning.training.domain;
 
-/**
- * Value object representing a training type name.
- *
- * @param value the non-blank name string
- */
+
 public record TypeName(String value) {
 
     public TypeName {

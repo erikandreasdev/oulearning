@@ -1,6 +1,6 @@
 package com.example.oulearning.training.domain.exception;
 
-/** Exception thrown when a training operation or value object creation violates invariants. */
+
 public final class InvalidTrainingOperationException extends TrainingException {
 
     public InvalidTrainingOperationException(final String message) {

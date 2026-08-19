@@ -3,9 +3,7 @@ package com.example.oulearning.training.domain;
 import java.util.Objects;
 import java.util.Optional;
 
-/**
- * Domain object representing a training type category.
- */
+
 public final class Type {
 
     private final TypeId id;

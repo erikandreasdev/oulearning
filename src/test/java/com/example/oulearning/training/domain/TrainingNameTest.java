@@ -19,13 +19,13 @@ class TrainingNameTest {
         @Test
         @DisplayName("given valid training name string, when creating TrainingName, then create successfully")
         void givenValidTrainingNameString_whenCreatingTrainingName_thenCreateSuccessfully() {
-            // given
+
             final var raw = TrainingTestFactory.randomTrainingNameString();
 
-            // when
+
             final var name = TrainingName.of("  %s  ".formatted(raw));
 
-            // then
+
             assertThat(name.value()).isEqualTo(raw);
             assertThat(name.toString()).isEqualTo(raw);
         }
@@ -33,11 +33,11 @@ class TrainingNameTest {
         @Test
         @DisplayName("given null name, when creating TrainingName, then throw InvalidTrainingOperationException")
         void givenNullName_whenCreatingTrainingName_thenThrowInvalidTrainingOperationException() {
-            // given
 
-            // when
 
-            // then
+
+
+
             assertThatThrownBy(() -> new TrainingName(null))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be null");
@@ -47,11 +47,11 @@ class TrainingNameTest {
         @ValueSource(strings = {"", "   ", "\t\n"})
         @DisplayName("given blank name, when creating TrainingName, then throw InvalidTrainingOperationException")
         void givenBlankName_whenCreatingTrainingName_thenThrowInvalidTrainingOperationException(final String blank) {
-            // given
 
-            // when
 
-            // then
+
+
+
             assertThatThrownBy(() -> new TrainingName(blank))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be blank");
@@ -60,12 +60,12 @@ class TrainingNameTest {
         @Test
         @DisplayName("given training name exceeding max length, when creating, then throw InvalidTrainingOperationException")
         void givenTrainingNameExceedingMaxLength_whenCreating_thenThrowInvalidTrainingOperationException() {
-            // given
+
             final var longName = "A".repeat(TrainingConstants.MAX_NAME_LENGTH + 1);
 
-            // when
 
-            // then
+
+
             assertThatThrownBy(() -> new TrainingName(longName))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Training name length must be between");
@@ -79,14 +79,14 @@ class TrainingNameTest {
         @Test
         @DisplayName("given identical training names, when comparing, then they are equal")
         void givenIdenticalTrainingNames_whenComparing_thenTheyAreEqual() {
-            // given
+
             final var raw = TrainingTestFactory.randomTrainingNameString();
             final var n1 = TrainingName.of(raw);
             final var n2 = TrainingName.of(raw);
 
-            // when
 
-            // then
+
+
             assertThat(n1).isEqualTo(n2);
             assertThat(n1.hashCode()).isEqualTo(n2.hashCode());
         }
@@ -94,13 +94,13 @@ class TrainingNameTest {
         @Test
         @DisplayName("given different training names, when comparing, then they are not equal")
         void givenDifferentTrainingNames_whenComparing_thenTheyAreNotEqual() {
-            // given
+
             final var n1 = TrainingTestFactory.randomTrainingName();
             final var n2 = TrainingTestFactory.randomTrainingName();
 
-            // when
 
-            // then
+
+
             assertThat(n1).isNotEqualTo(n2);
         }
     }

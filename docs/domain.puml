@@ -7,7 +7,7 @@ package "organization" {
 
     package "Hierarchy" {
 
-        class Id <<Value Object>> {
+        class OuId <<Value Object>> {
             - value : UUID
         }
 
@@ -15,45 +15,34 @@ package "organization" {
             - value : String
         }
 
-        class OrganizationalUnit {
-            - id : Id
+        class Ou {
+            - id : OuId
             - name : Name
-            - parentId : Id
-            - childIds : Set<Id>
-            - owners : Set<Id>
-            - members : Set<Id>
+            - parentId : OuId
+            - childIds : Set<OuId>
+            - owners : Set<EmployeeId>
+            - members : Set<EmployeeId>
         }
-
 
         class Organization {
-            - ouIds : Set<Id>
+            - ouIds : Set<OuId>
         }
 
-        OrganizationalUnit *-- Id
-        OrganizationalUnit *-- Name
-        OrganizationalUnit *-- Employee.Id : owners
-        OrganizationalUnit *-- Employee.Id : members
+        Ou *-- OuId
+        Ou *-- Name
+        Ou --> OuId : parentId
+        Ou o-- OuId : childIds
+        Ou o-- Employee.EmployeeId : owners
+        Ou o-- Employee.EmployeeId : members
 
-        Organization o-- Id
+        Organization o-- OuId
     }
-
 
     package "Employee" {
 
-        class Id <<Value Object>> {
-            - value : String
+        class EmployeeId <<Value Object>> {
+            - value : UUID
         }
-
-        class Employee {
-            - id : Id
-            - fullName : FullName
-            - email : Email
-        }
-
-        note right of Id
-            Workday Id
-            Corporate Key
-        end note
 
         class Name <<Value Object>> {
             - value : String
@@ -72,49 +61,56 @@ package "organization" {
             - value : String
         }
 
-        Employee *-- Id
+        class Employee {
+            - id : EmployeeId
+            - fullName : FullName
+            - email : Email
+        }
+
+        Employee *-- EmployeeId
         Employee *-- FullName
         Employee *-- Email
 
         FullName *-- Name
         FullName *-- Surname
-
     }
 }
 
 package "budgeting" {
 
-    class Id <<Value Object>> {
+    class BudgetId <<Value Object>> {
         - value : UUID
     }
 
     class FiscalYear <<Value Object>> {
-        - value : Integer
+        - value : int
     }
 
     class Money <<Value Object>> {
-        - amount : Decimal
+        - amount : BigDecimal
         - currency : String
     }
 
     class Budget {
-        - id : Id
-        - ouId : Id
+        - id : BudgetId
+        - ouId : OuId
         - fiscalYear : FiscalYear
         - total : Money
         - reserved : Money
         - available : Money
     }
 
-    Budget *-- Organization.Hierarchy.Id
+    Budget *-- BudgetId
+    Budget --> organization.Hierarchy.OuId : ouId
     Budget *-- FiscalYear
-    Budget *-- Money
-    Budget --> Id
+    Budget *-- Money : total
+    Budget *-- Money : reserved
+    Budget *-- Money : available
 }
 
 package "training" {
 
-    class Id <<Value Object>> {
+    class TrainingId <<Value Object>> {
         - value : UUID
     }
 
@@ -123,12 +119,12 @@ package "training" {
     }
 
     class Cost <<Value Object>> {
-        - amount : Decimal
+        - amount : BigDecimal
         - currency : String
     }
 
     class Hours <<Value Object>> {
-        - value : Integer
+        - value : int
     }
 
     class TypeId <<Value Object>> {
@@ -172,10 +168,7 @@ package "training" {
 
     class TrainingPurpose <<Value Object>> {
         - type : TrainingPurposeType
-    }
-
-    class OtherTrainingPurpose <<Value Object>> {
-        - purpose : String
+        - otherPurpose : String
     }
 
     class ManagerReview <<Value Object>> {
@@ -199,33 +192,10 @@ package "training" {
         - parentTypeId : TypeId
     }
 
-    note right of Type
-        Current Type Hierarchy
-
-        Technical
-
-        Power Skills
-            - Communication
-            - Personal Effectiveness (GTD)
-            - Negotiation
-            - Conflict Management
-            - Other
-
-        Languages
-
-        Regulatory / Mandatory
-
-        Onboarding
-
-        Leadership
-
-        Other
-    end note
-
     class Training {
-        - id : Id
-        - requestedBy : Id
-        - ouId : Id
+        - id : TrainingId
+        - requestedBy : EmployeeId
+        - ouId : OuId
         - name : TrainingName
         - cost : Cost
         - hours : Hours
@@ -235,37 +205,34 @@ package "training" {
         - managerReview : ManagerReview
         - createdAt : Instant
         - updatedAt : Instant
-        - attendees: Set<Id>
+        - attendees : Set<EmployeeId>
     }
 
-    OtherTrainingPurpose --|> TrainingPurpose
-
-    Training *-- Id
+    Training *-- TrainingId
+    Training --> organization.Employee.EmployeeId : requestedBy
+    Training --> organization.Hierarchy.OuId : ouId
     Training *-- TrainingName
     Training *-- Cost
     Training *-- Hours
     Training *-- TrainingPurpose
-    Training *-- ManagerReview
+    Training --> TypeId : typeId
+    Training --> TrainingStatus : status
+    Training o-- ManagerReview : managerReview
+    Training o-- organization.Employee.EmployeeId : attendees
 
     TrainingPurpose *-- TrainingPurposeType
 
     ManagerReview *-- Modality
-    ManagerReview *-- StartDate
-    ManagerReview *-- EndDate
-    ManagerReview *-- ExternalProvider
+    ManagerReview o-- ExternalProvider
 
-    ExternalProviderContact *-- Organization.Employee.Email : email
-    ExternalProviderContact *-- Organization.Employee.Phone : phone
+    ExternalProvider *-- ExternalProviderName
+    ExternalProvider *-- ExternalProviderContact
+    ExternalProviderContact *-- organization.Employee.Email : email
+    ExternalProviderContact *-- Phone : phone
 
     Type *-- TypeId
     Type *-- TypeName
     Type --> TypeId : parentTypeId
-
-    Training --> TypeId
-    Training --> TrainingStatus
-    Training --> Organization.Employee.Id : requestedBy
-    Training --> Organization.Employee.Id : ouId
-    Training *-- Employee.Id : attendees
 }
 
 @enduml

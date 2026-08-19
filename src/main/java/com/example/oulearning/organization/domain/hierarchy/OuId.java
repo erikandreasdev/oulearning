@@ -2,11 +2,7 @@ package com.example.oulearning.organization.domain.hierarchy;
 
 import java.util.UUID;
 
-/**
- * Value object representing an organizational unit identifier.
- *
- * @param value the UUID value
- */
+
 public record OuId(UUID value) {
 
     public OuId {

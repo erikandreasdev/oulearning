@@ -1,6 +1,6 @@
 package com.example.oulearning.organization.domain.employee.exception;
 
-/** Exception thrown when an email address violates format constraints. */
+
 public final class InvalidEmailException extends EmployeeException {
 
     public InvalidEmailException(final String message) {

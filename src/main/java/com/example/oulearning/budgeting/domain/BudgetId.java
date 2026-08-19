@@ -2,11 +2,7 @@ package com.example.oulearning.budgeting.domain;
 
 import java.util.UUID;
 
-/**
- * Value object representing a budget identifier.
- *
- * @param value the UUID value
- */
+
 public record BudgetId(UUID value) {
 
     public BudgetId {

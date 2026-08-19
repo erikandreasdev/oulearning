@@ -5,9 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Domain object representing an Organizational Unit (Ou).
- */
+
 public final class Ou {
 
     private final OuId id;

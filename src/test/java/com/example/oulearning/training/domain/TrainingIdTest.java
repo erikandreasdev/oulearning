@@ -17,13 +17,13 @@ class TrainingIdTest {
         @Test
         @DisplayName("given valid UUID, when creating TrainingId, then create successfully")
         void givenValidUuid_whenCreatingTrainingId_thenCreateSuccessfully() {
-            // given
+
             final var uuid = TrainingTestFactory.randomUuid();
 
-            // when
+
             final var id = TrainingId.of(uuid);
 
-            // then
+
             assertThat(id.value()).isEqualTo(uuid);
             assertThat(id.toString()).isEqualTo(uuid.toString());
         }
@@ -31,24 +31,24 @@ class TrainingIdTest {
         @Test
         @DisplayName("given valid UUID string, when parsing TrainingId, then parse successfully")
         void givenValidUuidString_whenParsingTrainingId_thenParseSuccessfully() {
-            // given
+
             final var uuid = TrainingTestFactory.randomUuid();
 
-            // when
+
             final var id = TrainingId.fromString(" %s ".formatted(uuid));
 
-            // then
+
             assertThat(id.value()).isEqualTo(uuid);
         }
 
         @Test
         @DisplayName("given null UUID, when creating TrainingId, then throw exception")
         void givenNullUuid_whenCreatingTrainingId_thenThrowException() {
-            // given
 
-            // when
 
-            // then
+
+
+
             assertThatThrownBy(() -> new TrainingId(null))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessageContaining("cannot be null");
@@ -57,12 +57,12 @@ class TrainingIdTest {
         @Test
         @DisplayName("given invalid UUID string, when parsing TrainingId, then throw exception")
         void givenInvalidUuidString_whenParsingTrainingId_thenThrowException() {
-            // given
+
             final var invalidUuid = Instancio.create(String.class);
 
-            // when
 
-            // then
+
+
             assertThatThrownBy(() -> TrainingId.fromString(invalidUuid))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessageContaining("Invalid UUID format");
@@ -80,14 +80,14 @@ class TrainingIdTest {
         @Test
         @DisplayName("given identical UUIDs, when comparing TrainingIds, then they are equal")
         void givenIdenticalUuids_whenComparingTrainingIds_thenTheyAreEqual() {
-            // given
+
             final var uuid = TrainingTestFactory.randomUuid();
             final var id1 = TrainingId.of(uuid);
             final var id2 = TrainingId.of(uuid);
 
-            // when
 
-            // then
+
+
             assertThat(id1).isEqualTo(id2);
             assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
         }
@@ -95,13 +95,13 @@ class TrainingIdTest {
         @Test
         @DisplayName("given different UUIDs, when comparing TrainingIds, then they are not equal")
         void givenDifferentUuids_whenComparingTrainingIds_thenTheyAreNotEqual() {
-            // given
+
             final var id1 = TrainingTestFactory.randomTrainingId();
             final var id2 = TrainingTestFactory.randomTrainingId();
 
-            // when
 
-            // then
+
+
             assertThat(id1).isNotEqualTo(id2);
         }
     }

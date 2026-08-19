@@ -19,13 +19,13 @@ class TypeNameTest {
         @Test
         @DisplayName("given valid type name string, when creating TypeName, then create successfully")
         void givenValidTypeNameString_whenCreatingTypeName_thenCreateSuccessfully() {
-            // given
+
             final var raw = TrainingTestFactory.randomTypeNameString();
 
-            // when
+
             final var name = TypeName.of("  %s  ".formatted(raw));
 
-            // then
+
             assertThat(name.value()).isEqualTo(raw);
             assertThat(name.toString()).isEqualTo(raw);
         }
@@ -33,11 +33,11 @@ class TypeNameTest {
         @Test
         @DisplayName("given null name, when creating TypeName, then throw InvalidTrainingOperationException")
         void givenNullName_whenCreatingTypeName_thenThrowInvalidTrainingOperationException() {
-            // given
 
-            // when
 
-            // then
+
+
+
             assertThatThrownBy(() -> new TypeName(null))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be null");
@@ -47,11 +47,11 @@ class TypeNameTest {
         @ValueSource(strings = {"", "   ", "\t\n"})
         @DisplayName("given blank name, when creating TypeName, then throw InvalidTrainingOperationException")
         void givenBlankName_whenCreatingTypeName_thenThrowInvalidTrainingOperationException(final String blank) {
-            // given
 
-            // when
 
-            // then
+
+
+
             assertThatThrownBy(() -> new TypeName(blank))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be blank");
@@ -60,12 +60,12 @@ class TypeNameTest {
         @Test
         @DisplayName("given type name exceeding max length, when creating, then throw InvalidTrainingOperationException")
         void givenTypeNameExceedingMaxLength_whenCreating_thenThrowInvalidTrainingOperationException() {
-            // given
+
             final var longName = "A".repeat(TrainingConstants.MAX_NAME_LENGTH + 1);
 
-            // when
 
-            // then
+
+
             assertThatThrownBy(() -> new TypeName(longName))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("TypeName length must be between");
@@ -79,14 +79,14 @@ class TypeNameTest {
         @Test
         @DisplayName("given identical type names, when comparing, then they are equal")
         void givenIdenticalTypeNames_whenComparing_thenTheyAreEqual() {
-            // given
+
             final var raw = TrainingTestFactory.randomTypeNameString();
             final var n1 = TypeName.of(raw);
             final var n2 = TypeName.of(raw);
 
-            // when
 
-            // then
+
+
             assertThat(n1).isEqualTo(n2);
             assertThat(n1.hashCode()).isEqualTo(n2.hashCode());
         }
@@ -94,13 +94,13 @@ class TypeNameTest {
         @Test
         @DisplayName("given different type names, when comparing, then they are not equal")
         void givenDifferentTypeNames_whenComparing_thenTheyAreNotEqual() {
-            // given
+
             final var n1 = TrainingTestFactory.randomTypeName();
             final var n2 = TrainingTestFactory.randomTypeName();
 
-            // when
 
-            // then
+
+
             assertThat(n1).isNotEqualTo(n2);
         }
     }

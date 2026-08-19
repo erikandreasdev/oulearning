@@ -3,9 +3,7 @@ package com.example.oulearning.budgeting.domain;
 import com.example.oulearning.organization.domain.hierarchy.OuId;
 import java.util.Objects;
 
-/**
- * Domain object representing a budget.
- */
+
 public final class Budget {
 
     private final BudgetId id;

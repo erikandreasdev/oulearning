@@ -7,9 +7,7 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 
-/**
- * Value object representing a monetary amount strictly in EUR backed by Moneta (JSR-354).
- */
+
 public final class Money {
 
     private static final CurrencyUnit EUR = Monetary.getCurrency(BudgetingConstants.DEFAULT_CURRENCY);

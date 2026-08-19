@@ -1,10 +1,6 @@
 package com.example.oulearning.budgeting.domain;
 
-/**
- * Value object representing a fiscal year.
- *
- * @param value the fiscal year (e.g. 2026)
- */
+
 public record FiscalYear(int value) {
 
     public FiscalYear {

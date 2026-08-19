@@ -1,6 +1,6 @@
 package com.example.oulearning.organization.domain.employee.exception;
 
-/** Exception thrown when an employee or employee identifier violates domain invariants. */
+
 public final class InvalidEmployeeException extends EmployeeException {
 
     public InvalidEmployeeException(final String message) {

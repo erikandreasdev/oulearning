@@ -2,11 +2,7 @@ package com.example.oulearning.training.domain;
 
 import java.util.UUID;
 
-/**
- * Value object representing a training type identifier.
- *
- * @param value the UUID value
- */
+
 public record TypeId(UUID value) {
 
     public TypeId {

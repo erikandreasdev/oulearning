@@ -1,10 +1,6 @@
 package com.example.oulearning.training.domain;
 
-/**
- * Value object representing training duration in hours.
- *
- * @param value the positive number of hours
- */
+
 public record Hours(int value) {
 
     public Hours {

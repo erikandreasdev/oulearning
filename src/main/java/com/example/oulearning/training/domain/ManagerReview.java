@@ -4,16 +4,7 @@ import com.example.oulearning.training.domain.exception.InvalidTrainingOperation
 import java.time.Instant;
 import java.util.Optional;
 
-/**
- * Value object representing a manager's review details for a training request.
- *
- * @param comments the manager's comments or notes
- * @param modality the training modality
- * @param startDate the start timestamp
- * @param endDate the end timestamp
- * @param externalProvider the optional external provider details
- * @param reviewedAt the timestamp when the review occurred
- */
+
 public record ManagerReview(
         String comments,
         Modality modality,

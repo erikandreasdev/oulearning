@@ -1,10 +1,6 @@
 package com.example.oulearning.organization.domain.employee;
 
-/**
- * Value object representing an employee's first name.
- *
- * @param value the first name string
- */
+
 public record Name(String value) {
 
     public Name {

@@ -1,8 +1,6 @@
 package com.example.oulearning.organization.domain.employee;
 
-/**
- * Constants for the employee bounded context.
- */
+
 public final class EmployeeConstants {
 
     public static final String EMAIL_REGEX =

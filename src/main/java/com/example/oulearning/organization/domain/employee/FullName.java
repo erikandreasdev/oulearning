@@ -2,12 +2,7 @@ package com.example.oulearning.organization.domain.employee;
 
 import com.example.oulearning.organization.domain.employee.exception.InvalidEmployeeException;
 
-/**
- * Value object representing an employee's full name.
- *
- * @param name the employee's first name
- * @param surname the employee's surname
- */
+
 public record FullName(Name name, Surname surname) {
 
     public FullName {

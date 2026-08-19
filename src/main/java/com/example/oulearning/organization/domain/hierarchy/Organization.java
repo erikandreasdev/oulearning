@@ -4,9 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Domain entity representing an Organization containing organizational unit identifiers.
- */
+
 public final class Organization {
 
     private final Set<OuId> ouIds = new HashSet<>();

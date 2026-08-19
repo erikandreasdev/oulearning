@@ -2,12 +2,7 @@ package com.example.oulearning.training.domain;
 
 import java.util.Optional;
 
-/**
- * Value object representing the purpose of a training request.
- *
- * @param type the purpose category
- * @param otherPurpose optional details when type is OTHER
- */
+
 public record TrainingPurpose(TrainingPurposeType type, String otherPurpose) {
 
     public TrainingPurpose {

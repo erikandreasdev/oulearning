@@ -1,10 +1,6 @@
 package com.example.oulearning.training.domain;
 
-/**
- * Value object representing an external training provider name.
- *
- * @param value the non-blank provider name string
- */
+
 public record ExternalProviderName(String value) {
 
     public ExternalProviderName {

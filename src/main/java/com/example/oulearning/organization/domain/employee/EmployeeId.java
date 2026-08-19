@@ -2,11 +2,7 @@ package com.example.oulearning.organization.domain.employee;
 
 import java.util.UUID;
 
-/**
- * Value object representing an employee identifier.
- *
- * @param value the UUID value
- */
+
 public record EmployeeId(UUID value) {
 
     public EmployeeId {
