@@ -6,27 +6,36 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import org.instancio.Instancio;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class ManagerReviewTest {
 
-    private final Instant now = Instant.now();
-    private final Instant startDate = now.plus(1, ChronoUnit.DAYS);
-    private final Instant endDate = now.plus(3, ChronoUnit.DAYS);
-    private final Modality modality = Modality.VIRTUAL;
-    private final ExternalProvider provider = TrainingTestFactory.randomExternalProvider();
+    private Modality modality;
+    private Instant startDate;
+    private Instant endDate;
+    private ExternalProvider provider;
+    private Instant now;
+
+    @BeforeEach
+    void setUp() {
+        modality = TrainingTestFactory.randomModality();
+        now = TrainingTestFactory.randomInstant();
+        startDate = now.plus(10, ChronoUnit.DAYS);
+        endDate = startDate.plus(2, ChronoUnit.DAYS);
+        provider = TrainingTestFactory.randomExternalProvider();
+    }
 
     @Nested
     @DisplayName("Creation and Validation")
     class CreationAndValidation {
 
         @Test
-        @DisplayName("given valid review data, when creating ManagerReview, then create successfully")
-        void givenValidReviewData_whenCreatingManagerReview_thenCreateSuccessfully() {
+        @DisplayName("given valid parameters, when creating ManagerReview, then create successfully")
+        void givenValidParameters_whenCreatingManagerReview_thenCreateSuccessfully() {
             // given
             final var comments = TrainingTestFactory.randomComments();
 
@@ -68,11 +77,11 @@ class ManagerReviewTest {
                     .hasMessageContaining("Comments cannot be null");
         }
 
-        @ParameterizedTest
-        @ValueSource(strings = {"", "   ", "\t\n"})
+        @Test
         @DisplayName("given blank comments, when creating ManagerReview, then throw InvalidTrainingOperationException")
-        void givenBlankComments_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException(final String blank) {
+        void givenBlankComments_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException() {
             // given
+            final var blank = " ".repeat(Instancio.gen().ints().range(1, 5).get());
 
             // when
 

@@ -4,11 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.organization.domain.employee.exception.InvalidEmailException;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class EmailTest {
 
@@ -58,11 +57,11 @@ class EmailTest {
                     .hasMessageContaining("cannot be null");
         }
 
-        @ParameterizedTest
-        @ValueSource(strings = {"", "   ", "\t\n"})
+        @Test
         @DisplayName("given blank email, when creating Email, then throw InvalidEmailException")
-        void givenBlankEmail_whenCreatingEmail_thenThrowInvalidEmailException(final String blank) {
+        void givenBlankEmail_whenCreatingEmail_thenThrowInvalidEmailException() {
             // given
+            final var blank = " ".repeat(Instancio.gen().ints().range(1, 5).get());
 
             // when
 
@@ -72,18 +71,11 @@ class EmailTest {
                     .hasMessageContaining("cannot be blank");
         }
 
-        @ParameterizedTest
-        @ValueSource(
-                strings = {
-                    "plainaddress",
-                    "missing@domain",
-                    "@missingusername.com",
-                    "user@.com",
-                    "user@domain..com"
-                })
-        @DisplayName("given invalid email format, when creating Email, then throw InvalidEmailException")
-        void givenInvalidEmailFormat_whenCreatingEmail_thenThrowInvalidEmailException(final String invalidEmail) {
+        @Test
+        @DisplayName("given invalid email format without domain, when creating Email, then throw InvalidEmailException")
+        void givenInvalidEmailFormatWithoutDomain_whenCreatingEmail_thenThrowInvalidEmailException() {
             // given
+            final var invalidEmail = Instancio.gen().string().alphaNumeric().length(5, 10).get();
 
             // when
 

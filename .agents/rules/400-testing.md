@@ -8,8 +8,20 @@ description: Testing rules for all test sources.
 
 - Pyramid: many domain unit tests → application tests with fakes → few adapter/integration tests → very few e2e.
 - Test method naming pattern: `givenA_whenB_thenC` where A, B, C accurately describe the Given, When, Then steps.
-- Structure tests cleanly following given-when-then flow. Pure code only: no line or block comments.
+- Mandatory Given / When / Then structure: Every test method must contain the explicit line comment blocks:
+  ```java
+  // given
+  given code here
+
+  // when
+  when code here
+
+  // then
+  then code here
+  ```
+  If a block has no code, keep the comment and leave the code empty for that block. These are the ONLY comments allowed in test code (no other line or block comments).
 - Dynamic test data via **Instancio** and centralized test factories (`*TestFactory.java`):
+  - Do not use `@ParameterizedTest`: Always use standard `@Test` combined with Instancio generation for varying and randomized test inputs.
   - Every test must test randomized possibilities using Instancio.
   - Manual/literal variable assignments are ONLY allowed when testing specific edge cases/values where random generation is not appropriate.
   - Test-specific generation parameters (lengths, ranges, character replacements, formatting templates) must be encapsulated inside test factories, never in domain classes.

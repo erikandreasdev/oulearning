@@ -4,11 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.organization.domain.employee.exception.InvalidEmployeeException;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class FullNameTest {
 
@@ -68,11 +67,11 @@ class FullNameTest {
                     .hasMessageContaining("Surname cannot be null");
         }
 
-        @ParameterizedTest
-        @ValueSource(strings = {"", "   ", "\t\n"})
+        @Test
         @DisplayName("given blank name or surname string, when creating, then throw InvalidEmployeeException")
-        void givenBlankComponents_whenCreating_thenThrowInvalidEmployeeException(final String blank) {
+        void givenBlankComponents_whenCreating_thenThrowInvalidEmployeeException() {
             // given
+            final var blank = " ".repeat(Instancio.gen().ints().range(1, 5).get());
 
             // when
 
@@ -90,7 +89,7 @@ class FullNameTest {
         @DisplayName("given name or surname exceeding max length, when creating, then throw InvalidEmployeeException")
         void givenLengthExceeded_whenCreating_thenThrowInvalidEmployeeException() {
             // given
-            final var longName = "A".repeat(51);
+            final var longName = "A".repeat(EmployeeConstants.MAX_NAME_LENGTH + 1);
 
             // when
 

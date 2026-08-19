@@ -4,11 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class TrainingNameTest {
 
@@ -43,11 +42,11 @@ class TrainingNameTest {
                     .hasMessageContaining("cannot be null");
         }
 
-        @ParameterizedTest
-        @ValueSource(strings = {"", "   ", "\t\n"})
+        @Test
         @DisplayName("given blank name, when creating TrainingName, then throw InvalidTrainingOperationException")
-        void givenBlankName_whenCreatingTrainingName_thenThrowInvalidTrainingOperationException(final String blank) {
+        void givenBlankName_whenCreatingTrainingName_thenThrowInvalidTrainingOperationException() {
             // given
+            final var blank = " ".repeat(Instancio.gen().ints().range(1, 5).get());
 
             // when
 

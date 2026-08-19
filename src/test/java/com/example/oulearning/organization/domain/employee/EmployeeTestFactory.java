@@ -9,6 +9,8 @@ public final class EmployeeTestFactory {
     private static final int MAX_USERNAME_LENGTH = 12;
     private static final int MIN_DOMAIN_LENGTH = 3;
     private static final int MAX_DOMAIN_LENGTH = 8;
+    private static final int MAX_NAME_GENERATION_LENGTH = 20;
+    private static final int MAX_SURNAME_GENERATION_LENGTH = 20;
     private static final String EMAIL_FORMAT = "%s@%s.com";
     private static final String NON_ALPHANUMERIC_REGEX = "[^a-z0-9]";
     private static final String USERNAME_REPLACEMENT_CHAR = "a";
@@ -27,14 +29,14 @@ public final class EmployeeTestFactory {
     public static String randomNameString() {
         return Instancio.gen()
                 .string()
-                .length(EmployeeConstants.MIN_NAME_LENGTH, EmployeeConstants.MAX_NAME_LENGTH)
+                .length(EmployeeConstants.MIN_NAME_LENGTH, MAX_NAME_GENERATION_LENGTH)
                 .get();
     }
 
     public static String randomSurnameString() {
         return Instancio.gen()
                 .string()
-                .length(EmployeeConstants.MIN_SURNAME_LENGTH, EmployeeConstants.MAX_SURNAME_LENGTH)
+                .length(EmployeeConstants.MIN_SURNAME_LENGTH, MAX_SURNAME_GENERATION_LENGTH)
                 .get();
     }
 

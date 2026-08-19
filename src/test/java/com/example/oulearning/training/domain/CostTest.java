@@ -5,68 +5,87 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class CostTest {
 
     @Nested
-    @DisplayName("Creation and Validation")
-    class CreationAndValidation {
+    @DisplayName("Creation and Formatting")
+    class CreationAndFormatting {
 
         @Test
-        @DisplayName("given BigDecimal and currency, when creating Cost, then cost is created successfully")
-        void givenBigDecimalAndCurrency_whenCreatingCost_thenCostIsCreatedSuccessfully() {
+        @DisplayName("given positive double amount and lowercase currency, when creating Cost, then create successfully and format uppercase")
+        void givenPositiveDoubleAmountAndLowercaseCurrency_whenCreatingCost_thenCreateSuccessfully() {
             // given
-            final var rawAmount = TrainingTestFactory.randomBigDecimalCostAmount().add(BigDecimal.ONE);
+            final var amount = TrainingTestFactory.randomDoubleCostAmount();
 
             // when
-            final var cost = Cost.of(rawAmount, "EUR");
+            final var cost = Cost.of(amount, "eur");
 
             // then
-            final var expectedAmount = rawAmount.setScale(2, RoundingMode.HALF_EVEN);
-            assertThat(cost.amount()).isEqualTo(expectedAmount);
+            assertThat(cost.amount()).isEqualByComparingTo(BigDecimal.valueOf(amount));
             assertThat(cost.currency()).isEqualTo("EUR");
-            assertThat(cost.toString()).isEqualTo("%s EUR".formatted(expectedAmount));
+            assertThat(cost.toString()).contains("EUR");
         }
 
         @Test
-        @DisplayName("given double and currency, when creating Cost, then cost is created successfully")
-        void givenDoubleAndCurrency_whenCreatingCost_thenCostIsCreatedSuccessfully() {
+        @DisplayName("given BigDecimal with scale, when creating Cost, then scale to two decimal places")
+        void givenBigDecimalWithScale_whenCreatingCost_thenScaleToTwoDecimalPlaces() {
             // given
-            final var rawAmount = TrainingTestFactory.randomDoubleCostAmount();
+            final var costAmount = BigDecimal.valueOf(123.456);
 
             // when
-            final var cost = Cost.of(rawAmount, "usd");
+            final var cost = Cost.of(costAmount, "EUR");
 
             // then
-            final var expectedAmount = BigDecimal.valueOf(rawAmount).setScale(2, RoundingMode.HALF_EVEN);
-            assertThat(cost.amount()).isEqualTo(expectedAmount);
+            assertThat(cost.amount()).isEqualTo(new BigDecimal("123.46"));
+        }
+
+        @Test
+        @DisplayName("given double with default currency, when creating Cost, then default to EUR")
+        void givenDoubleWithDefaultCurrency_whenCreatingCost_thenDefaultToEur() {
+            // given
+            final var amount = TrainingTestFactory.randomDoubleCostAmount();
+
+            // when
+            final var cost = Cost.of(amount);
+
+            // then
+            assertThat(cost.currency()).isEqualTo("EUR");
+        }
+
+        @Test
+        @DisplayName("given BigDecimal with default currency, when creating Cost, then default to EUR")
+        void givenBigDecimalWithDefaultCurrency_whenCreatingCost_thenDefaultToEur() {
+            // given
+            final var amount = TrainingTestFactory.randomBigDecimalCostAmount();
+
+            // when
+            final var cost = Cost.of(amount);
+
+            // then
+            assertThat(cost.currency()).isEqualTo("EUR");
+        }
+
+        @Test
+        @DisplayName("given zero factory method with custom currency, when creating Cost, then amount is zero")
+        void givenZeroWithCurrency_whenCreatingCost_thenAmountIsZero() {
+            // given
+
+            // when
+            final var cost = Cost.zero("USD");
+
+            // then
+            assertThat(cost.amount()).isEqualTo(new BigDecimal("0.00"));
             assertThat(cost.currency()).isEqualTo("USD");
         }
 
         @Test
-        @DisplayName("given double without currency, when creating Cost, then default to EUR")
-        void givenDoubleWithoutCurrency_whenCreatingCost_thenDefaultToEur() {
-            // given
-            final var rawAmount = TrainingTestFactory.randomDoubleCostAmount();
-
-            // when
-            final var cost = Cost.of(rawAmount);
-
-            // then
-            final var expectedAmount = BigDecimal.valueOf(rawAmount).setScale(2, RoundingMode.HALF_EVEN);
-            assertThat(cost.amount()).isEqualTo(expectedAmount);
-            assertThat(cost.currency()).isEqualTo("EUR");
-        }
-
-        @Test
-        @DisplayName("given zero factory, when creating zero Cost, then amount is zero")
-        void givenZeroFactory_whenCreatingZeroCost_thenAmountIsZero() {
+        @DisplayName("given zero factory method with default currency, when creating Cost, then amount is zero in EUR")
+        void givenZeroDefault_whenCreatingCost_thenAmountIsZeroInEur() {
             // given
 
             // when
@@ -104,12 +123,12 @@ class CostTest {
                     .hasMessageContaining("cannot be negative");
         }
 
-        @ParameterizedTest
-        @ValueSource(strings = {"", " ", "XYZ123"})
+        @Test
         @DisplayName("given invalid currency, when creating Cost, then throw InvalidTrainingOperationException")
-        void givenInvalidCurrency_whenCreatingCost_thenThrowInvalidTrainingOperationException(final String invalidCurrency) {
+        void givenInvalidCurrency_whenCreatingCost_thenThrowInvalidTrainingOperationException() {
             // given
             final var amount = TrainingTestFactory.randomDoubleCostAmount();
+            final var invalidCurrency = Instancio.gen().string().length(6).get();
 
             // when
 

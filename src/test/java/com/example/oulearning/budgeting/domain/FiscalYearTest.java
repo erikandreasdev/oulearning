@@ -4,11 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.budgeting.domain.exception.InvalidBudgetOperationException;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class FiscalYearTest {
 
@@ -16,11 +15,11 @@ class FiscalYearTest {
     @DisplayName("Creation and Validation")
     class CreationAndValidation {
 
-        @ParameterizedTest
-        @ValueSource(ints = {1900, 2024, 2026, 3000})
+        @Test
         @DisplayName("given valid year within bounds, when creating FiscalYear, then create successfully")
-        void givenValidYearWithinBounds_whenCreatingFiscalYear_thenCreateSuccessfully(final int year) {
+        void givenValidYearWithinBounds_whenCreatingFiscalYear_thenCreateSuccessfully() {
             // given
+            final var year = BudgetingTestFactory.randomFiscalYearValue();
 
             // when
             final var fiscalYear = FiscalYear.of(year);
@@ -30,11 +29,31 @@ class FiscalYearTest {
             assertThat(fiscalYear.toString()).isEqualTo(String.valueOf(year));
         }
 
-        @ParameterizedTest
-        @ValueSource(ints = {1899, 0, -2024, 3001})
-        @DisplayName("given year out of bounds, when creating FiscalYear, then throw InvalidBudgetOperationException")
-        void givenYearOutOfBounds_whenCreatingFiscalYear_thenThrowInvalidBudgetOperationException(final int invalidYear) {
+        @Test
+        @DisplayName("given year below min bounds, when creating FiscalYear, then throw InvalidBudgetOperationException")
+        void givenYearBelowMinBounds_whenCreatingFiscalYear_thenThrowInvalidBudgetOperationException() {
             // given
+            final var invalidYear = Instancio.gen()
+                    .ints()
+                    .max(BudgetingConstants.MIN_FISCAL_YEAR - 1)
+                    .get();
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> FiscalYear.of(invalidYear))
+                    .isInstanceOf(InvalidBudgetOperationException.class)
+                    .hasMessageContaining("Fiscal year must be between");
+        }
+
+        @Test
+        @DisplayName("given year above max bounds, when creating FiscalYear, then throw InvalidBudgetOperationException")
+        void givenYearAboveMaxBounds_whenCreatingFiscalYear_thenThrowInvalidBudgetOperationException() {
+            // given
+            final var invalidYear = Instancio.gen()
+                    .ints()
+                    .min(BudgetingConstants.MAX_FISCAL_YEAR + 1)
+                    .get();
 
             // when
 

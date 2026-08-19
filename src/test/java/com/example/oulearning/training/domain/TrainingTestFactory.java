@@ -22,8 +22,7 @@ public final class TrainingTestFactory {
     private static final int DEFAULT_START_DAY_OFFSET = 1;
     private static final int DEFAULT_END_DAY_OFFSET = 3;
 
-    private TrainingTestFactory() {
-    }
+    private TrainingTestFactory() {}
 
     public static UUID randomUuid() {
         return Instancio.create(UUID.class);
@@ -122,6 +121,14 @@ public final class TrainingTestFactory {
 
     public static String randomComments() {
         return Instancio.gen().string().length(MIN_COMMENTS_LENGTH, MAX_COMMENTS_LENGTH).get();
+    }
+
+    public static Modality randomModality() {
+        return Instancio.create(Modality.class);
+    }
+
+    public static Instant randomInstant() {
+        return Instant.now();
     }
 
     public static ManagerReview randomManagerReview() {

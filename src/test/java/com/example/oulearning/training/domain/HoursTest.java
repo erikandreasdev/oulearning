@@ -4,11 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class HoursTest {
 
@@ -30,11 +29,14 @@ class HoursTest {
             assertThat(hours.toString()).isEqualTo(String.valueOf(val));
         }
 
-        @ParameterizedTest
-        @ValueSource(ints = {0, -1, -50})
+        @Test
         @DisplayName("given non-positive integer, when creating Hours, then throw InvalidTrainingOperationException")
-        void givenNonPositiveInteger_whenCreatingHours_thenThrowInvalidTrainingOperationException(final int invalidVal) {
+        void givenNonPositiveInteger_whenCreatingHours_thenThrowInvalidTrainingOperationException() {
             // given
+            final var invalidVal = Instancio.gen()
+                    .ints()
+                    .max(TrainingConstants.MIN_HOURS - 1)
+                    .get();
 
             // when
 

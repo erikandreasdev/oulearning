@@ -4,11 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class PhoneTest {
 
@@ -16,18 +15,11 @@ class PhoneTest {
     @DisplayName("Creation and Normalization")
     class CreationAndNormalization {
 
-        @ParameterizedTest
-        @ValueSource(
-                strings = {
-                    "+1-555-123-4567",
-                    "(555) 123-4567",
-                    "555.123.4567",
-                    "  +34 600 123 456  ",
-                    "+123456789012345"
-                })
-        @DisplayName("given various valid phone formats, when creating Phone, then normalize and create successfully")
-        void givenVariousValidPhoneFormats_whenCreatingPhone_thenNormalizeAndCreateSuccessfully(final String rawPhone) {
+        @Test
+        @DisplayName("given valid phone format from factory, when creating Phone, then normalize and create successfully")
+        void givenValidPhoneFormat_whenCreatingPhone_thenNormalizeAndCreateSuccessfully() {
             // given
+            final var rawPhone = TrainingTestFactory.randomPhoneString();
 
             // when
             final var phone = Phone.of(rawPhone);
@@ -49,11 +41,11 @@ class PhoneTest {
                     .hasMessageContaining("cannot be null");
         }
 
-        @ParameterizedTest
-        @ValueSource(strings = {"", "   ", "\t\n"})
+        @Test
         @DisplayName("given blank phone string, when creating Phone, then throw InvalidTrainingOperationException")
-        void givenBlankPhoneString_whenCreatingPhone_thenThrowInvalidTrainingOperationException(final String blank) {
+        void givenBlankPhoneString_whenCreatingPhone_thenThrowInvalidTrainingOperationException() {
             // given
+            final var blank = " ".repeat(Instancio.gen().ints().range(1, 5).get());
 
             // when
 
@@ -63,11 +55,11 @@ class PhoneTest {
                     .hasMessageContaining("cannot be blank");
         }
 
-        @ParameterizedTest
-        @ValueSource(strings = {"12345", "123456", "1234567890123456", "phone-number", "++1234567", "+12345abc"})
-        @DisplayName("given invalid phone numbers, when creating Phone, then throw InvalidTrainingOperationException")
-        void givenInvalidPhoneNumbers_whenCreatingPhone_thenThrowInvalidTrainingOperationException(final String invalid) {
+        @Test
+        @DisplayName("given invalid non-numeric phone, when creating Phone, then throw InvalidTrainingOperationException")
+        void givenInvalidNonNumericPhone_whenCreatingPhone_thenThrowInvalidTrainingOperationException() {
             // given
+            final var invalid = Instancio.gen().string().alphaNumeric().length(5, 10).get() + "@";
 
             // when
 
