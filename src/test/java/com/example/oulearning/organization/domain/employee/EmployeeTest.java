@@ -21,12 +21,12 @@ class EmployeeTest {
         @Test
         @DisplayName("given valid fields, when creating Employee, then employee is created successfully")
         void givenValidFields_whenCreatingEmployee_thenEmployeeIsCreatedSuccessfully() {
+            // given
 
-
-
+            // when
             final var employee = Employee.of(id, fullName, email);
 
-
+            // then
             assertThat(employee.id()).isEqualTo(id);
             assertThat(employee.fullName()).isEqualTo(fullName);
             assertThat(employee.email()).isEqualTo(email);
@@ -37,11 +37,11 @@ class EmployeeTest {
         @Test
         @DisplayName("given null parameters, when creating Employee, then throw InvalidEmployeeException")
         void givenNullParameters_whenCreatingEmployee_thenThrowInvalidEmployeeException() {
+            // given
 
+            // when
 
-
-
-
+            // then
             assertThatThrownBy(() -> Employee.of(null, fullName, email))
                     .isInstanceOf(InvalidEmployeeException.class)
                     .hasMessageContaining("cannot be null");
@@ -61,14 +61,14 @@ class EmployeeTest {
         @Test
         @DisplayName("given employees with same id, when comparing, then they are equal")
         void givenEmployeesWithSameId_whenComparing_thenTheyAreEqual() {
-
+            // given
             final var employee1 = Employee.of(id, fullName, email);
             final var employee2 = Employee.of(
                     id, EmployeeTestFactory.randomFullName(), EmployeeTestFactory.randomEmail());
 
+            // when
 
-
-
+            // then
             assertThat(employee1).isEqualTo(employee2);
             assertThat(employee1.hashCode()).isEqualTo(employee2.hashCode());
         }
@@ -76,14 +76,14 @@ class EmployeeTest {
         @Test
         @DisplayName("given employees with different ids, when comparing, then they are not equal")
         void givenEmployeesWithDifferentIds_whenComparing_thenTheyAreNotEqual() {
-
+            // given
             final var employee1 = Employee.of(id, fullName, email);
             final var employee2 = Employee.of(
                     EmployeeTestFactory.randomEmployeeId(), fullName, email);
 
+            // when
 
-
-
+            // then
             assertThat(employee1).isNotEqualTo(employee2);
         }
     }

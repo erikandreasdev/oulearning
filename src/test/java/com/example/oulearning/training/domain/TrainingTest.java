@@ -33,12 +33,12 @@ class TrainingTest {
         @Test
         @DisplayName("given required fields, when creating Training with REQUESTED status, then training is created successfully")
         void givenRequiredFields_whenCreatingTrainingWithRequestedStatus_thenTrainingIsCreatedSuccessfully() {
+            // given
 
-
-
+            // when
             final var training = Training.create(id, employeeId, ouId, name, cost, hours, purpose, typeId, now);
 
-
+            // then
             assertThat(training.id()).isEqualTo(id);
             assertThat(training.requestedBy()).isEqualTo(employeeId);
             assertThat(training.ouId()).isEqualTo(ouId);
@@ -60,11 +60,11 @@ class TrainingTest {
         @Test
         @DisplayName("given null required parameters, when creating Training, then throw InvalidTrainingOperationException")
         void givenNullRequiredParameters_whenCreatingTraining_thenThrowInvalidTrainingOperationException() {
+            // given
 
+            // when
 
-
-
-
+            // then
             assertThatThrownBy(() -> Training.create(null, employeeId, ouId, name, cost, hours, purpose, typeId, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be null");
@@ -102,7 +102,7 @@ class TrainingTest {
         @Test
         @DisplayName("given trainings with same id, when comparing, then they are equal")
         void givenTrainingsWithSameId_whenComparing_thenTheyAreEqual() {
-
+            // given
             final var t1 = Training.create(id, employeeId, ouId, name, cost, hours, purpose, typeId, now);
             final var t2 = Training.of(
                     id,
@@ -119,9 +119,9 @@ class TrainingTest {
                     now,
                     Set.of(EmployeeTestFactory.randomEmployeeId()));
 
+            // when
 
-
-
+            // then
             assertThat(t1).isEqualTo(t2);
             assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
         }
@@ -129,14 +129,14 @@ class TrainingTest {
         @Test
         @DisplayName("given trainings with different ids, when comparing, then they are not equal")
         void givenTrainingsWithDifferentIds_whenComparing_thenTheyAreNotEqual() {
-
+            // given
             final var t1 = Training.create(id, employeeId, ouId, name, cost, hours, purpose, typeId, now);
             final var t2 = Training.create(
                     TrainingTestFactory.randomTrainingId(), employeeId, ouId, name, cost, hours, purpose, typeId, now);
 
+            // when
 
-
-
+            // then
             assertThat(t1).isNotEqualTo(t2);
         }
     }

@@ -26,13 +26,13 @@ class OuTest {
         @Test
         @DisplayName("given all valid fields, when creating Ou, then Ou is created successfully")
         void givenAllValidFields_whenCreatingOu_thenOuIsCreatedSuccessfully() {
-
+            // given
             final var childId = HierarchyTestFactory.randomOuId();
 
-
+            // when
             final var ou = Ou.of(id, name, parentId, Set.of(childId), Set.of(emp1), Set.of(emp2));
 
-
+            // then
             assertThat(ou.id()).isEqualTo(id);
             assertThat(ou.name()).isEqualTo(name);
             assertThat(ou.parentId()).contains(parentId);
@@ -46,12 +46,12 @@ class OuTest {
         @Test
         @DisplayName("given root OU parameters, when creating root Ou, then collections are empty")
         void givenRootOuParams_whenCreatingRootOu_thenCollectionsAreEmpty() {
+            // given
 
-
-
+            // when
             final var ou = Ou.of(id, name);
 
-
+            // then
             assertThat(ou.id()).isEqualTo(id);
             assertThat(ou.name()).isEqualTo(name);
             assertThat(ou.parentId()).isEmpty();
@@ -63,11 +63,11 @@ class OuTest {
         @Test
         @DisplayName("given null required parameters, when creating Ou, then throw InvalidOuException")
         void givenNullRequiredParams_whenCreatingOu_thenThrowInvalidOuException() {
+            // given
 
+            // when
 
-
-
-
+            // then
             assertThatThrownBy(() -> new Ou(null, name, parentId, Set.of(), Set.of(), Set.of()))
                     .isInstanceOf(InvalidOuException.class)
                     .hasMessageContaining("cannot be null");
@@ -84,13 +84,13 @@ class OuTest {
         @Test
         @DisplayName("given OUs with same id, when comparing, then they are equal")
         void givenOusWithSameId_whenComparing_thenTheyAreEqual() {
-
+            // given
             final var ou1 = Ou.of(id, name, parentId, Set.of(), Set.of(), Set.of());
             final var ou2 = Ou.of(id, HierarchyTestFactory.randomName(), null, Set.of(), Set.of(), Set.of());
 
+            // when
 
-
-
+            // then
             assertThat(ou1).isEqualTo(ou2);
             assertThat(ou1.hashCode()).isEqualTo(ou2.hashCode());
         }
@@ -98,14 +98,14 @@ class OuTest {
         @Test
         @DisplayName("given OUs with different ids, when comparing, then they are not equal")
         void givenOusWithDifferentIds_whenComparing_thenTheyAreNotEqual() {
-
+            // given
             final var ou1 = Ou.of(id, name, parentId, Set.of(), Set.of(), Set.of());
             final var ou2 = Ou.of(
                     HierarchyTestFactory.randomOuId(), name, parentId, Set.of(), Set.of(), Set.of());
 
+            // when
 
-
-
+            // then
             assertThat(ou1).isNotEqualTo(ou2);
         }
     }

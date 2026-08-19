@@ -11,35 +11,35 @@ class OrganizationTest {
     @Test
     @DisplayName("given empty Organization, when adding and removing OuIds, then set is updated accordingly")
     void givenEmptyOrganization_whenAddingAndRemovingOuIds_thenSetIsUpdatedAccordingly() {
-
+        // given
         final var organization = new Organization();
         final var ou1 = HierarchyTestFactory.randomOuId();
         final var ou2 = HierarchyTestFactory.randomOuId();
 
-
+        // when
         organization.addOu(ou1);
         organization.addOu(ou2);
 
-
+        // then
         assertThat(organization.ouIds()).containsExactlyInAnyOrder(ou1, ou2);
 
-
+        // when
         organization.removeOu(ou1);
 
-
+        // then
         assertThat(organization.ouIds()).containsExactly(ou2);
     }
 
     @Test
     @DisplayName("given initial set of OuIds, when creating Organization, then contains all initial OuIds")
     void givenInitialSetOfOuIds_whenCreatingOrganization_thenContainsAllInitialOuIds() {
-
+        // given
         final var ou1 = HierarchyTestFactory.randomOuId();
 
-
+        // when
         final var organization = new Organization(Set.of(ou1));
 
-
+        // then
         assertThat(organization.ouIds()).containsExactly(ou1);
     }
 }

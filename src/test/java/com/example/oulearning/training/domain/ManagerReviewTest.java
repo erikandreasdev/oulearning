@@ -27,13 +27,13 @@ class ManagerReviewTest {
         @Test
         @DisplayName("given valid review data, when creating ManagerReview, then create successfully")
         void givenValidReviewData_whenCreatingManagerReview_thenCreateSuccessfully() {
-
+            // given
             final var comments = TrainingTestFactory.randomComments();
 
-
+            // when
             final var review = new ManagerReview(comments, modality, startDate, endDate, provider, now);
 
-
+            // then
             assertThat(review.comments()).isEqualTo(comments);
             assertThat(review.modality()).isEqualTo(modality);
             assertThat(review.startDate()).isEqualTo(startDate);
@@ -45,24 +45,24 @@ class ManagerReviewTest {
         @Test
         @DisplayName("given review without external provider, when creating ManagerReview, then optionalProvider is empty")
         void givenReviewWithoutExternalProvider_whenCreatingManagerReview_thenOptionalProviderIsEmpty() {
-
+            // given
             final var comments = TrainingTestFactory.randomComments();
 
-
+            // when
             final var review = new ManagerReview(comments, modality, startDate, endDate, null, now);
 
-
+            // then
             assertThat(review.optionalExternalProvider()).isEmpty();
         }
 
         @Test
         @DisplayName("given null comments, when creating ManagerReview, then throw InvalidTrainingOperationException")
         void givenNullComments_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException() {
+            // given
 
+            // when
 
-
-
-
+            // then
             assertThatThrownBy(() -> new ManagerReview(null, modality, startDate, endDate, provider, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Comments cannot be null");
@@ -72,11 +72,11 @@ class ManagerReviewTest {
         @ValueSource(strings = {"", "   ", "\t\n"})
         @DisplayName("given blank comments, when creating ManagerReview, then throw InvalidTrainingOperationException")
         void givenBlankComments_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException(final String blank) {
+            // given
 
+            // when
 
-
-
-
+            // then
             assertThatThrownBy(() -> new ManagerReview(blank, modality, startDate, endDate, provider, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Comments cannot be blank");
@@ -85,12 +85,12 @@ class ManagerReviewTest {
         @Test
         @DisplayName("given comments exceeding max length, when creating ManagerReview, then throw InvalidTrainingOperationException")
         void givenCommentsExceedingMaxLength_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException() {
-
+            // given
             final var longComments = "A".repeat(TrainingConstants.MAX_COMMENTS_LENGTH + 1);
 
+            // when
 
-
-
+            // then
             assertThatThrownBy(() -> new ManagerReview(longComments, modality, startDate, endDate, provider, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Comments length must be between");
@@ -99,13 +99,13 @@ class ManagerReviewTest {
         @Test
         @DisplayName("given end date before start date, when creating ManagerReview, then throw InvalidTrainingOperationException")
         void givenEndDateBeforeStartDate_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException() {
-
+            // given
             final var invalidEnd = startDate.minus(1, ChronoUnit.DAYS);
             final var comments = TrainingTestFactory.randomComments();
 
+            // when
 
-
-
+            // then
             assertThatThrownBy(() -> new ManagerReview(comments, modality, startDate, invalidEnd, provider, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be before start date");
@@ -114,12 +114,12 @@ class ManagerReviewTest {
         @Test
         @DisplayName("given null modality, when creating ManagerReview, then throw InvalidTrainingOperationException")
         void givenNullModality_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException() {
-
+            // given
             final var comments = TrainingTestFactory.randomComments();
 
+            // when
 
-
-
+            // then
             assertThatThrownBy(() -> new ManagerReview(comments, null, startDate, endDate, provider, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Modality cannot be null");
@@ -133,14 +133,14 @@ class ManagerReviewTest {
         @Test
         @DisplayName("given identical reviews, when comparing, then they are equal")
         void givenIdenticalReviews_whenComparing_thenTheyAreEqual() {
-
+            // given
             final var comments = TrainingTestFactory.randomComments();
             final var r1 = new ManagerReview(comments, modality, startDate, endDate, provider, now);
             final var r2 = new ManagerReview(comments, modality, startDate, endDate, provider, now);
 
+            // when
 
-
-
+            // then
             assertThat(r1).isEqualTo(r2);
             assertThat(r1.hashCode()).isEqualTo(r2.hashCode());
         }

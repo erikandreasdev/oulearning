@@ -26,12 +26,12 @@ class BudgetTest {
         @Test
         @DisplayName("given valid fields, when creating Budget, then budget is created successfully")
         void givenValidFields_whenCreatingBudget_thenBudgetIsCreatedSuccessfully() {
+            // given
 
-
-
+            // when
             final var budget = Budget.of(id, ouId, fiscalYear, total, reserved, available);
 
-
+            // then
             assertThat(budget.id()).isEqualTo(id);
             assertThat(budget.ouId()).isEqualTo(ouId);
             assertThat(budget.fiscalYear()).isEqualTo(fiscalYear);
@@ -46,11 +46,11 @@ class BudgetTest {
         @Test
         @DisplayName("given null parameters, when creating Budget, then throw InvalidBudgetOperationException")
         void givenNullParameters_whenCreatingBudget_thenThrowInvalidBudgetOperationException() {
+            // given
 
+            // when
 
-
-
-
+            // then
             assertThatThrownBy(() -> Budget.of(null, ouId, fiscalYear, total, reserved, available))
                     .isInstanceOf(InvalidBudgetOperationException.class)
                     .hasMessageContaining("cannot be null");
@@ -79,7 +79,7 @@ class BudgetTest {
         @Test
         @DisplayName("given budgets with same id, when comparing, then they are equal")
         void givenBudgetsWithSameId_whenComparing_thenTheyAreEqual() {
-
+            // given
             final var b1 = Budget.of(id, ouId, fiscalYear, total, reserved, available);
             final var b2 = Budget.of(
                     id,
@@ -89,9 +89,9 @@ class BudgetTest {
                     Money.zero(),
                     BudgetingTestFactory.randomMoney());
 
+            // when
 
-
-
+            // then
             assertThat(b1).isEqualTo(b2);
             assertThat(b1.hashCode()).isEqualTo(b2.hashCode());
         }
@@ -99,14 +99,14 @@ class BudgetTest {
         @Test
         @DisplayName("given budgets with different ids, when comparing, then they are not equal")
         void givenBudgetsWithDifferentIds_whenComparing_thenTheyAreNotEqual() {
-
+            // given
             final var b1 = Budget.of(id, ouId, fiscalYear, total, reserved, available);
             final var b2 = Budget.of(
                     BudgetingTestFactory.randomBudgetId(), ouId, fiscalYear, total, reserved, available);
 
+            // when
 
-
-
+            // then
             assertThat(b1).isNotEqualTo(b2);
         }
     }

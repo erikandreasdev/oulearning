@@ -20,12 +20,12 @@ class FiscalYearTest {
         @ValueSource(ints = {1900, 2024, 2026, 3000})
         @DisplayName("given valid year within bounds, when creating FiscalYear, then create successfully")
         void givenValidYearWithinBounds_whenCreatingFiscalYear_thenCreateSuccessfully(final int year) {
+            // given
 
-
-
+            // when
             final var fiscalYear = FiscalYear.of(year);
 
-
+            // then
             assertThat(fiscalYear.value()).isEqualTo(year);
             assertThat(fiscalYear.toString()).isEqualTo(String.valueOf(year));
         }
@@ -34,11 +34,11 @@ class FiscalYearTest {
         @ValueSource(ints = {1899, 0, -2024, 3001})
         @DisplayName("given year out of bounds, when creating FiscalYear, then throw InvalidBudgetOperationException")
         void givenYearOutOfBounds_whenCreatingFiscalYear_thenThrowInvalidBudgetOperationException(final int invalidYear) {
+            // given
 
+            // when
 
-
-
-
+            // then
             assertThatThrownBy(() -> FiscalYear.of(invalidYear))
                     .isInstanceOf(InvalidBudgetOperationException.class)
                     .hasMessageContaining("Fiscal year must be between");
@@ -52,14 +52,14 @@ class FiscalYearTest {
         @Test
         @DisplayName("given identical years, when comparing FiscalYear, then they are equal")
         void givenIdenticalYears_whenComparingFiscalYear_thenTheyAreEqual() {
-
+            // given
             final var y = BudgetingTestFactory.randomFiscalYearValue();
             final var y1 = FiscalYear.of(y);
             final var y2 = FiscalYear.of(y);
 
+            // when
 
-
-
+            // then
             assertThat(y1).isEqualTo(y2);
             assertThat(y1.hashCode()).isEqualTo(y2.hashCode());
         }
@@ -67,14 +67,14 @@ class FiscalYearTest {
         @Test
         @DisplayName("given different years, when comparing FiscalYear, then they are not equal")
         void givenDifferentYears_whenComparingFiscalYear_thenTheyAreNotEqual() {
-
+            // given
             final var y = BudgetingTestFactory.randomFiscalYearValue();
             final var y1 = FiscalYear.of(y);
             final var y2 = FiscalYear.of(y + 1);
 
+            // when
 
-
-
+            // then
             assertThat(y1).isNotEqualTo(y2);
         }
     }

@@ -18,14 +18,14 @@ class ExternalProviderContactTest {
         @Test
         @DisplayName("given valid email and phone, when creating ExternalProviderContact, then create successfully")
         void givenValidEmailAndPhone_whenCreatingExternalProviderContact_thenCreateSuccessfully() {
-
+            // given
             final var email = EmployeeTestFactory.randomEmail();
             final var phone = TrainingTestFactory.randomPhone();
 
-
+            // when
             final var contact = ExternalProviderContact.of(email, phone);
 
-
+            // then
             assertThat(contact.email()).isEqualTo(email);
             assertThat(contact.phone()).isEqualTo(phone);
         }
@@ -33,12 +33,12 @@ class ExternalProviderContactTest {
         @Test
         @DisplayName("given null email, when creating ExternalProviderContact, then throw InvalidTrainingOperationException")
         void givenNullEmail_whenCreatingExternalProviderContact_thenThrowInvalidTrainingOperationException() {
-
+            // given
             final var phone = TrainingTestFactory.randomPhone();
 
+            // when
 
-
-
+            // then
             assertThatThrownBy(() -> ExternalProviderContact.of(null, phone))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Email cannot be null");
@@ -47,12 +47,12 @@ class ExternalProviderContactTest {
         @Test
         @DisplayName("given null phone, when creating ExternalProviderContact, then throw InvalidTrainingOperationException")
         void givenNullPhone_whenCreatingExternalProviderContact_thenThrowInvalidTrainingOperationException() {
-
+            // given
             final var email = EmployeeTestFactory.randomEmail();
 
+            // when
 
-
-
+            // then
             assertThatThrownBy(() -> ExternalProviderContact.of(email, null))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Phone cannot be null");
@@ -66,15 +66,15 @@ class ExternalProviderContactTest {
         @Test
         @DisplayName("given identical contacts, when comparing, then they are equal")
         void givenIdenticalContacts_whenComparing_thenTheyAreEqual() {
-
+            // given
             final var email = EmployeeTestFactory.randomEmail();
             final var phone = TrainingTestFactory.randomPhone();
             final var c1 = ExternalProviderContact.of(email, phone);
             final var c2 = ExternalProviderContact.of(email, phone);
 
+            // when
 
-
-
+            // then
             assertThat(c1).isEqualTo(c2);
             assertThat(c1.hashCode()).isEqualTo(c2.hashCode());
         }

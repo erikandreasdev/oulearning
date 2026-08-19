@@ -21,12 +21,12 @@ class TypeTest {
         @Test
         @DisplayName("given valid type with parent, when creating Type, then create successfully")
         void givenValidTypeWithParent_whenCreatingType_thenCreateSuccessfully() {
+            // given
 
-
-
+            // when
             final var type = Type.of(id, name, parentId);
 
-
+            // then
             assertThat(type.id()).isEqualTo(id);
             assertThat(type.name()).isEqualTo(name);
             assertThat(type.parentTypeId()).contains(parentId);
@@ -37,12 +37,12 @@ class TypeTest {
         @Test
         @DisplayName("given root type without parent, when creating Type, then parentTypeId is empty")
         void givenRootTypeWithoutParent_whenCreatingType_thenParentTypeIdIsEmpty() {
+            // given
 
-
-
+            // when
             final var type = Type.of(id, name);
 
-
+            // then
             assertThat(type.id()).isEqualTo(id);
             assertThat(type.name()).isEqualTo(name);
             assertThat(type.parentTypeId()).isEmpty();
@@ -51,11 +51,11 @@ class TypeTest {
         @Test
         @DisplayName("given null id or name, when creating Type, then throw InvalidTrainingOperationException")
         void givenNullIdOrName_whenCreatingType_thenThrowInvalidTrainingOperationException() {
+            // given
 
+            // when
 
-
-
-
+            // then
             assertThatThrownBy(() -> Type.of(null, name, parentId))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be null");
@@ -72,13 +72,13 @@ class TypeTest {
         @Test
         @DisplayName("given types with same id, when comparing Type, then they are equal")
         void givenTypesWithSameId_whenComparingType_thenTheyAreEqual() {
-
+            // given
             final var t1 = Type.of(id, name, parentId);
             final var t2 = Type.of(id, TrainingTestFactory.randomTypeName(), null);
 
+            // when
 
-
-
+            // then
             assertThat(t1).isEqualTo(t2);
             assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
         }
@@ -86,13 +86,13 @@ class TypeTest {
         @Test
         @DisplayName("given types with different ids, when comparing Type, then they are not equal")
         void givenTypesWithDifferentIds_whenComparingType_thenTheyAreNotEqual() {
-
+            // given
             final var t1 = Type.of(id, name, parentId);
             final var t2 = Type.of(TrainingTestFactory.randomTypeId(), name, parentId);
 
+            // when
 
-
-
+            // then
             assertThat(t1).isNotEqualTo(t2);
         }
     }
