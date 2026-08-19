@@ -1,0 +1,271 @@
+@startuml
+title Basic Domain Model
+
+skinparam classAttributeIconSize 0
+
+package "organization" {
+
+    package "Hierarchy" {
+
+        class Id <<Value Object>> {
+            - value : UUID
+        }
+
+        class Name <<Value Object>> {
+            - value : String
+        }
+
+        class OrganizationalUnit {
+            - id : Id
+            - name : Name
+            - parentId : Id
+            - childIds : Set<Id>
+            - owners : Set<Id>
+            - members : Set<Id>
+        }
+
+
+        class Organization {
+            - ouIds : Set<Id>
+        }
+
+        OrganizationalUnit *-- Id
+        OrganizationalUnit *-- Name
+        OrganizationalUnit *-- Employee.Id : owners
+        OrganizationalUnit *-- Employee.Id : members
+
+        Organization o-- Id
+    }
+
+
+    package "Employee" {
+
+        class Id <<Value Object>> {
+            - value : String
+        }
+
+        class Employee {
+            - id : Id
+            - fullName : FullName
+            - email : Email
+        }
+
+        note right of Id
+            Workday Id
+            Corporate Key
+        end note
+
+        class Name <<Value Object>> {
+            - value : String
+        }
+
+        class Surname <<Value Object>> {
+            - value : String
+        }
+
+        class FullName <<Value Object>> {
+            - name : Name
+            - surname : Surname
+        }
+
+        class Email <<Value Object>> {
+            - value : String
+        }
+
+        Employee *-- Id
+        Employee *-- FullName
+        Employee *-- Email
+
+        FullName *-- Name
+        FullName *-- Surname
+
+    }
+}
+
+package "budgeting" {
+
+    class Id <<Value Object>> {
+        - value : UUID
+    }
+
+    class FiscalYear <<Value Object>> {
+        - value : Integer
+    }
+
+    class Money <<Value Object>> {
+        - amount : Decimal
+        - currency : String
+    }
+
+    class Budget {
+        - id : Id
+        - ouId : Id
+        - fiscalYear : FiscalYear
+        - total : Money
+        - reserved : Money
+        - available : Money
+    }
+
+    Budget *-- Organization.Hierarchy.Id
+    Budget *-- FiscalYear
+    Budget *-- Money
+    Budget --> Id
+}
+
+package "training" {
+
+    class Id <<Value Object>> {
+        - value : UUID
+    }
+
+    class TrainingName <<Value Object>> {
+        - value : String
+    }
+
+    class Cost <<Value Object>> {
+        - amount : Decimal
+        - currency : String
+    }
+
+    class Hours <<Value Object>> {
+        - value : Integer
+    }
+
+    class TypeId <<Value Object>> {
+        - value : UUID
+    }
+
+    class TypeName <<Value Object>> {
+        - value : String
+    }
+
+    class Phone <<Value Object>> {
+        - value : String
+    }
+
+    class ExternalProviderName <<Value Object>> {
+        - value : String
+    }
+
+    class ExternalProviderContact <<Value Object>> {
+        - email : Email
+        - phone : Phone
+    }
+
+    class ExternalProvider <<Value Object>> {
+        - name : ExternalProviderName
+        - contact : ExternalProviderContact
+    }
+
+    enum Modality {
+        VIRTUAL
+        ON_SITE
+        E_LEARNING
+        BLENDED
+    }
+
+    enum TrainingPurposeType {
+        IDP
+        DEPARTMENT_GOALS
+        OTHER
+    }
+
+    class TrainingPurpose <<Value Object>> {
+        - type : TrainingPurposeType
+    }
+
+    class OtherTrainingPurpose <<Value Object>> {
+        - purpose : String
+    }
+
+    class ManagerReview <<Value Object>> {
+        - comments : String
+        - modality : Modality
+        - startDate : Instant
+        - endDate : Instant
+        - externalProvider : ExternalProvider
+        - reviewedAt : Instant
+    }
+
+    enum TrainingStatus {
+        REQUESTED
+        APPROVED
+        REJECTED
+    }
+
+    class Type {
+        - id : TypeId
+        - name : TypeName
+        - parentTypeId : TypeId
+    }
+
+    note right of Type
+        Current Type Hierarchy
+
+        Technical
+
+        Power Skills
+            - Communication
+            - Personal Effectiveness (GTD)
+            - Negotiation
+            - Conflict Management
+            - Other
+
+        Languages
+
+        Regulatory / Mandatory
+
+        Onboarding
+
+        Leadership
+
+        Other
+    end note
+
+    class Training {
+        - id : Id
+        - requestedBy : Id
+        - ouId : Id
+        - name : TrainingName
+        - cost : Cost
+        - hours : Hours
+        - purpose : TrainingPurpose
+        - typeId : TypeId
+        - status : TrainingStatus
+        - managerReview : ManagerReview
+        - createdAt : Instant
+        - updatedAt : Instant
+        - attendees: Set<Id>
+    }
+
+    OtherTrainingPurpose --|> TrainingPurpose
+
+    Training *-- Id
+    Training *-- TrainingName
+    Training *-- Cost
+    Training *-- Hours
+    Training *-- TrainingPurpose
+    Training *-- ManagerReview
+
+    TrainingPurpose *-- TrainingPurposeType
+
+    ManagerReview *-- Modality
+    ManagerReview *-- StartDate
+    ManagerReview *-- EndDate
+    ManagerReview *-- ExternalProvider
+
+    ExternalProviderContact *-- Organization.Employee.Email : email
+    ExternalProviderContact *-- Organization.Employee.Phone : phone
+
+    Type *-- TypeId
+    Type *-- TypeName
+    Type --> TypeId : parentTypeId
+
+    Training --> TypeId
+    Training --> TrainingStatus
+    Training --> Organization.Employee.Id : requestedBy
+    Training --> Organization.Employee.Id : ouId
+    Training *-- Employee.Id : attendees
+}
+
+@enduml
