@@ -3,6 +3,7 @@ package com.example.oulearning.training.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.budgeting.domain.BudgetingConstants;
 import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import java.math.BigDecimal;
 import org.instancio.Instancio;
@@ -23,12 +24,12 @@ class CostTest {
             final var amount = TrainingTestFactory.randomDoubleCostAmount();
 
             // when
-            final var cost = Cost.of(amount, "eur");
+            final var cost = Cost.of(amount, BudgetingConstants.DEFAULT_CURRENCY.toLowerCase());
 
             // then
             assertThat(cost.amount()).isEqualByComparingTo(BigDecimal.valueOf(amount));
-            assertThat(cost.currency()).isEqualTo("EUR");
-            assertThat(cost.toString()).contains("EUR");
+            assertThat(cost.currency()).isEqualTo(BudgetingConstants.DEFAULT_CURRENCY);
+            assertThat(cost.toString()).contains(BudgetingConstants.DEFAULT_CURRENCY);
         }
 
         @Test
@@ -38,7 +39,7 @@ class CostTest {
             final var costAmount = BigDecimal.valueOf(123.456);
 
             // when
-            final var cost = Cost.of(costAmount, "EUR");
+            final var cost = Cost.of(costAmount, BudgetingConstants.DEFAULT_CURRENCY);
 
             // then
             assertThat(cost.amount()).isEqualTo(new BigDecimal("123.46"));
@@ -54,7 +55,7 @@ class CostTest {
             final var cost = Cost.of(amount);
 
             // then
-            assertThat(cost.currency()).isEqualTo("EUR");
+            assertThat(cost.currency()).isEqualTo(BudgetingConstants.DEFAULT_CURRENCY);
         }
 
         @Test
@@ -67,7 +68,7 @@ class CostTest {
             final var cost = Cost.of(amount);
 
             // then
-            assertThat(cost.currency()).isEqualTo("EUR");
+            assertThat(cost.currency()).isEqualTo(BudgetingConstants.DEFAULT_CURRENCY);
         }
 
         @Test
@@ -93,7 +94,7 @@ class CostTest {
 
             // then
             assertThat(cost.amount()).isEqualTo(new BigDecimal("0.00"));
-            assertThat(cost.currency()).isEqualTo("EUR");
+            assertThat(cost.currency()).isEqualTo(BudgetingConstants.DEFAULT_CURRENCY);
         }
 
         @Test
@@ -104,7 +105,7 @@ class CostTest {
             // when
 
             // then
-            assertThatThrownBy(() -> new Cost(null, "EUR"))
+            assertThatThrownBy(() -> new Cost(null, BudgetingConstants.DEFAULT_CURRENCY))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("amount cannot be null");
         }
@@ -118,7 +119,7 @@ class CostTest {
             // when
 
             // then
-            assertThatThrownBy(() -> Cost.of(neg, "EUR"))
+            assertThatThrownBy(() -> Cost.of(neg, BudgetingConstants.DEFAULT_CURRENCY))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be negative");
         }
@@ -147,8 +148,8 @@ class CostTest {
         void givenIdenticalAmountsAndCurrencies_whenComparingCost_thenTheyAreEqual() {
             // given
             final var amount = TrainingTestFactory.randomDoubleCostAmount();
-            final var c1 = Cost.of(amount, "EUR");
-            final var c2 = Cost.of(BigDecimal.valueOf(amount), "eur");
+            final var c1 = Cost.of(amount, BudgetingConstants.DEFAULT_CURRENCY);
+            final var c2 = Cost.of(BigDecimal.valueOf(amount), BudgetingConstants.DEFAULT_CURRENCY.toLowerCase());
 
             // when
 

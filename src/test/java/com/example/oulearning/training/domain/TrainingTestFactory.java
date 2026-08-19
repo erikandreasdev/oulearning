@@ -81,7 +81,7 @@ public final class TrainingTestFactory {
     }
 
     public static Cost randomCost() {
-        return Cost.of(randomBigDecimalCostAmount(), TrainingConstants.DEFAULT_CURRENCY);
+        return Cost.of(randomBigDecimalCostAmount(), com.example.oulearning.budgeting.domain.BudgetingConstants.DEFAULT_CURRENCY);
     }
 
     public static String randomPhoneDigits() {

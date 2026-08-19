@@ -28,8 +28,8 @@ class MoneyTest {
             // then
             final var expectedAmount = rawAmount.setScale(2, RoundingMode.HALF_EVEN);
             assertThat(money.amount()).isEqualTo(expectedAmount);
-            assertThat(money.currency()).isEqualTo("EUR");
-            assertThat(money.toString()).isEqualTo("%s EUR".formatted(expectedAmount));
+            assertThat(money.currency()).isEqualTo(BudgetingConstants.DEFAULT_CURRENCY);
+            assertThat(money.toString()).isEqualTo("%s %s".formatted(expectedAmount, BudgetingConstants.DEFAULT_CURRENCY));
         }
 
         @Test
@@ -44,7 +44,7 @@ class MoneyTest {
             // then
             final var expectedAmount = BigDecimal.valueOf(rawAmount).setScale(2, RoundingMode.HALF_EVEN);
             assertThat(money.amount()).isEqualTo(expectedAmount);
-            assertThat(money.currency()).isEqualTo("EUR");
+            assertThat(money.currency()).isEqualTo(BudgetingConstants.DEFAULT_CURRENCY);
         }
 
         @Test
@@ -57,7 +57,7 @@ class MoneyTest {
 
             // then
             assertThat(money.amount()).isEqualTo(new BigDecimal("0.00"));
-            assertThat(money.currency()).isEqualTo("EUR");
+            assertThat(money.currency()).isEqualTo(BudgetingConstants.DEFAULT_CURRENCY);
             assertThat(money.isZero()).isTrue();
         }
 
@@ -91,7 +91,7 @@ class MoneyTest {
 
             // then
             assertThat(result.amount()).isEqualTo(m1.amount().add(m2.amount()));
-            assertThat(result.currency()).isEqualTo("EUR");
+            assertThat(result.currency()).isEqualTo(BudgetingConstants.DEFAULT_CURRENCY);
         }
 
         @Test
@@ -106,7 +106,7 @@ class MoneyTest {
 
             // then
             assertThat(result.amount()).isEqualTo(m1.amount().subtract(m2.amount()));
-            assertThat(result.currency()).isEqualTo("EUR");
+            assertThat(result.currency()).isEqualTo(BudgetingConstants.DEFAULT_CURRENCY);
         }
     }
 

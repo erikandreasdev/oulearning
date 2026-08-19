@@ -7,7 +7,8 @@ description: Domain layer rules — aggregates, value objects, domain events, re
 # Domain layer
 
 - Pure Java. Zero framework imports: no Spring, JPA, Jackson, Lombok, Jakarta Validation.
-- Aggregates own and enforce their invariants. No public setters. State changes go through intention-revealing methods (`order.confirm()`, not `setStatus`), which validate and may register domain events.
+- Every domain model class (aggregates, entities, value objects, domain events) must be an immutable `record` to leverage immutability, data security, and clarity.
+- Aggregates own and enforce their invariants. No public setters. State changes go through intention-revealing methods (`order.confirm()`, not `setStatus`), which validate and return updated record states or register domain events.
 - Value objects are immutable `record`s with validation in the compact constructor. Use them for every domain concept (`Money`, `Email`, `Quantity`, `FullName`), never raw primitives.
 - Identity is a typed UUID value object (`record TrainingId(UUID value)`), never bare `UUID`/`Long`/`String`.
 - Enforce validation and invariants strictly in domain code via centralized domain guards (`*Guard`) that throw domain-specific exceptions extending `DomainException`.

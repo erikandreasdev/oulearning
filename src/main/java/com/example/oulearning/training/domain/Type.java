@@ -3,17 +3,11 @@ package com.example.oulearning.training.domain;
 import java.util.Objects;
 import java.util.Optional;
 
+public record Type(TypeId id, TypeName name, TypeId rawParentTypeId) {
 
-public final class Type {
-
-    private final TypeId id;
-    private final TypeName name;
-    private final TypeId parentTypeId;
-
-    public Type(final TypeId id, final TypeName name, final TypeId parentTypeId) {
-        this.id = TrainingGuard.requireNonNull(id, "TypeId");
-        this.name = TrainingGuard.requireNonNull(name, "Name");
-        this.parentTypeId = parentTypeId;
+    public Type {
+        id = TrainingGuard.requireNonNull(id, "TypeId");
+        name = TrainingGuard.requireNonNull(name, "Name");
     }
 
     public static Type of(final TypeId id, final TypeName name, final TypeId parentTypeId) {
@@ -24,16 +18,8 @@ public final class Type {
         return new Type(id, name, null);
     }
 
-    public TypeId id() {
-        return id;
-    }
-
-    public TypeName name() {
-        return name;
-    }
-
     public Optional<TypeId> parentTypeId() {
-        return Optional.ofNullable(parentTypeId);
+        return Optional.ofNullable(rawParentTypeId);
     }
 
     @Override
@@ -50,6 +36,6 @@ public final class Type {
 
     @Override
     public String toString() {
-        return "Type[id=%s, name=%s, parentTypeId=%s]".formatted(id, name, parentTypeId);
+        return "Type[id=%s, name=%s, parentTypeId=%s]".formatted(id, name, rawParentTypeId);
     }
 }

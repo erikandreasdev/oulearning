@@ -2,33 +2,16 @@ package com.example.oulearning.organization.domain.employee;
 
 import java.util.Objects;
 
+public record Employee(EmployeeId id, FullName fullName, Email email) {
 
-public final class Employee {
-
-    private final EmployeeId id;
-    private final FullName fullName;
-    private final Email email;
-
-    public Employee(final EmployeeId id, final FullName fullName, final Email email) {
-        this.id = EmployeeGuard.requireNonNull(id, "Employee id");
-        this.fullName = EmployeeGuard.requireNonNull(fullName, "FullName");
-        this.email = EmployeeGuard.requireNonNull(email, "Email");
+    public Employee {
+        id = EmployeeGuard.requireNonNull(id, "Employee id");
+        fullName = EmployeeGuard.requireNonNull(fullName, "FullName");
+        email = EmployeeGuard.requireNonNull(email, "Email");
     }
 
     public static Employee of(final EmployeeId id, final FullName fullName, final Email email) {
         return new Employee(id, fullName, email);
-    }
-
-    public EmployeeId id() {
-        return id;
-    }
-
-    public FullName fullName() {
-        return fullName;
-    }
-
-    public Email email() {
-        return email;
     }
 
     @Override

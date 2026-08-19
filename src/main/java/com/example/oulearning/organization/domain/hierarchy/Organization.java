@@ -1,35 +1,35 @@
 package com.example.oulearning.organization.domain.hierarchy;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+public record Organization(Set<OuId> ouIds) {
 
-public final class Organization {
-
-    private final Set<OuId> ouIds = new HashSet<>();
-
-    public Organization() {}
-
-    public Organization(final Set<OuId> ouIds) {
-        if (ouIds != null) {
+    public Organization {
+        if (ouIds == null) {
+            ouIds = Set.of();
+        } else {
             ouIds.forEach(id -> HierarchyGuard.requireNonNull(id, "Ou id"));
-            this.ouIds.addAll(ouIds);
+            ouIds = Set.copyOf(ouIds);
         }
     }
 
-    public void addOu(final OuId ouId) {
-        HierarchyGuard.requireNonNull(ouId, "Ou id");
-        this.ouIds.add(ouId);
+    public Organization() {
+        this(Set.of());
     }
 
-    public void removeOu(final OuId ouId) {
+    public Organization addOu(final OuId ouId) {
         HierarchyGuard.requireNonNull(ouId, "Ou id");
-        this.ouIds.remove(ouId);
+        final var updated = new HashSet<>(ouIds);
+        updated.add(ouId);
+        return new Organization(updated);
     }
 
-    public Set<OuId> ouIds() {
-        return Collections.unmodifiableSet(ouIds);
+    public Organization removeOu(final OuId ouId) {
+        HierarchyGuard.requireNonNull(ouId, "Ou id");
+        final var updated = new HashSet<>(ouIds);
+        updated.remove(ouId);
+        return new Organization(updated);
     }
 
     @Override

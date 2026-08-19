@@ -3,7 +3,6 @@ package com.example.oulearning.training.domain;
 
 public final class TrainingConstants {
 
-    public static final String DEFAULT_CURRENCY = "EUR";
     public static final int MIN_HOURS = 1;
     public static final int PHONE_DIGITS_MIN = 7;
     public static final int PHONE_DIGITS_MAX = 15;

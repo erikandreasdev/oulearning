@@ -17,17 +17,16 @@ class OrganizationTest {
         final var ou2 = HierarchyTestFactory.randomOuId();
 
         // when
-        organization.addOu(ou1);
-        organization.addOu(ou2);
+        final var orgWithTwo = organization.addOu(ou1).addOu(ou2);
 
         // then
-        assertThat(organization.ouIds()).containsExactlyInAnyOrder(ou1, ou2);
+        assertThat(orgWithTwo.ouIds()).containsExactlyInAnyOrder(ou1, ou2);
 
         // when
-        organization.removeOu(ou1);
+        final var orgWithOne = orgWithTwo.removeOu(ou1);
 
         // then
-        assertThat(organization.ouIds()).containsExactly(ou2);
+        assertThat(orgWithOne.ouIds()).containsExactly(ou2);
     }
 
     @Test

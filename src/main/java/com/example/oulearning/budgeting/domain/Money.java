@@ -7,16 +7,13 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 
-
-public final class Money {
+public record Money(MonetaryAmount monetaryAmount) {
 
     private static final CurrencyUnit EUR = Monetary.getCurrency(BudgetingConstants.DEFAULT_CURRENCY);
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
-    private final MonetaryAmount monetaryAmount;
-
-    public Money(final MonetaryAmount monetaryAmount) {
-        this.monetaryAmount = BudgetingGuard.requireNonNull(monetaryAmount, "MonetaryAmount");
+    public Money {
+        monetaryAmount = BudgetingGuard.requireNonNull(monetaryAmount, "MonetaryAmount");
     }
 
     public static Money of(final BigDecimal amount) {
@@ -42,10 +39,6 @@ public final class Money {
 
     public String currency() {
         return BudgetingConstants.DEFAULT_CURRENCY;
-    }
-
-    public MonetaryAmount monetaryAmount() {
-        return monetaryAmount;
     }
 
     public Money add(final Money other) {

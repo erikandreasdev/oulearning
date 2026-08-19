@@ -3,29 +3,21 @@ package com.example.oulearning.budgeting.domain;
 import com.example.oulearning.organization.domain.hierarchy.OuId;
 import java.util.Objects;
 
+public record Budget(
+        BudgetId id,
+        OuId ouId,
+        FiscalYear fiscalYear,
+        Money total,
+        Money reserved,
+        Money available) {
 
-public final class Budget {
-
-    private final BudgetId id;
-    private final OuId ouId;
-    private final FiscalYear fiscalYear;
-    private final Money total;
-    private final Money reserved;
-    private final Money available;
-
-    public Budget(
-            final BudgetId id,
-            final OuId ouId,
-            final FiscalYear fiscalYear,
-            final Money total,
-            final Money reserved,
-            final Money available) {
-        this.id = BudgetingGuard.requireNonNull(id, "Budget id");
-        this.ouId = BudgetingGuard.requireNonNull(ouId, "Ou id");
-        this.fiscalYear = BudgetingGuard.requireNonNull(fiscalYear, "FiscalYear");
-        this.total = BudgetingGuard.requireNonNull(total, "Total");
-        this.reserved = BudgetingGuard.requireNonNull(reserved, "Reserved");
-        this.available = BudgetingGuard.requireNonNull(available, "Available");
+    public Budget {
+        id = BudgetingGuard.requireNonNull(id, "Budget id");
+        ouId = BudgetingGuard.requireNonNull(ouId, "Ou id");
+        fiscalYear = BudgetingGuard.requireNonNull(fiscalYear, "FiscalYear");
+        total = BudgetingGuard.requireNonNull(total, "Total");
+        reserved = BudgetingGuard.requireNonNull(reserved, "Reserved");
+        available = BudgetingGuard.requireNonNull(available, "Available");
     }
 
     public static Budget of(
@@ -36,30 +28,6 @@ public final class Budget {
             final Money reserved,
             final Money available) {
         return new Budget(id, ouId, fiscalYear, total, reserved, available);
-    }
-
-    public BudgetId id() {
-        return id;
-    }
-
-    public OuId ouId() {
-        return ouId;
-    }
-
-    public FiscalYear fiscalYear() {
-        return fiscalYear;
-    }
-
-    public Money total() {
-        return total;
-    }
-
-    public Money reserved() {
-        return reserved;
-    }
-
-    public Money available() {
-        return available;
     }
 
     @Override

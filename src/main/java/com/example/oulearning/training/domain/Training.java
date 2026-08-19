@@ -7,50 +7,34 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+public record Training(
+        TrainingId id,
+        EmployeeId requestedBy,
+        OuId ouId,
+        TrainingName name,
+        Cost cost,
+        Hours hours,
+        TrainingPurpose purpose,
+        TypeId typeId,
+        TrainingStatus status,
+        ManagerReview rawManagerReview,
+        Instant createdAt,
+        Instant updatedAt,
+        Set<EmployeeId> attendees) {
 
-public final class Training {
-
-    private final TrainingId id;
-    private final EmployeeId requestedBy;
-    private final OuId ouId;
-    private final TrainingName name;
-    private final Cost cost;
-    private final Hours hours;
-    private final TrainingPurpose purpose;
-    private final TypeId typeId;
-    private final TrainingStatus status;
-    private final ManagerReview managerReview;
-    private final Instant createdAt;
-    private final Instant updatedAt;
-    private final Set<EmployeeId> attendees;
-
-    public Training(
-            final TrainingId id,
-            final EmployeeId requestedBy,
-            final OuId ouId,
-            final TrainingName name,
-            final Cost cost,
-            final Hours hours,
-            final TrainingPurpose purpose,
-            final TypeId typeId,
-            final TrainingStatus status,
-            final ManagerReview managerReview,
-            final Instant createdAt,
-            final Instant updatedAt,
-            final Set<EmployeeId> attendees) {
-        this.id = TrainingGuard.requireNonNull(id, "Training id");
-        this.requestedBy = TrainingGuard.requireNonNull(requestedBy, "RequestedBy employee id");
-        this.ouId = TrainingGuard.requireNonNull(ouId, "Ou id");
-        this.name = TrainingGuard.requireNonNull(name, "Name");
-        this.cost = TrainingGuard.requireNonNull(cost, "Cost");
-        this.hours = TrainingGuard.requireNonNull(hours, "Hours");
-        this.purpose = TrainingGuard.requireNonNull(purpose, "Purpose");
-        this.typeId = TrainingGuard.requireNonNull(typeId, "TypeId");
-        this.status = TrainingGuard.requireNonNull(status, "Status");
-        this.managerReview = managerReview;
-        this.createdAt = TrainingGuard.requireNonNull(createdAt, "CreatedAt");
-        this.updatedAt = TrainingGuard.requireNonNull(updatedAt, "UpdatedAt");
-        this.attendees = (attendees != null) ? Set.copyOf(attendees) : Set.of();
+    public Training {
+        id = TrainingGuard.requireNonNull(id, "Training id");
+        requestedBy = TrainingGuard.requireNonNull(requestedBy, "RequestedBy employee id");
+        ouId = TrainingGuard.requireNonNull(ouId, "Ou id");
+        name = TrainingGuard.requireNonNull(name, "Name");
+        cost = TrainingGuard.requireNonNull(cost, "Cost");
+        hours = TrainingGuard.requireNonNull(hours, "Hours");
+        purpose = TrainingGuard.requireNonNull(purpose, "Purpose");
+        typeId = TrainingGuard.requireNonNull(typeId, "TypeId");
+        status = TrainingGuard.requireNonNull(status, "Status");
+        createdAt = TrainingGuard.requireNonNull(createdAt, "CreatedAt");
+        updatedAt = TrainingGuard.requireNonNull(updatedAt, "UpdatedAt");
+        attendees = (attendees != null) ? Set.copyOf(attendees) : Set.of();
     }
 
     public static Training of(
@@ -109,56 +93,8 @@ public final class Training {
                 Set.of());
     }
 
-    public TrainingId id() {
-        return id;
-    }
-
-    public EmployeeId requestedBy() {
-        return requestedBy;
-    }
-
-    public OuId ouId() {
-        return ouId;
-    }
-
-    public TrainingName name() {
-        return name;
-    }
-
-    public Cost cost() {
-        return cost;
-    }
-
-    public Hours hours() {
-        return hours;
-    }
-
-    public TrainingPurpose purpose() {
-        return purpose;
-    }
-
-    public TypeId typeId() {
-        return typeId;
-    }
-
-    public TrainingStatus status() {
-        return status;
-    }
-
     public Optional<ManagerReview> managerReview() {
-        return Optional.ofNullable(managerReview);
-    }
-
-    public Instant createdAt() {
-        return createdAt;
-    }
-
-    public Instant updatedAt() {
-        return updatedAt;
-    }
-
-    public Set<EmployeeId> attendees() {
-        return attendees;
+        return Optional.ofNullable(rawManagerReview);
     }
 
     @Override

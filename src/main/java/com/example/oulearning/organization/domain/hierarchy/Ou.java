@@ -5,29 +5,20 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+public record Ou(
+        OuId id,
+        Name name,
+        OuId rawParentId,
+        Set<OuId> childIds,
+        Set<EmployeeId> owners,
+        Set<EmployeeId> members) {
 
-public final class Ou {
-
-    private final OuId id;
-    private final Name name;
-    private final OuId parentId;
-    private final Set<OuId> childIds;
-    private final Set<EmployeeId> owners;
-    private final Set<EmployeeId> members;
-
-    public Ou(
-            final OuId id,
-            final Name name,
-            final OuId parentId,
-            final Set<OuId> childIds,
-            final Set<EmployeeId> owners,
-            final Set<EmployeeId> members) {
-        this.id = HierarchyGuard.requireNonNull(id, "Ou id");
-        this.name = HierarchyGuard.requireNonNull(name, "Name");
-        this.parentId = parentId;
-        this.childIds = (childIds != null) ? Set.copyOf(childIds) : Set.of();
-        this.owners = (owners != null) ? Set.copyOf(owners) : Set.of();
-        this.members = (members != null) ? Set.copyOf(members) : Set.of();
+    public Ou {
+        id = HierarchyGuard.requireNonNull(id, "Ou id");
+        name = HierarchyGuard.requireNonNull(name, "Name");
+        childIds = (childIds != null) ? Set.copyOf(childIds) : Set.of();
+        owners = (owners != null) ? Set.copyOf(owners) : Set.of();
+        members = (members != null) ? Set.copyOf(members) : Set.of();
     }
 
     public static Ou of(
@@ -44,28 +35,8 @@ public final class Ou {
         return new Ou(id, name, null, Set.of(), Set.of(), Set.of());
     }
 
-    public OuId id() {
-        return id;
-    }
-
-    public Name name() {
-        return name;
-    }
-
     public Optional<OuId> parentId() {
-        return Optional.ofNullable(parentId);
-    }
-
-    public Set<OuId> childIds() {
-        return childIds;
-    }
-
-    public Set<EmployeeId> owners() {
-        return owners;
-    }
-
-    public Set<EmployeeId> members() {
-        return members;
+        return Optional.ofNullable(rawParentId);
     }
 
     @Override
@@ -82,6 +53,6 @@ public final class Ou {
 
     @Override
     public String toString() {
-        return "Ou[id=%s, name=%s, parentId=%s]".formatted(id, name, parentId);
+        return "Ou[id=%s, name=%s, parentId=%s]".formatted(id, name, rawParentId);
     }
 }
