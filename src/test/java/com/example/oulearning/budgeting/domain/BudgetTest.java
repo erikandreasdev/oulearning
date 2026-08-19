@@ -3,6 +3,7 @@ package com.example.oulearning.budgeting.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.organization.domain.hierarchy.OuId;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -10,9 +11,8 @@ import org.junit.jupiter.api.Test;
 
 class BudgetTest {
 
-    private final Id id = Id.of(UUID.randomUUID());
-    private final com.example.oulearning.organization.domain.hierarchy.Id ouId =
-            com.example.oulearning.organization.domain.hierarchy.Id.of(UUID.randomUUID());
+    private final BudgetId id = BudgetId.of(UUID.randomUUID());
+    private final OuId ouId = OuId.of(UUID.randomUUID());
     private final FiscalYear fiscalYear = FiscalYear.of(2026);
     private final Money total = Money.of(10000.0, "EUR");
     private final Money reserved = Money.of(2000.0, "EUR");
@@ -63,7 +63,7 @@ class BudgetTest {
             Budget b1 = Budget.of(id, ouId, fiscalYear, total, reserved, available);
             Budget b2 = Budget.of(
                     id,
-                    com.example.oulearning.organization.domain.hierarchy.Id.of(UUID.randomUUID()),
+                    OuId.of(UUID.randomUUID()),
                     FiscalYear.of(2027),
                     Money.of(500.0, "EUR"),
                     Money.zero("EUR"),
@@ -77,7 +77,7 @@ class BudgetTest {
         @DisplayName("should not be equal when ids differ")
         void should_notBeEqual_when_idsDiffer() {
             Budget b1 = Budget.of(id, ouId, fiscalYear, total, reserved, available);
-            Budget b2 = Budget.of(Id.of(UUID.randomUUID()), ouId, fiscalYear, total, reserved, available);
+            Budget b2 = Budget.of(BudgetId.of(UUID.randomUUID()), ouId, fiscalYear, total, reserved, available);
 
             assertThat(b1).isNotEqualTo(b2);
         }

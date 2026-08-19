@@ -3,6 +3,7 @@ package com.example.oulearning.organization.domain.hierarchy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.organization.domain.employee.EmployeeId;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -11,13 +12,11 @@ import org.junit.jupiter.api.Test;
 
 class OuTest {
 
-    private final Id id = Id.of(UUID.randomUUID());
+    private final OuId id = OuId.of(UUID.randomUUID());
     private final Name name = Name.of("Software Engineering");
-    private final Id parentId = Id.of(UUID.randomUUID());
-    private final com.example.oulearning.organization.domain.employee.Id emp1 =
-            com.example.oulearning.organization.domain.employee.Id.of("EMP-001");
-    private final com.example.oulearning.organization.domain.employee.Id emp2 =
-            com.example.oulearning.organization.domain.employee.Id.of("EMP-002");
+    private final OuId parentId = OuId.of(UUID.randomUUID());
+    private final EmployeeId emp1 = EmployeeId.of("EMP-001");
+    private final EmployeeId emp2 = EmployeeId.of("EMP-002");
 
     @Nested
     @DisplayName("Creation and Invariants")
@@ -26,7 +25,7 @@ class OuTest {
         @Test
         @DisplayName("should create OU with all fields")
         void should_createOu_withAllFields() {
-            Id childId = Id.of(UUID.randomUUID());
+            OuId childId = OuId.of(UUID.randomUUID());
             Ou ou = Ou.of(id, name, parentId, Set.of(childId), Set.of(emp1), Set.of(emp2));
 
             assertThat(ou.id()).isEqualTo(id);
@@ -78,7 +77,7 @@ class OuTest {
         @DisplayName("should not be equal when ids differ")
         void should_notBeEqual_when_idsDiffer() {
             Ou ou1 = Ou.of(id, name, parentId, Set.of(), Set.of(), Set.of());
-            Ou ou2 = Ou.of(Id.of(UUID.randomUUID()), name, parentId, Set.of(), Set.of(), Set.of());
+            Ou ou2 = Ou.of(OuId.of(UUID.randomUUID()), name, parentId, Set.of(), Set.of(), Set.of());
 
             assertThat(ou1).isNotEqualTo(ou2);
         }

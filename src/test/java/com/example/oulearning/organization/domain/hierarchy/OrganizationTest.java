@@ -13,8 +13,8 @@ class OrganizationTest {
     @DisplayName("should add and remove OU ids from organization")
     void should_addAndRemoveOuIds() {
         Organization organization = new Organization();
-        Id ou1 = Id.of(UUID.randomUUID());
-        Id ou2 = Id.of(UUID.randomUUID());
+        OuId ou1 = OuId.of(UUID.randomUUID());
+        OuId ou2 = OuId.of(UUID.randomUUID());
 
         organization.addOu(ou1);
         organization.addOu(ou2);
@@ -28,7 +28,7 @@ class OrganizationTest {
     @Test
     @DisplayName("should initialize organization with OU ids")
     void should_initializeWithOuIds() {
-        Id ou1 = Id.of(UUID.randomUUID());
+        OuId ou1 = OuId.of(UUID.randomUUID());
         Organization organization = new Organization(Set.of(ou1));
 
         assertThat(organization.ouIds()).containsExactly(ou1);

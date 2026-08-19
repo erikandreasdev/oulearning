@@ -1,5 +1,6 @@
 package com.example.oulearning.organization.domain.hierarchy;
 
+import com.example.oulearning.organization.domain.employee.EmployeeId;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -9,20 +10,20 @@ import java.util.Set;
  */
 public final class Ou {
 
-    private final Id id;
+    private final OuId id;
     private final Name name;
-    private final Id parentId;
-    private final Set<Id> childIds;
-    private final Set<com.example.oulearning.organization.domain.employee.Id> owners;
-    private final Set<com.example.oulearning.organization.domain.employee.Id> members;
+    private final OuId parentId;
+    private final Set<OuId> childIds;
+    private final Set<EmployeeId> owners;
+    private final Set<EmployeeId> members;
 
     public Ou(
-            Id id,
+            OuId id,
             Name name,
-            Id parentId,
-            Set<Id> childIds,
-            Set<com.example.oulearning.organization.domain.employee.Id> owners,
-            Set<com.example.oulearning.organization.domain.employee.Id> members) {
+            OuId parentId,
+            Set<OuId> childIds,
+            Set<EmployeeId> owners,
+            Set<EmployeeId> members) {
         this.id = Objects.requireNonNull(id, "Ou id cannot be null");
         this.name = Objects.requireNonNull(name, "Name cannot be null");
         this.parentId = parentId;
@@ -32,20 +33,20 @@ public final class Ou {
     }
 
     public static Ou of(
-            Id id,
+            OuId id,
             Name name,
-            Id parentId,
-            Set<Id> childIds,
-            Set<com.example.oulearning.organization.domain.employee.Id> owners,
-            Set<com.example.oulearning.organization.domain.employee.Id> members) {
+            OuId parentId,
+            Set<OuId> childIds,
+            Set<EmployeeId> owners,
+            Set<EmployeeId> members) {
         return new Ou(id, name, parentId, childIds, owners, members);
     }
 
-    public static Ou of(Id id, Name name) {
+    public static Ou of(OuId id, Name name) {
         return new Ou(id, name, null, Set.of(), Set.of(), Set.of());
     }
 
-    public Id id() {
+    public OuId id() {
         return id;
     }
 
@@ -53,19 +54,19 @@ public final class Ou {
         return name;
     }
 
-    public Optional<Id> parentId() {
+    public Optional<OuId> parentId() {
         return Optional.ofNullable(parentId);
     }
 
-    public Set<Id> childIds() {
+    public Set<OuId> childIds() {
         return childIds;
     }
 
-    public Set<com.example.oulearning.organization.domain.employee.Id> owners() {
+    public Set<EmployeeId> owners() {
         return owners;
     }
 
-    public Set<com.example.oulearning.organization.domain.employee.Id> members() {
+    public Set<EmployeeId> members() {
         return members;
     }
 

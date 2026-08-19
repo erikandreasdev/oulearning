@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class EmployeeTest {
 
-    private final Id id = Id.of("EMP-001");
+    private final EmployeeId id = EmployeeId.of("EMP-001");
     private final FullName fullName = FullName.of("Jane", "Doe");
     private final Email email = Email.of("jane.doe@example.com");
 
@@ -57,7 +57,7 @@ class EmployeeTest {
         @DisplayName("should not be equal when ids differ")
         void should_notBeEqual_when_idsDiffer() {
             Employee employee1 = Employee.of(id, fullName, email);
-            Employee employee2 = Employee.of(Id.of("EMP-002"), fullName, email);
+            Employee employee2 = Employee.of(EmployeeId.of("EMP-002"), fullName, email);
 
             assertThat(employee1).isNotEqualTo(employee2);
         }

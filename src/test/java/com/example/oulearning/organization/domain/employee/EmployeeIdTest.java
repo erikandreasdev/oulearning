@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class IdTest {
+class EmployeeIdTest {
 
     @Nested
     @DisplayName("Creation and Validation")
@@ -19,7 +19,7 @@ class IdTest {
         @ValueSource(strings = {"EMP-12345", "  WORKDAY_987  ", "USER_01"})
         @DisplayName("should create employee id when valid value provided")
         void should_createId_when_validValueProvided(String rawValue) {
-            Id id = Id.of(rawValue);
+            EmployeeId id = EmployeeId.of(rawValue);
 
             assertThat(id.value()).isEqualTo(rawValue.strip());
             assertThat(id.toString()).isEqualTo(rawValue.strip());
@@ -28,7 +28,7 @@ class IdTest {
         @Test
         @DisplayName("should throw InvalidEmployeeException when id is null")
         void should_throwException_when_idIsNull() {
-            assertThatThrownBy(() -> new Id(null))
+            assertThatThrownBy(() -> new EmployeeId(null))
                     .isInstanceOf(InvalidEmployeeException.class)
                     .hasMessageContaining("cannot be null");
         }
@@ -37,7 +37,7 @@ class IdTest {
         @ValueSource(strings = {"", "   ", "\t\n"})
         @DisplayName("should throw InvalidEmployeeException when id is blank")
         void should_throwException_when_idIsBlank(String blankValue) {
-            assertThatThrownBy(() -> new Id(blankValue))
+            assertThatThrownBy(() -> new EmployeeId(blankValue))
                     .isInstanceOf(InvalidEmployeeException.class)
                     .hasMessageContaining("cannot be blank");
         }
@@ -50,8 +50,8 @@ class IdTest {
         @Test
         @DisplayName("should be equal when ids match")
         void should_beEqual_when_idsMatch() {
-            Id id1 = Id.of("EMP001");
-            Id id2 = Id.of("EMP001");
+            EmployeeId id1 = EmployeeId.of("EMP001");
+            EmployeeId id2 = EmployeeId.of("EMP001");
 
             assertThat(id1).isEqualTo(id2);
             assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
@@ -60,8 +60,8 @@ class IdTest {
         @Test
         @DisplayName("should not be equal when ids differ")
         void should_notBeEqual_when_idsDiffer() {
-            Id id1 = Id.of("EMP001");
-            Id id2 = Id.of("EMP002");
+            EmployeeId id1 = EmployeeId.of("EMP001");
+            EmployeeId id2 = EmployeeId.of("EMP002");
 
             assertThat(id1).isNotEqualTo(id2);
         }

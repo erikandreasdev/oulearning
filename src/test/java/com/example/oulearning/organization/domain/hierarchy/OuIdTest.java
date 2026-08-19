@@ -1,4 +1,4 @@
-package com.example.oulearning.training.domain;
+package com.example.oulearning.organization.domain.hierarchy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,48 +8,48 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class IdTest {
+class OuIdTest {
 
     @Nested
     @DisplayName("Creation and Validation")
     class CreationAndValidation {
 
         @Test
-        @DisplayName("should create Id when valid UUID provided")
+        @DisplayName("should create OuId when valid UUID provided")
         void should_createId_when_validUuidProvided() {
             UUID uuid = UUID.randomUUID();
-            Id id = Id.of(uuid);
+            OuId id = OuId.of(uuid);
 
             assertThat(id.value()).isEqualTo(uuid);
             assertThat(id.toString()).isEqualTo(uuid.toString());
         }
 
         @Test
-        @DisplayName("should create Id from valid string")
-        void should_createId_fromValidString() {
+        @DisplayName("should create OuId from valid UUID string")
+        void should_createId_from_validUuidString() {
             UUID uuid = UUID.randomUUID();
-            Id id = Id.fromString(uuid.toString());
+            OuId id = OuId.fromString(" " + uuid + " ");
 
             assertThat(id.value()).isEqualTo(uuid);
         }
 
         @Test
-        @DisplayName("should throw InvalidTrainingOperationException when UUID is null")
+        @DisplayName("should throw InvalidOuException when UUID is null")
         void should_throwException_when_uuidIsNull() {
-            assertThatThrownBy(() -> new Id(null))
-                    .isInstanceOf(InvalidTrainingOperationException.class)
+            assertThatThrownBy(() -> new OuId(null))
+                    .isInstanceOf(InvalidOuException.class)
                     .hasMessageContaining("cannot be null");
         }
 
         @Test
-        @DisplayName("should throw InvalidTrainingOperationException when UUID string is invalid")
-        void should_throwException_when_stringIsInvalid() {
-            assertThatThrownBy(() -> Id.fromString("invalid-uuid"))
-                    .isInstanceOf(InvalidTrainingOperationException.class)
+        @DisplayName("should throw InvalidOuException when UUID string is invalid")
+        void should_throwException_when_uuidStringIsInvalid() {
+            assertThatThrownBy(() -> OuId.fromString("invalid-uuid"))
+                    .isInstanceOf(InvalidOuException.class)
                     .hasMessageContaining("Invalid UUID format");
 
-            assertThatThrownBy(() -> Id.fromString(""))
-                    .isInstanceOf(InvalidTrainingOperationException.class)
+            assertThatThrownBy(() -> OuId.fromString(""))
+                    .isInstanceOf(InvalidOuException.class)
                     .hasMessageContaining("cannot be null or blank");
         }
     }
@@ -62,8 +62,8 @@ class IdTest {
         @DisplayName("should be equal when UUIDs match")
         void should_beEqual_when_uuidsMatch() {
             UUID uuid = UUID.randomUUID();
-            Id id1 = Id.of(uuid);
-            Id id2 = Id.of(uuid);
+            OuId id1 = OuId.of(uuid);
+            OuId id2 = OuId.of(uuid);
 
             assertThat(id1).isEqualTo(id2);
             assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
@@ -72,8 +72,8 @@ class IdTest {
         @Test
         @DisplayName("should not be equal when UUIDs differ")
         void should_notBeEqual_when_uuidsDiffer() {
-            Id id1 = Id.of(UUID.randomUUID());
-            Id id2 = Id.of(UUID.randomUUID());
+            OuId id1 = OuId.of(UUID.randomUUID());
+            OuId id2 = OuId.of(UUID.randomUUID());
 
             assertThat(id1).isNotEqualTo(id2);
         }

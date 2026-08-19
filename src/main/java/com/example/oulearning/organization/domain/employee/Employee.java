@@ -7,21 +7,21 @@ import java.util.Objects;
  */
 public final class Employee {
 
-    private final Id id;
+    private final EmployeeId id;
     private final FullName fullName;
     private final Email email;
 
-    public Employee(Id id, FullName fullName, Email email) {
+    public Employee(EmployeeId id, FullName fullName, Email email) {
         this.id = Objects.requireNonNull(id, "Employee id cannot be null");
         this.fullName = Objects.requireNonNull(fullName, "FullName cannot be null");
         this.email = Objects.requireNonNull(email, "Email cannot be null");
     }
 
-    public static Employee of(Id id, FullName fullName, Email email) {
+    public static Employee of(EmployeeId id, FullName fullName, Email email) {
         return new Employee(id, fullName, email);
     }
 
-    public Id id() {
+    public EmployeeId id() {
         return id;
     }
 

@@ -7,24 +7,24 @@ import java.util.UUID;
  *
  * @param value the UUID value
  */
-public record Id(UUID value) {
+public record TrainingId(UUID value) {
 
-    public Id {
+    public TrainingId {
         if (value == null) {
             throw new InvalidTrainingOperationException("Training id cannot be null");
         }
     }
 
-    public static Id of(UUID value) {
-        return new Id(value);
+    public static TrainingId of(UUID value) {
+        return new TrainingId(value);
     }
 
-    public static Id fromString(String value) {
+    public static TrainingId fromString(String value) {
         if (value == null || value.isBlank()) {
             throw new InvalidTrainingOperationException("Training id string cannot be null or blank");
         }
         try {
-            return new Id(UUID.fromString(value.strip()));
+            return new TrainingId(UUID.fromString(value.strip()));
         } catch (IllegalArgumentException e) {
             throw new InvalidTrainingOperationException("Invalid UUID format: " + value);
         }

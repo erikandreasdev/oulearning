@@ -1,5 +1,6 @@
 package com.example.oulearning.budgeting.domain;
 
+import com.example.oulearning.organization.domain.hierarchy.OuId;
 import java.util.Objects;
 
 /**
@@ -7,16 +8,16 @@ import java.util.Objects;
  */
 public final class Budget {
 
-    private final Id id;
-    private final com.example.oulearning.organization.domain.hierarchy.Id ouId;
+    private final BudgetId id;
+    private final OuId ouId;
     private final FiscalYear fiscalYear;
     private final Money total;
     private final Money reserved;
     private final Money available;
 
     public Budget(
-            Id id,
-            com.example.oulearning.organization.domain.hierarchy.Id ouId,
+            BudgetId id,
+            OuId ouId,
             FiscalYear fiscalYear,
             Money total,
             Money reserved,
@@ -30,8 +31,8 @@ public final class Budget {
     }
 
     public static Budget of(
-            Id id,
-            com.example.oulearning.organization.domain.hierarchy.Id ouId,
+            BudgetId id,
+            OuId ouId,
             FiscalYear fiscalYear,
             Money total,
             Money reserved,
@@ -39,11 +40,11 @@ public final class Budget {
         return new Budget(id, ouId, fiscalYear, total, reserved, available);
     }
 
-    public Id id() {
+    public BudgetId id() {
         return id;
     }
 
-    public com.example.oulearning.organization.domain.hierarchy.Id ouId() {
+    public OuId ouId() {
         return ouId;
     }
 

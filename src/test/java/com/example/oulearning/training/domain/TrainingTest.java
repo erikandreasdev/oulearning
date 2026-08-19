@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.organization.domain.employee.Email;
+import com.example.oulearning.organization.domain.employee.EmployeeId;
+import com.example.oulearning.organization.domain.hierarchy.OuId;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
@@ -13,11 +15,9 @@ import org.junit.jupiter.api.Test;
 
 class TrainingTest {
 
-    private final Id id = Id.of(UUID.randomUUID());
-    private final com.example.oulearning.organization.domain.employee.Id requestedBy =
-            com.example.oulearning.organization.domain.employee.Id.of("EMP-001");
-    private final com.example.oulearning.organization.domain.hierarchy.Id ouId =
-            com.example.oulearning.organization.domain.hierarchy.Id.of(UUID.randomUUID());
+    private final TrainingId id = TrainingId.of(UUID.randomUUID());
+    private final EmployeeId requestedBy = EmployeeId.of("EMP-001");
+    private final OuId ouId = OuId.of(UUID.randomUUID());
     private final TrainingName name = TrainingName.of("Domain-Driven Design Masterclass");
     private final Cost cost = Cost.of(1200.0, "EUR");
     private final Hours hours = Hours.of(16);
@@ -42,8 +42,7 @@ class TrainingTest {
         @Test
         @DisplayName("should create training with all fields")
         void should_createTraining_withAllFields() {
-            com.example.oulearning.organization.domain.employee.Id attendee =
-                    com.example.oulearning.organization.domain.employee.Id.of("EMP-002");
+            EmployeeId attendee = EmployeeId.of("EMP-002");
 
             Training training = Training.of(
                     id,
@@ -101,8 +100,8 @@ class TrainingTest {
                     TrainingStatus.REQUESTED, null, now, now, Set.of());
             Training t2 = Training.of(
                     id,
-                    com.example.oulearning.organization.domain.employee.Id.of("OTHER"),
-                    com.example.oulearning.organization.domain.hierarchy.Id.of(UUID.randomUUID()),
+                    EmployeeId.of("OTHER"),
+                    OuId.of(UUID.randomUUID()),
                     TrainingName.of("Other Training"),
                     Cost.of(500.0, "EUR"),
                     Hours.of(8),
@@ -125,7 +124,7 @@ class TrainingTest {
                     id, requestedBy, ouId, name, cost, hours, purpose, typeId,
                     TrainingStatus.REQUESTED, null, now, now, Set.of());
             Training t2 = Training.of(
-                    Id.of(UUID.randomUUID()), requestedBy, ouId, name, cost, hours, purpose, typeId,
+                    TrainingId.of(UUID.randomUUID()), requestedBy, ouId, name, cost, hours, purpose, typeId,
                     TrainingStatus.REQUESTED, null, now, now, Set.of());
 
             assertThat(t1).isNotEqualTo(t2);

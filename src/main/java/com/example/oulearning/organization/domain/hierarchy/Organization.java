@@ -10,27 +10,27 @@ import java.util.Set;
  */
 public final class Organization {
 
-    private final Set<Id> ouIds = new HashSet<>();
+    private final Set<OuId> ouIds = new HashSet<>();
 
     public Organization() {}
 
-    public Organization(Set<Id> ouIds) {
+    public Organization(Set<OuId> ouIds) {
         if (ouIds != null) {
             this.ouIds.addAll(ouIds);
         }
     }
 
-    public void addOu(Id ouId) {
+    public void addOu(OuId ouId) {
         Objects.requireNonNull(ouId, "ouId cannot be null");
         this.ouIds.add(ouId);
     }
 
-    public void removeOu(Id ouId) {
+    public void removeOu(OuId ouId) {
         Objects.requireNonNull(ouId, "ouId cannot be null");
         this.ouIds.remove(ouId);
     }
 
-    public Set<Id> ouIds() {
+    public Set<OuId> ouIds() {
         return Collections.unmodifiableSet(ouIds);
     }
 

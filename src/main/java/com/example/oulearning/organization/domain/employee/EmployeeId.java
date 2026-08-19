@@ -5,9 +5,9 @@ package com.example.oulearning.organization.domain.employee;
  *
  * @param value the non-blank employee identifier string
  */
-public record Id(String value) {
+public record EmployeeId(String value) {
 
-    public Id {
+    public EmployeeId {
         if (value == null) {
             throw new InvalidEmployeeException("Employee id cannot be null");
         }
@@ -17,8 +17,8 @@ public record Id(String value) {
         }
     }
 
-    public static Id of(String value) {
-        return new Id(value);
+    public static EmployeeId of(String value) {
+        return new EmployeeId(value);
     }
 
     @Override

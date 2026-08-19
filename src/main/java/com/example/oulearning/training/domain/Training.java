@@ -1,5 +1,7 @@
 package com.example.oulearning.training.domain;
 
+import com.example.oulearning.organization.domain.employee.EmployeeId;
+import com.example.oulearning.organization.domain.hierarchy.OuId;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,9 +12,9 @@ import java.util.Set;
  */
 public final class Training {
 
-    private final Id id;
-    private final com.example.oulearning.organization.domain.employee.Id requestedBy;
-    private final com.example.oulearning.organization.domain.hierarchy.Id ouId;
+    private final TrainingId id;
+    private final EmployeeId requestedBy;
+    private final OuId ouId;
     private final TrainingName name;
     private final Cost cost;
     private final Hours hours;
@@ -22,12 +24,12 @@ public final class Training {
     private final ManagerReview managerReview;
     private final Instant createdAt;
     private final Instant updatedAt;
-    private final Set<com.example.oulearning.organization.domain.employee.Id> attendees;
+    private final Set<EmployeeId> attendees;
 
     public Training(
-            Id id,
-            com.example.oulearning.organization.domain.employee.Id requestedBy,
-            com.example.oulearning.organization.domain.hierarchy.Id ouId,
+            TrainingId id,
+            EmployeeId requestedBy,
+            OuId ouId,
             TrainingName name,
             Cost cost,
             Hours hours,
@@ -37,7 +39,7 @@ public final class Training {
             ManagerReview managerReview,
             Instant createdAt,
             Instant updatedAt,
-            Set<com.example.oulearning.organization.domain.employee.Id> attendees) {
+            Set<EmployeeId> attendees) {
         this.id = Objects.requireNonNull(id, "Training id cannot be null");
         this.requestedBy = Objects.requireNonNull(requestedBy, "RequestedBy employee id cannot be null");
         this.ouId = Objects.requireNonNull(ouId, "Ou id cannot be null");
@@ -54,9 +56,9 @@ public final class Training {
     }
 
     public static Training of(
-            Id id,
-            com.example.oulearning.organization.domain.employee.Id requestedBy,
-            com.example.oulearning.organization.domain.hierarchy.Id ouId,
+            TrainingId id,
+            EmployeeId requestedBy,
+            OuId ouId,
             TrainingName name,
             Cost cost,
             Hours hours,
@@ -66,7 +68,7 @@ public final class Training {
             ManagerReview managerReview,
             Instant createdAt,
             Instant updatedAt,
-            Set<com.example.oulearning.organization.domain.employee.Id> attendees) {
+            Set<EmployeeId> attendees) {
         return new Training(
                 id,
                 requestedBy,
@@ -83,15 +85,15 @@ public final class Training {
                 attendees);
     }
 
-    public Id id() {
+    public TrainingId id() {
         return id;
     }
 
-    public com.example.oulearning.organization.domain.employee.Id requestedBy() {
+    public EmployeeId requestedBy() {
         return requestedBy;
     }
 
-    public com.example.oulearning.organization.domain.hierarchy.Id ouId() {
+    public OuId ouId() {
         return ouId;
     }
 
@@ -131,7 +133,7 @@ public final class Training {
         return updatedAt;
     }
 
-    public Set<com.example.oulearning.organization.domain.employee.Id> attendees() {
+    public Set<EmployeeId> attendees() {
         return attendees;
     }
 
