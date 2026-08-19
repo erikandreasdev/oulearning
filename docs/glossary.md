@@ -46,8 +46,8 @@ Classification of an organizational unit: `ORGANIZATION` (root), `AREA` (composi
 Value object encapsulating search parameters (`OuId`, `OuName`, `includeSubtree`) for locating organizational units.
 
 ### OrganizationalUnit
-The domain model representing an organizational unit within the organization hierarchy across N levels. It encapsulates its identity, name, type classification, owners, parent references, child references, and loaded child instances.
-- **Root Unit**: `isRoot() == true` (`parentIds.isEmpty()`).
+The domain model representing an organizational unit within the organization hierarchy across N levels. It encapsulates its identity, name, type classification, owners, a single parent reference (`parentId`), child references (`childIds`), and loaded child instances (`loadedChildren`).
+- **Root Unit**: `isRoot() == true` (`parentId == null`).
 - **Leaf Unit**: `isLeaf() == true` (`childIds.isEmpty()`).
 - **Subtree Loaded**: `isSubtreeLoaded() == true` (`childIds.isEmpty() || loadedChildren.size() == childIds.size()`).
 
@@ -58,7 +58,7 @@ Domain repository port interface for finding and persisting `OrganizationalUnit`
 Strongly-typed identity value object uniquely identifying an immutable snapshot of the organization.
 
 ### Organization
-The Aggregate Root representing the entire organizational hierarchy at a specific point in time. It starts from a single root `OrganizationalUnit` (Level 1) with no parents and maintains historical snapshots as organization structure evolutions occur. Supports querying total units count, tree depth, and finding units by ID or Name.
+The Aggregate Root representing the entire organizational hierarchy at a specific point in time. It starts from a single root `OrganizationalUnit` (Level 1) with no parent (`parentId == null`) and maintains the full set of all unit IDs (`ouIds: Set<OuId>`) belonging to the organization snapshot. Supports querying total units count (`totalOusCount()`), tree depth (`depth()`), checking membership (`containsOu(OuId)`), and finding units by ID or Name.
 
 ### OrganizationRepository
 Domain repository port interface for persisting and querying historical `Organization` snapshots. Package: `com.example.oulearning.organization.domain.organization.repository`.
@@ -97,3 +97,29 @@ A domain strategy defining how a parent organizational unit distributes its allo
 
 ### BudgetDistributionService
 Domain Service for executing budget distribution strategies across child organizational units.
+
+## Training Bounded Context
+
+### TrainingRequestId
+Strongly-typed identity value object uniquely identifying a `TrainingRequest` using a `UUID`. Package: `com.example.oulearning.training.domain.request.vo.identity`.
+
+### TrainingName
+Value object representing the descriptive name of a requested training program (1 to 200 characters).
+
+### TrainingCost
+Value object encapsulating the estimated or actual monetary cost of a training program.
+
+### TrainingHours
+Value object representing the total duration in hours dedicated to a training program.
+
+### TrainingPurpose
+Value object encapsulating the rationale for taking a training program, combining a `TrainingPurposeType` (`UPSKILLING`, `RESKILLING`, `CERTIFICATION`, `COMPLIANCE`, `OTHER`) and descriptive notes.
+
+### TrainingRequestStatus
+Lifecycle state of a training request: `PENDING_APPROVAL`, `APPROVED`, `REJECTED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`.
+
+### TrainingRequest
+The Aggregate Root in the training bounded context representing an employee's application for professional training, including financial impact, organizational unit context, approval decision lifecycle, and auditing timestamps.
+
+### TrainingRequestRepository
+Domain repository port interface for persisting and querying `TrainingRequest` aggregates. Package: `com.example.oulearning.training.domain.request.repository`.

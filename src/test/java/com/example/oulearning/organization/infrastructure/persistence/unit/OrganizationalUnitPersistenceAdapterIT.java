@@ -52,7 +52,7 @@ class OrganizationalUnitPersistenceAdapterIT {
                     unitId,
                     OuName.of("Frontend Team"),
                     Set.of(CorporateKey.of("CK0001"), CorporateKey.of("CK0002")),
-                    Set.of());
+                    null);
 
             adapter.save(leaf);
 
@@ -68,25 +68,25 @@ class OrganizationalUnitPersistenceAdapterIT {
         @Test
         @DisplayName("should persist multi-level hierarchy and load subtree recursively")
         void should_persistAndLoadSubtreeRecursively_when_includeSubtreeIsTrue() {
+            final var areaId = OuId.of(UUID.randomUUID());
             final var leaf1 = OrganizationalUnit.leaf(
                     OuId.of(UUID.randomUUID()),
                     OuName.of("Frontend"),
                     Set.of(CorporateKey.of("CK0010")),
-                    Set.of());
+                    areaId);
 
             final var leaf2 = OrganizationalUnit.leaf(
                     OuId.of(UUID.randomUUID()),
                     OuName.of("Backend"),
                     Set.of(CorporateKey.of("CK0020")),
-                    Set.of());
+                    areaId);
 
-            final var areaId = OuId.of(UUID.randomUUID());
             final var area = OrganizationalUnit.withChildren(
                     areaId,
                     OuName.of("Engineering"),
                     OuType.AREA,
                     Set.of(CorporateKey.of("CK0001")),
-                    Set.of(),
+                    null,
                     Set.of(leaf1, leaf2));
 
             adapter.save(area);

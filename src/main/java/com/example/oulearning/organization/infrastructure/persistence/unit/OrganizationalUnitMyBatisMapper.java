@@ -16,34 +16,34 @@ import org.apache.ibatis.annotations.Update;
 public interface OrganizationalUnitMyBatisMapper {
 
     @Insert("""
-            INSERT INTO organizational_units (id, name, ou_type, snapshot_id, version)
-            VALUES (#{id}, #{name}, #{ouType}, #{snapshotId}, #{version})
+            INSERT INTO organizational_units (id, name, ou_type, snapshot_id, parent_ou_id, version)
+            VALUES (#{id}, #{name}, #{ouType}, #{snapshotId}, #{parentOuId}, #{version})
             """)
     void insertUnit(OrganizationalUnitEntity entity);
 
     @Update("""
             UPDATE organizational_units
-            SET name = #{name}, ou_type = #{ouType}, snapshot_id = #{snapshotId}, version = version + 1
+            SET name = #{name}, ou_type = #{ouType}, snapshot_id = #{snapshotId}, parent_ou_id = #{parentOuId}, version = version + 1
             WHERE id = #{id} AND version = #{version}
             """)
     int updateUnit(OrganizationalUnitEntity entity);
 
     @Select("""
-            SELECT id, name, ou_type AS ouType, snapshot_id AS snapshotId, version
+            SELECT id, name, ou_type AS ouType, snapshot_id AS snapshotId, parent_ou_id AS parentOuId, version
             FROM organizational_units
             WHERE id = #{id}
             """)
     OrganizationalUnitEntity findUnitById(@Param("id") String id);
 
     @Select("""
-            SELECT id, name, ou_type AS ouType, snapshot_id AS snapshotId, version
+            SELECT id, name, ou_type AS ouType, snapshot_id AS snapshotId, parent_ou_id AS parentOuId, version
             FROM organizational_units
             WHERE name = #{name}
             """)
     OrganizationalUnitEntity findUnitByName(@Param("name") String name);
 
     @Select("""
-            SELECT id, name, ou_type AS ouType, snapshot_id AS snapshotId, version
+            SELECT id, name, ou_type AS ouType, snapshot_id AS snapshotId, parent_ou_id AS parentOuId, version
             FROM organizational_units
             WHERE snapshot_id = #{snapshotId}
             """)
@@ -61,7 +61,7 @@ public interface OrganizationalUnitMyBatisMapper {
 
     // Parents
     @Select("SELECT parent_ou_id FROM ou_parents WHERE ou_id = #{ouId}")
-    Set<String> findParentsByOuId(@Param("ouId") String ouId);
+    String findParentByOuId(@Param("ouId") String ouId);
 
     @Insert("INSERT INTO ou_parents (ou_id, parent_ou_id) VALUES (#{ouId}, #{parentOuId})")
     void insertParent(@Param("ouId") String ouId, @Param("parentOuId") String parentOuId);

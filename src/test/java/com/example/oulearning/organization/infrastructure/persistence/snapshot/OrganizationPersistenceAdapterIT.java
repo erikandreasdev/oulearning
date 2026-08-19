@@ -49,19 +49,19 @@ class OrganizationPersistenceAdapterIT {
         @Test
         @DisplayName("should persist complete organization hierarchy and retrieve latest via cache")
         void should_persistOrganization_andRetrieveLatestViaCache() {
+            final var rootId = OuId.of(UUID.randomUUID());
             final var sub1 = OrganizationalUnit.leaf(
                     OuId.of(UUID.randomUUID()),
                     OuName.of("Frontend"),
                     Set.of(CorporateKey.of("CK0001")),
-                    Set.of());
+                    rootId);
 
-            final var rootId = OuId.of(UUID.randomUUID());
             final var rootOu = OrganizationalUnit.withChildren(
                     rootId,
                     OuName.of("Global Corp"),
                     OuType.ORGANIZATION,
                     Set.of(CorporateKey.of("CK0099")),
-                    Set.of(),
+                    null,
                     Set.of(sub1));
 
             final var snapshotId = SnapshotId.of(UUID.randomUUID());
@@ -85,7 +85,7 @@ class OrganizationPersistenceAdapterIT {
                     OuId.of(UUID.randomUUID()),
                     OuName.of("Acme"),
                     Set.of(CorporateKey.of("CK0001")),
-                    Set.of());
+                    null);
 
             final var snapshotId = SnapshotId.of(UUID.randomUUID());
             final var organization = new Organization(snapshotId, rootOu, Instant.now());

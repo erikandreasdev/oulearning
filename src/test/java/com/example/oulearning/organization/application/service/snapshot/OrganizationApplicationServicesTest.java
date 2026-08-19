@@ -90,7 +90,7 @@ class OrganizationApplicationServicesTest {
     void should_createAndRetrieveUnit() {
         final var unitId = UUID.randomUUID();
         final var command = new CreateOrganizationalUnitCommand(
-                unitId, "Backend Team", "SUBAREA", Set.of("CK0001"), Set.of(), Set.of());
+                unitId, "Backend Team", "SUBAREA", Set.of("CK0001"), null, Set.of());
 
         final var createdId = createUnitService.execute(command);
         assertThat(createdId).isEqualTo(unitId);
@@ -104,7 +104,7 @@ class OrganizationApplicationServicesTest {
     @DisplayName("should create snapshot and retrieve latest")
     void should_createSnapshotAndGetLatest() {
         final var unitId = UUID.randomUUID();
-        final var unit = OrganizationalUnit.leaf(OuId.of(unitId), OuName.of("Root OU"), Set.of(), Set.of());
+        final var unit = OrganizationalUnit.leaf(OuId.of(unitId), OuName.of("Root OU"), Set.of(), null);
         unitRepository.save(unit);
 
         final var snapshotId = UUID.randomUUID();
@@ -189,7 +189,8 @@ class OrganizationApplicationServicesTest {
                 OuId.of(UUID.randomUUID()),
                 OuName.of("Engineering"),
                 Set.of(),
-                Set.of());
+                null);
+        organizationRepository.save(Organization.active(SnapshotId.of(UUID.randomUUID()), rootOu, Instant.now(clock)));
         organizationRepository.save(Organization.active(SnapshotId.of(UUID.randomUUID()), rootOu, Instant.now(clock)));
 
         final var empCsv = """

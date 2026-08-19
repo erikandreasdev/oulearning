@@ -31,6 +31,7 @@ public class OrganizationalUnitEntityMapper {
                 domain.name().value(),
                 domain.type().name(),
                 snapshotId,
+                domain.parentId() != null ? domain.parentId().toString() : null,
                 version != null ? version : 0L);
     }
 
@@ -39,7 +40,7 @@ public class OrganizationalUnitEntityMapper {
      *
      * @param entity         the persistence entity
      * @param owners         the corporate keys of unit owners
-     * @param parentIds      the parent OU IDs
+     * @param parentId       the parent OU ID (nullable)
      * @param childIds       the child OU IDs
      * @param loadedChildren the loaded child domain units
      * @return the reconstructed {@link OrganizationalUnit} domain model
@@ -47,7 +48,7 @@ public class OrganizationalUnitEntityMapper {
     public OrganizationalUnit toDomain(
             OrganizationalUnitEntity entity,
             Set<CorporateKey> owners,
-            Set<OuId> parentIds,
+            OuId parentId,
             Set<OuId> childIds,
             Set<OrganizationalUnit> loadedChildren) {
         Objects.requireNonNull(entity, "OrganizationalUnitEntity cannot be null");
@@ -57,10 +58,10 @@ public class OrganizationalUnitEntityMapper {
         final var type = OuType.valueOf(entity.ouType());
 
         final var safeOwners = owners != null ? owners : Set.<CorporateKey>of();
-        final var safeParents = parentIds != null ? parentIds : Set.<OuId>of();
+        final var resolvedParent = parentId != null ? parentId : (entity.parentOuId() != null ? OuId.of(entity.parentOuId()) : null);
         final var safeChildren = childIds != null ? childIds : Set.<OuId>of();
         final var safeLoadedChildren = loadedChildren != null ? loadedChildren : Set.<OrganizationalUnit>of();
 
-        return new OrganizationalUnit(id, name, type, safeOwners, safeParents, safeChildren, safeLoadedChildren);
+        return new OrganizationalUnit(id, name, type, safeOwners, resolvedParent, safeChildren, safeLoadedChildren);
     }
 }

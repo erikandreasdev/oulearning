@@ -13,9 +13,11 @@ CREATE TABLE organizational_units (
     name VARCHAR2(100) NOT NULL,
     ou_type VARCHAR2(30) NOT NULL,
     snapshot_id VARCHAR2(36),
+    parent_ou_id VARCHAR2(36),
     version NUMBER(19) DEFAULT 0 NOT NULL,
     CONSTRAINT pk_organizational_units PRIMARY KEY (id),
-    CONSTRAINT fk_ou_snapshot FOREIGN KEY (snapshot_id) REFERENCES organization_snapshots(id) ON DELETE CASCADE
+    CONSTRAINT fk_ou_snapshot FOREIGN KEY (snapshot_id) REFERENCES organization_snapshots(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ou_parent FOREIGN KEY (parent_ou_id) REFERENCES organizational_units(id) ON DELETE SET NULL
 );
 
 -- OU Owners join table
@@ -44,5 +46,6 @@ CREATE TABLE ou_children (
 
 -- Performance indexes
 CREATE INDEX idx_ou_snapshot_id ON organizational_units(snapshot_id);
+CREATE INDEX idx_ou_parent_id ON organizational_units(parent_ou_id);
 CREATE INDEX idx_ou_name ON organizational_units(name);
 CREATE INDEX idx_org_created_at ON organization_snapshots(created_at);

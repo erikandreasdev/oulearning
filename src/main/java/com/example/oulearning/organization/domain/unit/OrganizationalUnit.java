@@ -2,19 +2,20 @@ package com.example.oulearning.organization.domain.unit;
 
 import com.example.oulearning.organization.domain.employee.vo.identity.CorporateKey;
 import com.example.oulearning.organization.domain.unit.exception.InvalidOuException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import com.example.oulearning.organization.domain.unit.OuId;
 
 /**
  * Domain model representing an Organizational Unit within the organization hierarchy.
  * Supports N-level hierarchies from root organizations down to leaf teams.
+ * An OU can have at most one parent (null for root organization).
  *
  * @param id             the strongly-typed identifier of the organizational unit
  * @param name           the name of the organizational unit
  * @param type           the classification type (ORGANIZATION, AREA, SUBAREA)
  * @param owners         the set of corporate keys owning/managing this organizational unit
- * @param parentIds      the set of parent OU identifiers (empty for root organization)
+ * @param parentId       the parent OU identifier (null for root organization)
  * @param childIds       the set of child OU identifiers (empty for leaf units)
  * @param loadedChildren the set of loaded child {@link OrganizationalUnit}s (empty if subtree not loaded)
  */
@@ -23,7 +24,7 @@ public record OrganizationalUnit(
         OuName name,
         OuType type,
         Set<CorporateKey> owners,
-        Set<OuId> parentIds,
+        OuId parentId,
         Set<OuId> childIds,
         Set<OrganizationalUnit> loadedChildren) {
 
@@ -43,9 +44,6 @@ public record OrganizationalUnit(
         if (owners == null) {
             throw new InvalidOuException("OrganizationalUnit owners cannot be null");
         }
-        if (parentIds == null) {
-            throw new InvalidOuException("OrganizationalUnit parent IDs cannot be null");
-        }
         if (childIds == null) {
             throw new InvalidOuException("OrganizationalUnit child IDs cannot be null");
         }
@@ -54,7 +52,6 @@ public record OrganizationalUnit(
         }
 
         owners = Set.copyOf(owners);
-        parentIds = Set.copyOf(parentIds);
         childIds = Set.copyOf(childIds);
         loadedChildren = Set.copyOf(loadedChildren);
 
@@ -67,8 +64,12 @@ public record OrganizationalUnit(
         }
     }
 
+    public Optional<OuId> optionalParentId() {
+        return Optional.ofNullable(parentId);
+    }
+
     public boolean isRoot() {
-        return parentIds.isEmpty();
+        return parentId == null;
     }
 
     public boolean isLeaf() {
@@ -83,13 +84,13 @@ public record OrganizationalUnit(
             OuId id,
             OuName name,
             Set<CorporateKey> owners,
-            Set<OuId> parentIds) {
+            OuId parentId) {
         return new OrganizationalUnit(
                 id,
                 name,
                 OuType.SUBAREA,
                 owners,
-                parentIds,
+                parentId,
                 Set.of(),
                 Set.of());
     }
@@ -99,14 +100,14 @@ public record OrganizationalUnit(
             OuName name,
             OuType type,
             Set<CorporateKey> owners,
-            Set<OuId> parentIds,
+            OuId parentId,
             Set<OuId> childIds) {
         return new OrganizationalUnit(
                 id,
                 name,
                 type,
                 owners,
-                parentIds,
+                parentId,
                 childIds,
                 Set.of());
     }
@@ -116,12 +117,12 @@ public record OrganizationalUnit(
             OuName name,
             OuType type,
             Set<CorporateKey> owners,
-            Set<OuId> parentIds,
+            OuId parentId,
             Set<OrganizationalUnit> children) {
         final var ids = children == null
                 ? Set.<OuId>of()
                 : children.stream().map(OrganizationalUnit::id).collect(Collectors.toSet());
         final var loaded = children == null ? Set.<OrganizationalUnit>of() : children;
-        return new OrganizationalUnit(id, name, type, owners, parentIds, ids, loaded);
+        return new OrganizationalUnit(id, name, type, owners, parentId, ids, loaded);
     }
 }

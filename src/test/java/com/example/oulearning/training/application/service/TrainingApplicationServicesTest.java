@@ -85,7 +85,7 @@ class TrainingApplicationServicesTest {
                 com.example.oulearning.organization.domain.unit.OuId.of(targetOuId),
                 OuName.of("Engineering"),
                 Set.of(com.example.oulearning.organization.domain.employee.vo.identity.CorporateKey.of("CK0001")),
-                Set.of());
+                null);
         ouRepository.save(targetOu);
 
         // Setup Employees in target OU

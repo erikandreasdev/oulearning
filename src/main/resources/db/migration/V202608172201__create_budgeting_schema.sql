@@ -12,5 +12,3 @@ CREATE TABLE budgets (
     CONSTRAINT pk_budgets PRIMARY KEY (id),
     CONSTRAINT uq_budgets_ou_id UNIQUE (ou_id)
 );
-
-CREATE INDEX idx_budgets_ou_id ON budgets(ou_id);

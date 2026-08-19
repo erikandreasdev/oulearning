@@ -25,8 +25,8 @@ public record OrganizationalUnitResponse(
         @Schema(description = "Designated owner corporate keys", example = "[\"CK0001\"]")
         Set<String> owners,
 
-        @Schema(description = "Parent unit UUIDs", example = "[]")
-        Set<UUID> parentIds,
+        @Schema(description = "Parent unit UUID (null for root unit)", example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
+        UUID parentId,
 
         @Schema(description = "Direct child unit UUIDs", example = "[\"b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22\"]")
         Set<UUID> childIds,
@@ -43,9 +43,7 @@ public record OrganizationalUnitResponse(
                 .map(CorporateKey::value)
                 .collect(Collectors.toSet());
 
-        final var parentIds = unit.parentIds().stream()
-                .map(OuId::value)
-                .collect(Collectors.toSet());
+        final var parentId = unit.parentId() != null ? unit.parentId().value() : null;
 
         final var childIds = unit.childIds().stream()
                 .map(OuId::value)
@@ -60,7 +58,7 @@ public record OrganizationalUnitResponse(
                 unit.name().value(),
                 unit.type().name(),
                 owners,
-                parentIds,
+                parentId,
                 childIds,
                 loadedChildren);
     }

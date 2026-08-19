@@ -45,11 +45,11 @@ class OrganizationalUnitPersistenceAdapterTest {
             final var childId = UUID.randomUUID().toString();
 
             final var entity = new OrganizationalUnitEntity(
-                    unitIdStr, "Engineering Area", "AREA", null, 0L);
+                    unitIdStr, "Engineering Area", "AREA", null, parentId, 0L);
 
             when(mapper.findUnitById(unitIdStr)).thenReturn(entity);
             when(mapper.findOwnersByOuId(unitIdStr)).thenReturn(Set.of("CK0001"));
-            when(mapper.findParentsByOuId(unitIdStr)).thenReturn(Set.of(parentId));
+            when(mapper.findParentByOuId(unitIdStr)).thenReturn(parentId);
             when(mapper.findChildrenByOuId(unitIdStr)).thenReturn(Set.of(childId));
 
             final var criteria = OuSearchCriteria.byId(OuId.of(unitId), false);
@@ -61,7 +61,7 @@ class OrganizationalUnitPersistenceAdapterTest {
             assertThat(unit.name().value()).isEqualTo("Engineering Area");
             assertThat(unit.type()).isEqualTo(OuType.AREA);
             assertThat(unit.owners()).containsExactly(CorporateKey.of("CK0001"));
-            assertThat(unit.parentIds()).containsExactly(OuId.of(parentId));
+            assertThat(unit.parentId()).isEqualTo(OuId.of(parentId));
             assertThat(unit.childIds()).containsExactly(OuId.of(childId));
             assertThat(unit.loadedChildren()).isEmpty();
         }
@@ -75,18 +75,18 @@ class OrganizationalUnitPersistenceAdapterTest {
             final var childIdStr = childId.toString();
 
             final var parentEntity = new OrganizationalUnitEntity(
-                    parentIdStr, "Parent Unit", "AREA", null, 0L);
+                    parentIdStr, "Parent Unit", "AREA", null, null, 0L);
             final var childEntity = new OrganizationalUnitEntity(
-                    childIdStr, "Child Unit", "SUBAREA", null, 0L);
+                    childIdStr, "Child Unit", "SUBAREA", null, parentIdStr, 0L);
 
             when(mapper.findUnitById(parentIdStr)).thenReturn(parentEntity);
             when(mapper.findOwnersByOuId(parentIdStr)).thenReturn(Set.of("CK0001"));
-            when(mapper.findParentsByOuId(parentIdStr)).thenReturn(Set.of());
+            when(mapper.findParentByOuId(parentIdStr)).thenReturn(null);
             when(mapper.findChildrenByOuId(parentIdStr)).thenReturn(Set.of(childIdStr));
 
             when(mapper.findUnitById(childIdStr)).thenReturn(childEntity);
             when(mapper.findOwnersByOuId(childIdStr)).thenReturn(Set.of("CK0002"));
-            when(mapper.findParentsByOuId(childIdStr)).thenReturn(Set.of(parentIdStr));
+            when(mapper.findParentByOuId(childIdStr)).thenReturn(parentIdStr);
             when(mapper.findChildrenByOuId(childIdStr)).thenReturn(Set.of());
 
             final var criteria = OuSearchCriteria.byId(OuId.of(parentId), true);
@@ -108,11 +108,11 @@ class OrganizationalUnitPersistenceAdapterTest {
             final var unitIdStr = unitId.toString();
 
             final var entity = new OrganizationalUnitEntity(
-                    unitIdStr, "Sales", "SUBAREA", null, 0L);
+                    unitIdStr, "Sales", "SUBAREA", null, null, 0L);
 
             when(mapper.findUnitByName("Sales")).thenReturn(entity);
             when(mapper.findOwnersByOuId(unitIdStr)).thenReturn(Set.of("CK1000"));
-            when(mapper.findParentsByOuId(unitIdStr)).thenReturn(Set.of());
+            when(mapper.findParentByOuId(unitIdStr)).thenReturn(null);
             when(mapper.findChildrenByOuId(unitIdStr)).thenReturn(Set.of());
 
             final var result = adapter.find(OuSearchCriteria.byName(OuName.of("Sales")));
@@ -147,7 +147,7 @@ class OrganizationalUnitPersistenceAdapterTest {
                     OuName.of("Engineering"),
                     OuType.AREA,
                     Set.of(CorporateKey.of("CK0001")),
-                    Set.of(parentId),
+                    parentId,
                     Set.of(childId));
 
             when(mapper.findUnitById(unitId.toString())).thenReturn(null);
@@ -165,14 +165,14 @@ class OrganizationalUnitPersistenceAdapterTest {
         void should_updateUnit_when_exists() {
             final var unitId = OuId.of(UUID.randomUUID());
             final var existing = new OrganizationalUnitEntity(
-                    unitId.toString(), "Old Name", "AREA", null, 1L);
+                    unitId.toString(), "Old Name", "AREA", null, null, 1L);
 
             final var unit = OrganizationalUnit.of(
                     unitId,
                     OuName.of("New Name"),
                     OuType.AREA,
                     Set.of(CorporateKey.of("CK0002")),
-                    Set.of(),
+                    null,
                     Set.of());
 
             when(mapper.findUnitById(unitId.toString())).thenReturn(existing);

@@ -4,7 +4,9 @@ import com.example.oulearning.organization.domain.organization.Organization;
 import com.example.oulearning.organization.domain.organization.SnapshotId;
 import com.example.oulearning.organization.domain.organization.SnapshotStatus;
 import com.example.oulearning.organization.domain.unit.OrganizationalUnit;
+import com.example.oulearning.organization.domain.unit.OuId;
 import java.util.Objects;
+import java.util.Set;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,11 +28,18 @@ public class OrganizationSnapshotEntityMapper {
     }
 
     public Organization toDomain(OrganizationSnapshotEntity entity, OrganizationalUnit rootOu) {
+        return toDomain(entity, rootOu, null);
+    }
+
+    public Organization toDomain(OrganizationSnapshotEntity entity, OrganizationalUnit rootOu, Set<com.example.oulearning.organization.domain.unit.OuId> ouIds) {
         Objects.requireNonNull(entity, "OrganizationSnapshotEntity cannot be null");
         Objects.requireNonNull(rootOu, "Root OrganizationalUnit cannot be null");
 
         final var snapshotId = SnapshotId.of(entity.id());
         final var status = entity.status() != null ? SnapshotStatus.valueOf(entity.status()) : SnapshotStatus.ACTIVE;
+        if (ouIds != null && !ouIds.isEmpty()) {
+            return new Organization(snapshotId, rootOu, ouIds, status, entity.createdAt());
+        }
         return new Organization(snapshotId, rootOu, status, entity.createdAt());
     }
 }

@@ -1,0 +1,287 @@
+@startuml DomainModel
+!theme plain
+skinparam monochrome false
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam classFontSize 12
+skinparam packageFontSize 14
+skinparam defaultFontName "Helvetica"
+skinparam linetype ortho
+
+title OULearning - Pure Domain Model (Aggregates, Entities & Value Objects)
+
+' ====================================================================
+' SHARED DOMAIN
+' ====================================================================
+package "Shared Domain" as Shared {
+    abstract class DomainException <<(E,#FADBD8) sealed>> {
+        + String message
+    }
+}
+
+' ====================================================================
+' ORGANIZATION BOUNDED CONTEXT
+' ====================================================================
+package "Organization Bounded Context" as OrganizationContext {
+
+    class Organization <<(A,#AED6F1) Aggregate Root>> {
+        + SnapshotId snapshotId
+        + OrganizationalUnit rootOu
+        + Set<OuId> ouIds
+        + SnapshotStatus status
+        + Instant createdAt
+        --
+        + containsOu(OuId): boolean
+        + totalOusCount(): int
+        + depth(): int
+        + findOu(OuId): Optional<OrganizationalUnit>
+        + findOu(OuName): Optional<OrganizationalUnit>
+        + archive(): Organization
+        + isActive(): boolean
+    }
+
+    class OrganizationalUnit <<(E,#D4EFDF) Entity>> {
+        + OuId id
+        + OuName name
+        + OuType type
+        + Set<CorporateKey> owners
+        + OuId parentId
+        + Set<OuId> childIds
+        + Set<OrganizationalUnit> loadedChildren
+        --
+        + isRoot(): boolean
+        + isLeaf(): boolean
+        + isSubtreeLoaded(): boolean
+        + optionalParentId(): Optional<OuId>
+        + find(OuId): Optional<OrganizationalUnit>
+        + depth(): int
+    }
+
+    class Employee <<(E,#D4EFDF) Entity>> {
+        + CorporateKey corporateKey
+        + FullName fullName
+        + Email email
+        + Phone phone
+        + EmployeeRole role
+        + OuId ouId
+        --
+        + isManager(): boolean
+        + belongsTo(OuId): boolean
+    }
+
+    enum SnapshotStatus <<(V,#FCF3CF) Value Object>> {
+        ACTIVE
+        ARCHIVED
+    }
+
+    enum OuType <<(V,#FCF3CF) Value Object>> {
+        ORGANIZATION
+        AREA
+        SUBAREA
+    }
+
+    enum EmployeeRole <<(V,#FCF3CF) Value Object>> {
+        EMPLOYEE
+        MANAGER
+        TRAINER
+        ADMIN
+    }
+
+    class SnapshotId <<(V,#FCF3CF) Value Object>> {
+        + UUID value
+    }
+
+    class OuId <<(V,#FCF3CF) Value Object>> {
+        + UUID value
+    }
+
+    class OuName <<(V,#FCF3CF) Value Object>> {
+        + String value
+    }
+
+    class CorporateKey <<(V,#FCF3CF) Value Object>> {
+        + String value
+    }
+
+    class FullName <<(V,#FCF3CF) Value Object>> {
+        + Name name
+        + Surname surname
+    }
+
+    class Name <<(V,#FCF3CF) Value Object>> {
+        + String value
+    }
+
+    class Surname <<(V,#FCF3CF) Value Object>> {
+        + String value
+    }
+
+    class Email <<(V,#FCF3CF) Value Object>> {
+        + String value
+    }
+
+    class Phone <<(V,#FCF3CF) Value Object>> {
+        + String value
+    }
+
+    Organization "1" *-- "1" SnapshotId
+    Organization "1" *-- "1" SnapshotStatus
+    Organization "1" *-- "1" OrganizationalUnit : rootOu
+    Organization "1" o-- "*" OuId : ouIds
+
+    OrganizationalUnit "1" *-- "1" OuId : id
+    OrganizationalUnit "1" *-- "1" OuName : name
+    OrganizationalUnit "1" *-- "1" OuType : type
+    OrganizationalUnit "1" o-- "*" CorporateKey : owners
+    OrganizationalUnit "1" o-- "0..1" OuId : parentId
+    OrganizationalUnit "1" o-- "*" OuId : childIds
+    OrganizationalUnit "1" *-- "*" OrganizationalUnit : loadedChildren
+
+    Employee "1" *-- "1" CorporateKey
+    Employee "1" *-- "1" FullName
+    FullName "1" *-- "1" Name
+    FullName "1" *-- "1" Surname
+    Employee "1" *-- "1" Email
+    Employee "1" o-- "0..1" Phone
+    Employee "1" *-- "1" EmployeeRole
+    Employee "1" o-- "1" OuId : ouId
+}
+
+' ====================================================================
+' BUDGETING BOUNDED CONTEXT
+' ====================================================================
+package "Budgeting Bounded Context" as BudgetingContext {
+
+    class Budget <<(A,#AED6F1) Aggregate Root>> {
+        + BudgetId id
+        + OuId ouId
+        + BudgetFiscalYear fiscalYear
+        + Money allocated
+        + Money reserved
+        + Money spent
+        --
+        + allocate(Money): void
+        + reserve(Money): void
+        + spend(Money): void
+        + releaseReservation(Money): void
+        + available(): Money
+    }
+
+    class BudgetId <<(V,#FCF3CF) Value Object>> {
+        + UUID value
+    }
+
+    class BudgetFiscalYear <<(V,#FCF3CF) Value Object>> {
+        + int year
+    }
+
+    class Money <<(V,#FCF3CF) Value Object>> {
+        + BigDecimal amount
+        + String currency
+        --
+        + add(Money): Money
+        + subtract(Money): Money
+        + isPositive(): boolean
+        + isZero(): boolean
+    }
+
+    Budget "1" *-- "1" BudgetId
+    Budget "1" o-- "1" OuId : ouId
+    Budget "1" *-- "1" BudgetFiscalYear
+    Budget "1" *-- "1" Money : allocated
+    Budget "1" *-- "1" Money : reserved
+    Budget "1" *-- "1" Money : spent
+}
+
+' ====================================================================
+' TRAINING BOUNDED CONTEXT
+' ====================================================================
+package "Training Bounded Context" as TrainingContext {
+
+    class TrainingRequest <<(A,#AED6F1) Aggregate Root>> {
+        + TrainingRequestId id
+        + CorporateKey employeeKey
+        + OuId ouId
+        + TrainingName trainingName
+        + TrainingCost cost
+        + TrainingHours hours
+        + TrainingPurpose purpose
+        + TrainingRequestStatus status
+        + ManagerNotes managerNotes
+        + RejectionReason rejectionReason
+        + Instant createdAt
+        + Instant updatedAt
+        --
+        + approve(ManagerNotes, Instant): void
+        + reject(RejectionReason, Instant): void
+        + start(Instant): void
+        + complete(Instant): void
+        + cancel(Instant): void
+    }
+
+    class TrainingRequestId <<(V,#FCF3CF) Value Object>> {
+        + UUID value
+    }
+
+    class TrainingName <<(V,#FCF3CF) Value Object>> {
+        + String value
+    }
+
+    class TrainingCost <<(V,#FCF3CF) Value Object>> {
+        + BigDecimal amount
+        + String currency
+    }
+
+    class TrainingHours <<(V,#FCF3CF) Value Object>> {
+        + int value
+    }
+
+    class TrainingPurpose <<(V,#FCF3CF) Value Object>> {
+        + TrainingPurposeType type
+        + String description
+    }
+
+    enum TrainingPurposeType <<(V,#FCF3CF) Value Object>> {
+        UPSKILLING
+        RESKILLING
+        CERTIFICATION
+        COMPLIANCE
+        OTHER
+    }
+
+    enum TrainingRequestStatus <<(V,#FCF3CF) Value Object>> {
+        PENDING_APPROVAL
+        APPROVED
+        REJECTED
+        IN_PROGRESS
+        COMPLETED
+        CANCELLED
+    }
+
+    class ManagerNotes <<(V,#FCF3CF) Value Object>> {
+        + String value
+    }
+
+    class RejectionReason <<(V,#FCF3CF) Value Object>> {
+        + String value
+    }
+
+    TrainingRequest "1" *-- "1" TrainingRequestId
+    TrainingRequest "1" o-- "1" CorporateKey : employeeKey
+    TrainingRequest "1" o-- "1" OuId : ouId
+    TrainingRequest "1" *-- "1" TrainingName
+    TrainingRequest "1" *-- "1" TrainingCost
+    TrainingRequest "1" *-- "1" TrainingHours
+    TrainingRequest "1" *-- "1" TrainingPurpose
+    TrainingPurpose "1" *-- "1" TrainingPurposeType
+    TrainingRequest "1" *-- "1" TrainingRequestStatus
+    TrainingRequest "1" o-- "0..1" ManagerNotes
+    TrainingRequest "1" o-- "0..1" RejectionReason
+}
+
+' Cross-Context Identity References (DDD Integration by Identity)
+TrainingRequest ..> OuId : references
+TrainingRequest ..> CorporateKey : references
+Budget ..> OuId : references
+
+@enduml

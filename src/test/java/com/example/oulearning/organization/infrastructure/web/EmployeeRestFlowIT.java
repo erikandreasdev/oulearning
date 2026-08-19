@@ -63,7 +63,7 @@ class EmployeeRestFlowIT {
                     "name": "%s",
                     "ouType": "SUBAREA",
                     "ownerCorporateKeys": ["CK0002"],
-                    "parentIds": ["%s"],
+                    "parentId": "%s",
                     "childIds": []
                 }
                 """.formatted(childSubareaId, childSubareaName, rootAreaId);
@@ -80,7 +80,7 @@ class EmployeeRestFlowIT {
                     "name": "%s",
                     "ouType": "AREA",
                     "ownerCorporateKeys": ["CK0001"],
-                    "parentIds": [],
+                    "parentId": null,
                     "childIds": ["%s"]
                 }
                 """.formatted(rootAreaId, rootAreaName, childSubareaId);

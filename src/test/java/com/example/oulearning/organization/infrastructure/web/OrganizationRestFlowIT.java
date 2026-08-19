@@ -59,7 +59,7 @@ class OrganizationRestFlowIT {
                     "name": "Frontend Team %s",
                     "ouType": "SUBAREA",
                     "ownerCorporateKeys": ["CK0001"],
-                    "parentIds": [],
+                    "parentId": null,
                     "childIds": []
                 }
                 """.formatted(leaf1Id, leaf1Id.toString().substring(0, 8));
@@ -77,7 +77,7 @@ class OrganizationRestFlowIT {
                     "name": "Backend Team %s",
                     "ouType": "SUBAREA",
                     "ownerCorporateKeys": ["CK0002"],
-                    "parentIds": [],
+                    "parentId": null,
                     "childIds": []
                 }
                 """.formatted(leaf2Id, leaf2Id.toString().substring(0, 8));
@@ -95,7 +95,7 @@ class OrganizationRestFlowIT {
                     "name": "Engineering Area %s",
                     "ouType": "AREA",
                     "ownerCorporateKeys": ["CK0099"],
-                    "parentIds": [],
+                    "parentId": null,
                     "childIds": ["%s", "%s"]
                 }
                 """.formatted(areaId, areaId.toString().substring(0, 8), leaf1Id, leaf2Id);

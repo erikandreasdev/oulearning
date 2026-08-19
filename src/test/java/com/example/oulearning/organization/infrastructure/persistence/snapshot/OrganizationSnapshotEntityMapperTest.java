@@ -34,9 +34,9 @@ class OrganizationSnapshotEntityMapperTest {
                     rootId,
                     OuName.of("Root Org"),
                     Set.of(CorporateKey.of("CK0001")),
-                    Set.of());
+                    null);
             final var createdAt = Instant.now();
-            final var domain = new Organization(snapshotId, rootOu, SnapshotStatus.ACTIVE, createdAt);
+            final var domain = Organization.active(snapshotId, rootOu, createdAt);
 
             final var entity = mapper.toEntity(domain, 3L);
 
@@ -73,12 +73,13 @@ class OrganizationSnapshotEntityMapperTest {
                     rootId,
                     OuName.of("Root Org"),
                     Set.of(CorporateKey.of("CK0001")),
-                    Set.of());
+                    null);
 
             final var domain = mapper.toDomain(entity, rootOu);
 
             assertThat(domain.snapshotId().value()).isEqualTo(snapshotId);
             assertThat(domain.rootOu()).isEqualTo(rootOu);
+            assertThat(domain.ouIds()).containsExactly(rootId);
             assertThat(domain.status()).isEqualTo(SnapshotStatus.ACTIVE);
             assertThat(domain.createdAt()).isEqualTo(createdAt);
         }

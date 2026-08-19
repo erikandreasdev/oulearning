@@ -12,16 +12,18 @@ import java.util.Set;
 
 /**
  * Aggregate root representing the entire Organization at a specific point in time (Snapshot).
- * Tracks whether this snapshot is currently ACTIVE or ARCHIVED for audit purposes.
+ * Tracks the complete set of OU IDs belonging to the snapshot, root OU, and lifecycle status.
  *
  * @param snapshotId the unique identifier of this organization snapshot
  * @param rootOu     the single root OrganizationalUnit representing the Organization itself
+ * @param ouIds      the set of all OrganizationalUnit IDs within this snapshot
  * @param status     the status lifecycle (ACTIVE or ARCHIVED)
  * @param createdAt  the timestamp when this organization snapshot was created
  */
 public record Organization(
         SnapshotId snapshotId,
         OrganizationalUnit rootOu,
+        Set<OuId> ouIds,
         SnapshotStatus status,
         Instant createdAt) {
 
@@ -32,6 +34,9 @@ public record Organization(
         if (rootOu == null) {
             throw new InvalidOrganizationException("Root OrganizationalUnit cannot be null");
         }
+        if (ouIds == null) {
+            throw new InvalidOrganizationException("OuIds set cannot be null");
+        }
         if (status == null) {
             throw new InvalidOrganizationException("SnapshotStatus cannot be null");
         }
@@ -40,31 +45,55 @@ public record Organization(
         }
         if (!rootOu.isRoot()) {
             throw new InvalidOrganizationException(
-                    "Organization root OU '%s' must have no parent IDs (actual: %s)"
-                            .formatted(rootOu.name().value(), rootOu.parentIds()));
+                    "Organization root OU '%s' must have no parent ID (actual: %s)"
+                            .formatted(rootOu.name().value(), rootOu.parentId()));
         }
 
-        // Validate tree integrity (no cycles)
-        validateTreeIntegrity(rootOu);
+        ouIds = Set.copyOf(ouIds);
+
+        // Validate tree integrity (no cycles) and ensure all loaded units are in ouIds
+        final var treeIds = collectAndValidateTree(rootOu);
+        if (!ouIds.containsAll(treeIds)) {
+            throw new InvalidOrganizationException(
+                    "ouIds set does not contain all OrganizationalUnits from the hierarchy tree");
+        }
     }
 
     public Organization(SnapshotId snapshotId, OrganizationalUnit rootOu, Instant createdAt) {
-        this(snapshotId, rootOu, SnapshotStatus.ACTIVE, createdAt);
+        this(snapshotId, rootOu, collectAndValidateTree(rootOu), SnapshotStatus.ACTIVE, createdAt);
+    }
+
+    public Organization(SnapshotId snapshotId, OrganizationalUnit rootOu, SnapshotStatus status, Instant createdAt) {
+        this(snapshotId, rootOu, collectAndValidateTree(rootOu), status, createdAt);
     }
 
     public static Organization active(SnapshotId snapshotId, OrganizationalUnit rootOu, Instant createdAt) {
-        return new Organization(snapshotId, rootOu, SnapshotStatus.ACTIVE, createdAt);
+        return new Organization(snapshotId, rootOu, collectAndValidateTree(rootOu), SnapshotStatus.ACTIVE, createdAt);
+    }
+
+    public static Organization active(SnapshotId snapshotId, OrganizationalUnit rootOu, Set<OuId> ouIds, Instant createdAt) {
+        return new Organization(snapshotId, rootOu, ouIds, SnapshotStatus.ACTIVE, createdAt);
     }
 
     public Organization archive() {
-        return new Organization(snapshotId, rootOu, SnapshotStatus.ARCHIVED, createdAt);
+        return new Organization(snapshotId, rootOu, ouIds, SnapshotStatus.ARCHIVED, createdAt);
     }
 
     public boolean isActive() {
         return status == SnapshotStatus.ACTIVE;
     }
 
-    private static void validateTreeIntegrity(OrganizationalUnit root) {
+    public boolean containsOu(OuId ouId) {
+        if (ouId == null) {
+            return false;
+        }
+        return ouIds.contains(ouId);
+    }
+
+    private static Set<OuId> collectAndValidateTree(OrganizationalUnit root) {
+        if (root == null) {
+            return Set.of();
+        }
         final var visited = new HashSet<OuId>();
         final var queue = new ArrayDeque<OrganizationalUnit>();
         queue.add(root);
@@ -79,6 +108,7 @@ public record Organization(
 
             queue.addAll(current.loadedChildren());
         }
+        return Set.copyOf(visited);
     }
 
     public Optional<OrganizationalUnit> findOu(OuId id) {
@@ -110,7 +140,7 @@ public record Organization(
     }
 
     public int totalOusCount() {
-        return allOus().size();
+        return ouIds.size();
     }
 
     public int depth() {

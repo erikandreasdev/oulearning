@@ -8,4 +8,5 @@ public record OrganizationalUnitEntity(
         String name,
         String ouType,
         String snapshotId,
+        String parentOuId,
         Long version) {}

@@ -47,8 +47,8 @@ class OrganizationPersistenceAdapterTest {
                 OuId.of(UUID.randomUUID()),
                 OuName.of("Root Org"),
                 Set.of(CorporateKey.of("CK0001")),
-                Set.of());
-        return new Organization(snapshotId, rootOu, SnapshotStatus.ACTIVE, timestamp);
+                null);
+        return Organization.active(snapshotId, rootOu, timestamp);
     }
 
     @Nested
@@ -89,7 +89,7 @@ class OrganizationPersistenceAdapterTest {
                     rootOuId,
                     OuName.of("Root Org"),
                     Set.of(CorporateKey.of("CK0001")),
-                    Set.of());
+                    null);
 
             when(snapshotMapper.findLatestSnapshot()).thenReturn(snapshotEntity);
             when(unitRepository.find(OuSearchCriteria.byId(rootOuId, true))).thenReturn(Optional.of(rootOu));
@@ -134,7 +134,7 @@ class OrganizationPersistenceAdapterTest {
             final var entity = new OrganizationSnapshotEntity(
                     snapshotIdStr, rootOuId.toString(), "ARCHIVED", targetTime, 0L);
             final var rootOu = OrganizationalUnit.leaf(
-                    rootOuId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), Set.of());
+                    rootOuId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), null);
 
             when(snapshotMapper.findSnapshotAt(targetTime)).thenReturn(entity);
             when(unitRepository.find(OuSearchCriteria.byId(rootOuId, true))).thenReturn(Optional.of(rootOu));
@@ -154,7 +154,7 @@ class OrganizationPersistenceAdapterTest {
             final var entity = new OrganizationSnapshotEntity(
                     snapshotId.toString(), rootOuId.toString(), "ACTIVE", Instant.now(), 0L);
             final var rootOu = OrganizationalUnit.leaf(
-                    rootOuId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), Set.of());
+                    rootOuId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), null);
 
             when(snapshotMapper.findSnapshotById(snapshotId.toString())).thenReturn(entity);
             when(unitRepository.find(OuSearchCriteria.byId(rootOuId, true))).thenReturn(Optional.of(rootOu));
@@ -176,7 +176,7 @@ class OrganizationPersistenceAdapterTest {
             final var e2 = new OrganizationSnapshotEntity(id2, rootId.toString(), "ACTIVE", Instant.now(), 0L);
 
             final var rootOu = OrganizationalUnit.leaf(
-                    rootId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), Set.of());
+                    rootId, OuName.of("Root Org"), Set.of(CorporateKey.of("CK0001")), null);
 
             when(snapshotMapper.findAllSnapshots()).thenReturn(List.of(e1, e2));
             when(unitRepository.find(OuSearchCriteria.byId(rootId, true))).thenReturn(Optional.of(rootOu));

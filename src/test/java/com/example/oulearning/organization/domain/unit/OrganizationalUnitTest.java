@@ -27,17 +27,18 @@ class OrganizationalUnitTest {
             final var id = DomainGenerators.randomOuId();
             final var name = DomainGenerators.randomOuName();
             final var owners = Set.of(DomainGenerators.randomCorporateKey());
-            final var parentIds = Set.of(DomainGenerators.randomOuId());
+            final var parentId = DomainGenerators.randomOuId();
 
             // when
-            final var leaf = OrganizationalUnit.leaf(id, name, owners, parentIds);
+            final var leaf = OrganizationalUnit.leaf(id, name, owners, parentId);
 
             // then
             assertThat(leaf.id()).isEqualTo(id);
             assertThat(leaf.name()).isEqualTo(name);
             assertThat(leaf.type()).isEqualTo(OuType.SUBAREA);
             assertThat(leaf.owners()).isEqualTo(owners);
-            assertThat(leaf.parentIds()).isEqualTo(parentIds);
+            assertThat(leaf.parentId()).isEqualTo(parentId);
+            assertThat(leaf.optionalParentId()).contains(parentId);
             assertThat(leaf.childIds()).isEmpty();
             assertThat(leaf.loadedChildren()).isEmpty();
             assertThat(leaf.isLeaf()).isTrue();
@@ -46,15 +47,16 @@ class OrganizationalUnitTest {
         }
 
         @Test
-        @DisplayName("should identify root unit when parentIds is empty")
+        @DisplayName("should identify root unit when parentId is null")
         void should_identifyRootUnit() {
             final var root = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     DomainGenerators.randomOuName(),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    null);
 
             assertThat(root.isRoot()).isTrue();
+            assertThat(root.optionalParentId()).isEmpty();
             assertThat(root.isLeaf()).isTrue();
         }
 
@@ -62,6 +64,7 @@ class OrganizationalUnitTest {
         @DisplayName("should create unit with child IDs when subtree is not loaded")
         void should_createUnit_withChildIds_whenSubtreeNotLoaded() {
             final var id = DomainGenerators.randomOuId();
+            final var parentId = DomainGenerators.randomOuId();
             final var child1 = DomainGenerators.randomOuId();
             final var child2 = DomainGenerators.randomOuId();
 
@@ -70,7 +73,7 @@ class OrganizationalUnitTest {
                     DomainGenerators.randomOuName(),
                     OuType.AREA,
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of(DomainGenerators.randomOuId()),
+                    parentId,
                     Set.of(child1, child2));
 
             assertThat(unit.isLeaf()).isFalse();
@@ -88,25 +91,28 @@ class OrganizationalUnitTest {
         @Test
         @DisplayName("should create N-level hierarchy with loaded children")
         void should_createNLevelHierarchy() {
+            final var rootId = DomainGenerators.randomOuId();
+            final var areaId = DomainGenerators.randomOuId();
+
             // Level 3
             final var l3Sub1 = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Frontend"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    areaId);
             final var l3Sub2 = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Backend"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    areaId);
 
             // Level 2 Area
             final var l2Area = OrganizationalUnit.withChildren(
-                    DomainGenerators.randomOuId(),
+                    areaId,
                     OuName.of("Engineering"),
                     OuType.AREA,
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of(),
+                    rootId,
                     Set.of(l3Sub1, l3Sub2));
 
             // Level 2 Leaf
@@ -114,15 +120,15 @@ class OrganizationalUnitTest {
                     DomainGenerators.randomOuId(),
                     OuName.of("Sales"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    rootId);
 
             // Level 1 Root
             final var root = OrganizationalUnit.withChildren(
-                    DomainGenerators.randomOuId(),
+                    rootId,
                     OuName.of("Headquarters"),
                     OuType.ORGANIZATION,
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of(),
+                    null,
                     Set.of(l2Area, l2Sales));
 
             assertThat(root.isRoot()).isTrue();
@@ -142,7 +148,7 @@ class OrganizationalUnitTest {
                             DomainGenerators.randomOuName(),
                             OuType.AREA,
                             Set.of(DomainGenerators.randomCorporateKey()),
-                            Set.of(),
+                            null,
                             Set.of(otherId),
                             Set.of(child)))
                     .isInstanceOf(InvalidOuException.class)
@@ -160,21 +166,19 @@ class OrganizationalUnitTest {
             final var id = DomainGenerators.randomOuId();
             final var name = DomainGenerators.randomOuName();
             final var owners = Set.of(DomainGenerators.randomCorporateKey());
-            final var parentIds = Set.of(DomainGenerators.randomOuId());
+            final var parentId = DomainGenerators.randomOuId();
 
-            assertThatThrownBy(() -> new OrganizationalUnit(null, name, OuType.AREA, owners, parentIds, Set.of(), Set.of()))
+            assertThatThrownBy(() -> new OrganizationalUnit(null, name, OuType.AREA, owners, parentId, Set.of(), Set.of()))
                     .isInstanceOf(InvalidOuException.class);
-            assertThatThrownBy(() -> new OrganizationalUnit(id, null, OuType.AREA, owners, parentIds, Set.of(), Set.of()))
+            assertThatThrownBy(() -> new OrganizationalUnit(id, null, OuType.AREA, owners, parentId, Set.of(), Set.of()))
                     .isInstanceOf(InvalidOuException.class);
-            assertThatThrownBy(() -> new OrganizationalUnit(id, name, null, owners, parentIds, Set.of(), Set.of()))
+            assertThatThrownBy(() -> new OrganizationalUnit(id, name, null, owners, parentId, Set.of(), Set.of()))
                     .isInstanceOf(InvalidOuException.class);
-            assertThatThrownBy(() -> new OrganizationalUnit(id, name, OuType.AREA, null, parentIds, Set.of(), Set.of()))
+            assertThatThrownBy(() -> new OrganizationalUnit(id, name, OuType.AREA, null, parentId, Set.of(), Set.of()))
                     .isInstanceOf(InvalidOuException.class);
-            assertThatThrownBy(() -> new OrganizationalUnit(id, name, OuType.AREA, owners, null, Set.of(), Set.of()))
+            assertThatThrownBy(() -> new OrganizationalUnit(id, name, OuType.AREA, owners, parentId, null, Set.of()))
                     .isInstanceOf(InvalidOuException.class);
-            assertThatThrownBy(() -> new OrganizationalUnit(id, name, OuType.AREA, owners, parentIds, null, Set.of()))
-                    .isInstanceOf(InvalidOuException.class);
-            assertThatThrownBy(() -> new OrganizationalUnit(id, name, OuType.AREA, owners, parentIds, Set.of(), null))
+            assertThatThrownBy(() -> new OrganizationalUnit(id, name, OuType.AREA, owners, parentId, Set.of(), null))
                     .isInstanceOf(InvalidOuException.class);
         }
 
@@ -184,10 +188,10 @@ class OrganizationalUnitTest {
             final var id = DomainGenerators.randomOuId();
             final var name = DomainGenerators.randomOuName();
             final var owners = Set.of(DomainGenerators.randomCorporateKey());
-            final var parentIds = Set.of(DomainGenerators.randomOuId());
+            final var parentId = DomainGenerators.randomOuId();
 
-            final var ou1 = OrganizationalUnit.leaf(id, name, owners, parentIds);
-            final var ou2 = OrganizationalUnit.leaf(id, name, owners, parentIds);
+            final var ou1 = OrganizationalUnit.leaf(id, name, owners, parentId);
+            final var ou2 = OrganizationalUnit.leaf(id, name, owners, parentId);
 
             assertThat(ou1).isEqualTo(ou2);
             assertThat(ou1.hashCode()).isEqualTo(ou2.hashCode());

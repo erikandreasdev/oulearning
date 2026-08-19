@@ -23,15 +23,14 @@ public record CreateOrganizationalUnitRequest(
         @Schema(description = "Corporate keys of designated unit owners", example = "[\"CK0001\", \"CK0002\"]")
         Set<String> ownerCorporateKeys,
 
-        @Schema(description = "Parent OU UUIDs", example = "[]")
-        Set<UUID> parentIds,
+        @Schema(description = "Parent OU UUID (null for root unit)", example = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")
+        UUID parentId,
 
         @Schema(description = "Child OU UUIDs", example = "[\"b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22\"]")
         Set<UUID> childIds) {
 
     public CreateOrganizationalUnitRequest {
         ownerCorporateKeys = ownerCorporateKeys != null ? Set.copyOf(ownerCorporateKeys) : Set.of();
-        parentIds = parentIds != null ? Set.copyOf(parentIds) : Set.of();
         childIds = childIds != null ? Set.copyOf(childIds) : Set.of();
     }
 }

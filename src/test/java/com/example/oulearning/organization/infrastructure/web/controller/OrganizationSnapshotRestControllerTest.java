@@ -66,8 +66,8 @@ class OrganizationSnapshotRestControllerTest {
                 OuId.of(UUID.randomUUID()),
                 OuName.of("Global Corp"),
                 Set.of(CorporateKey.of("CK0001")),
-                Set.of());
-        return new Organization(SnapshotId.of(snapshotId), rootOu, SnapshotStatus.ACTIVE, timestamp);
+                null);
+        return Organization.active(SnapshotId.of(snapshotId), rootOu, timestamp);
     }
 
     @Nested

@@ -44,6 +44,26 @@ class EmployeeFileParserTest {
         }
 
         @Test
+        @DisplayName("should parse sample 100 employees CSV file")
+        void should_parseSample100EmployeesCsv() throws Exception {
+            final var file = new java.io.File("bruno/samples/employees-100.csv");
+            try (final var in = new java.io.FileInputStream(file)) {
+                final var list = parser.parse(in, file.getName());
+                assertThat(list).hasSize(100);
+            }
+        }
+
+        @Test
+        @DisplayName("should parse sample 5000 employees CSV file")
+        void should_parseSample5000EmployeesCsv() throws Exception {
+            final var file = new java.io.File("bruno/samples/employees-5000.csv");
+            try (final var in = new java.io.FileInputStream(file)) {
+                final var list = parser.parse(in, file.getName());
+                assertThat(list).hasSize(5000);
+            }
+        }
+
+        @Test
         @DisplayName("should throw when mandatory column is missing")
         void should_throw_whenMissingColumn() {
             final var csv = """

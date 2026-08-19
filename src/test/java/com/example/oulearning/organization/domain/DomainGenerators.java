@@ -85,18 +85,19 @@ public final class DomainGenerators {
                 randomOuId(),
                 randomOuName(),
                 Set.of(randomCorporateKey()),
-                Set.of(randomOuId()));
+                randomOuId());
     }
 
     public static OrganizationalUnit randomOrganizationalUnit() {
+        final var parentId = randomOuId();
         final var child1 = randomLeafOu();
         final var child2 = randomLeafOu();
         return OrganizationalUnit.withChildren(
-                randomOuId(),
+                parentId,
                 randomOuName(),
                 OuType.AREA,
                 Set.of(randomCorporateKey()),
-                Set.of(randomOuId()),
+                randomOuId(),
                 Set.of(child1, child2));
     }
 
@@ -106,19 +107,19 @@ public final class DomainGenerators {
                 randomOuId(),
                 randomOuName(),
                 Set.of(randomCorporateKey()),
-                Set.of(rootOuId));
+                rootOuId);
         final var sub2 = OrganizationalUnit.leaf(
                 randomOuId(),
                 randomOuName(),
                 Set.of(randomCorporateKey()),
-                Set.of(rootOuId));
+                rootOuId);
         final var rootOu = OrganizationalUnit.withChildren(
                 rootOuId,
                 OuName.of("Headquarters"),
                 OuType.ORGANIZATION,
                 Set.of(randomCorporateKey()),
-                Set.of(), // root has no parents
+                null, // root has no parent
                 Set.of(sub1, sub2));
-        return new Organization(randomSnapshotId(), rootOu, Instant.now());
+        return Organization.active(randomSnapshotId(), rootOu, Instant.now());
     }
 }

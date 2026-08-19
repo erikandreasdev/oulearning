@@ -54,6 +54,30 @@ class OrganizationFileParserTest {
         }
 
         @Test
+        @DisplayName("should parse sample 50 OU hierarchy CSV file")
+        void should_parseSample50OuCsv() throws Exception {
+            final var file = new java.io.File("bruno/samples/organization-50-ou.csv");
+            try (final var in = new java.io.FileInputStream(file)) {
+                final var root = parser.parse(in, file.getName());
+                assertThat(root).isNotNull();
+                assertThat(root.name()).isEqualTo(OuName.of("Global Enterprise"));
+                assertThat(root.loadedChildren()).hasSize(7);
+            }
+        }
+
+        @Test
+        @DisplayName("should parse sample 100 OU hierarchy CSV file")
+        void should_parseSample100OuCsv() throws Exception {
+            final var file = new java.io.File("bruno/samples/organization-100-ou.csv");
+            try (final var in = new java.io.FileInputStream(file)) {
+                final var root = parser.parse(in, file.getName());
+                assertThat(root).isNotNull();
+                assertThat(root.name()).isEqualTo(OuName.of("Apex Global Corporation"));
+                assertThat(root.loadedChildren()).hasSize(9);
+            }
+        }
+
+        @Test
         @DisplayName("should throw when CSV has multiple roots")
         void should_throw_whenMultipleRoots() {
             final var csv = """

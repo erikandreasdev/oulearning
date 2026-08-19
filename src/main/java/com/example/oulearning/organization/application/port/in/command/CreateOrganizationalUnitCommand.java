@@ -11,12 +11,11 @@ public record CreateOrganizationalUnitCommand(
         String name,
         String ouType,
         Set<String> ownerCorporateKeys,
-        Set<UUID> parentIds,
+        UUID parentId,
         Set<UUID> childIds) {
 
     public CreateOrganizationalUnitCommand {
         ownerCorporateKeys = ownerCorporateKeys != null ? Set.copyOf(ownerCorporateKeys) : Set.of();
-        parentIds = parentIds != null ? Set.copyOf(parentIds) : Set.of();
         childIds = childIds != null ? Set.copyOf(childIds) : Set.of();
     }
 }

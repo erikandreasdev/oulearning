@@ -84,9 +84,9 @@ public class OrganizationalUnitPersistenceAdapter implements OrganizationalUnitR
             mapper.insertOwner(unitIdStr, owner.value());
         }
 
-        // Save parents
-        for (final var parentId : unit.parentIds()) {
-            mapper.insertParent(unitIdStr, parentId.toString());
+        // Save parent
+        if (unit.parentId() != null) {
+            mapper.insertParent(unitIdStr, unit.parentId().toString());
         }
 
         // Save children
@@ -108,10 +108,8 @@ public class OrganizationalUnitPersistenceAdapter implements OrganizationalUnitR
                 ? Set.<CorporateKey>of()
                 : ownerKeys.stream().map(CorporateKey::of).collect(Collectors.toSet());
 
-        final var parentIdStrs = mapper.findParentsByOuId(unitIdStr);
-        final var parentIds = parentIdStrs == null
-                ? Set.<OuId>of()
-                : parentIdStrs.stream().map(OuId::of).collect(Collectors.toSet());
+        final var parentIdStr = entity.parentOuId() != null ? entity.parentOuId() : mapper.findParentByOuId(unitIdStr);
+        final var parentId = parentIdStr != null ? OuId.of(parentIdStr) : null;
 
         final var childIdStrs = mapper.findChildrenByOuId(unitIdStr);
         final var childIds = childIdStrs == null
@@ -128,6 +126,6 @@ public class OrganizationalUnitPersistenceAdapter implements OrganizationalUnitR
             }
         }
 
-        return entityMapper.toDomain(entity, owners, parentIds, childIds, Set.copyOf(loadedChildren));
+        return entityMapper.toDomain(entity, owners, parentId, childIds, Set.copyOf(loadedChildren));
     }
 }

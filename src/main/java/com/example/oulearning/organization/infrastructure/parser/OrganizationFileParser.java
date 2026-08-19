@@ -238,7 +238,7 @@ public class OrganizationFileParser implements OrganizationFileParserPort {
                 childrenByParent.computeIfAbsent(parentKey, k -> new ArrayList<>()).add(row);
             }
         }
-        final var rootOu = buildSubtree(rootRow, childrenByParent, Set.of(), new HashSet<>());
+        final var rootOu = buildSubtree(rootRow, childrenByParent, null, new HashSet<>());
 
         final int treeSize = countTreeNodes(rootOu);
         if (treeSize != rows.size()) {
@@ -261,7 +261,7 @@ public class OrganizationFileParser implements OrganizationFileParserPort {
     private OrganizationalUnit buildSubtree(
             RawOuRow current,
             Map<String, List<RawOuRow>> childrenByParent,
-            Set<OuId> parentIds,
+            OuId parentId,
             Set<String> visited) {
         if (!visited.add(current.name().toLowerCase())) {
             throw new InvalidOrganizationTreeException("Cycle detected at OU '%s'".formatted(current.name()));
@@ -271,9 +271,8 @@ public class OrganizationFileParser implements OrganizationFileParserPort {
         final var childRows = childrenByParent.getOrDefault(current.name().toLowerCase(), List.of());
         final var loadedChildren = new HashSet<OrganizationalUnit>();
 
-        final var nextParentIds = Set.of(currentOuId);
         for (final var childRow : childRows) {
-            loadedChildren.add(buildSubtree(childRow, childrenByParent, nextParentIds, new HashSet<>(visited)));
+            loadedChildren.add(buildSubtree(childRow, childrenByParent, currentOuId, new HashSet<>(visited)));
         }
 
         if (loadedChildren.isEmpty()) {
@@ -281,14 +280,14 @@ public class OrganizationFileParser implements OrganizationFileParserPort {
                     currentOuId,
                     OuName.of(current.name()),
                     current.owners(),
-                    parentIds);
+                    parentId);
         } else {
             return OrganizationalUnit.withChildren(
                     currentOuId,
                     OuName.of(current.name()),
                     current.ouType(),
                     current.owners(),
-                    parentIds,
+                    parentId,
                     Set.copyOf(loadedChildren));
         }
     }

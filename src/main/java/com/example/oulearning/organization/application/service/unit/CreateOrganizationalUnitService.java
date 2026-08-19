@@ -40,15 +40,13 @@ public class CreateOrganizationalUnitService implements CreateOrganizationalUnit
                 .map(CorporateKey::of)
                 .collect(Collectors.toSet());
 
-        final var parents = command.parentIds().stream()
-                .map(OuId::of)
-                .collect(Collectors.toSet());
+        final var parent = command.parentId() != null ? OuId.of(command.parentId()) : null;
 
         final var children = command.childIds().stream()
                 .map(OuId::of)
                 .collect(Collectors.toSet());
 
-        final var unit = OrganizationalUnit.of(ouId, name, ouType, owners, parents, children);
+        final var unit = OrganizationalUnit.of(ouId, name, ouType, owners, parent, children);
         repository.save(unit);
 
         return unit.id().value();

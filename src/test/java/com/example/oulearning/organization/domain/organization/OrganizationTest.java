@@ -25,42 +25,48 @@ class OrganizationTest {
     class CreationAndInvariants {
 
         @Test
-        @DisplayName("should create valid Organization snapshot with N-level hierarchy")
+        @DisplayName("should create valid Organization snapshot with N-level hierarchy and ouIds set")
         void should_createOrganization_withNLevelHierarchy() {
+            final var rootId = DomainGenerators.randomOuId();
+            final var engId = DomainGenerators.randomOuId();
+            final var feId = DomainGenerators.randomOuId();
+            final var beId = DomainGenerators.randomOuId();
+            final var salesId = DomainGenerators.randomOuId();
+
             // Level 3
             final var frontendSub = OrganizationalUnit.leaf(
-                    DomainGenerators.randomOuId(),
+                    feId,
                     OuName.of("Frontend"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    engId);
             final var backendSub = OrganizationalUnit.leaf(
-                    DomainGenerators.randomOuId(),
+                    beId,
                     OuName.of("Backend"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    engId);
 
             // Level 2
             final var engineeringArea = OrganizationalUnit.withChildren(
-                    DomainGenerators.randomOuId(),
+                    engId,
                     OuName.of("Engineering"),
                     OuType.AREA,
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of(),
+                    rootId,
                     Set.of(frontendSub, backendSub));
 
             final var salesSub = OrganizationalUnit.leaf(
-                    DomainGenerators.randomOuId(),
+                    salesId,
                     OuName.of("Sales"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    rootId);
 
             // Level 1 Root
             final var rootOu = OrganizationalUnit.withChildren(
-                    DomainGenerators.randomOuId(),
+                    rootId,
                     OuName.of("Acme Corp"),
                     OuType.ORGANIZATION,
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of(), // root has no parents
+                    null, // root has no parent
                     Set.of(engineeringArea, salesSub));
 
             final var snapshotId = DomainGenerators.randomSnapshotId();
@@ -73,22 +79,25 @@ class OrganizationTest {
             assertThat(organization.snapshotId()).isEqualTo(snapshotId);
             assertThat(organization.rootOu()).isEqualTo(rootOu);
             assertThat(organization.createdAt()).isEqualTo(timestamp);
+            assertThat(organization.ouIds()).containsExactlyInAnyOrder(rootId, engId, feId, beId, salesId);
+            assertThat(organization.containsOu(feId)).isTrue();
+            assertThat(organization.containsOu(DomainGenerators.randomOuId())).isFalse();
             assertThat(organization.totalOusCount()).isEqualTo(5);
             assertThat(organization.depth()).isEqualTo(3);
         }
 
         @Test
-        @DisplayName("should throw InvalidOrganizationException when root OU has parent IDs")
+        @DisplayName("should throw InvalidOrganizationException when root OU has parent ID")
         void should_throwException_when_rootOuHasParents() {
             final var invalidRootOu = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("Root"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of(DomainGenerators.randomOuId())); // Has a parent!
+                    DomainGenerators.randomOuId()); // Has a parent!
 
             assertThatThrownBy(() -> new Organization(DomainGenerators.randomSnapshotId(), invalidRootOu, Instant.now()))
                     .isInstanceOf(InvalidOrganizationException.class)
-                    .hasMessageContaining("must have no parent IDs");
+                    .hasMessageContaining("must have no parent ID");
         }
 
         @Test
@@ -98,7 +107,7 @@ class OrganizationTest {
                     DomainGenerators.randomOuId(),
                     OuName.of("Root"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    null);
 
             assertThatThrownBy(() -> new Organization(null, rootOu, Instant.now()))
                     .isInstanceOf(InvalidOrganizationException.class)
@@ -120,7 +129,7 @@ class OrganizationTest {
                     DomainGenerators.randomOuId(),
                     OuName.of("Root"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    null);
 
             assertThatThrownBy(() -> new Organization(DomainGenerators.randomSnapshotId(), rootOu, null))
                     .isInstanceOf(InvalidOrganizationException.class)
@@ -135,19 +144,20 @@ class OrganizationTest {
         @Test
         @DisplayName("should find OU by ID in multi-level hierarchy")
         void should_findOuById() {
+            final var rootId = DomainGenerators.randomOuId();
             final var subareaId = DomainGenerators.randomOuId();
             final var subarea = OrganizationalUnit.leaf(
                     subareaId,
                     OuName.of("DevOps"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    rootId);
 
             final var rootOu = OrganizationalUnit.withChildren(
-                    DomainGenerators.randomOuId(),
+                    rootId,
                     OuName.of("Company"),
                     OuType.ORGANIZATION,
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of(),
+                    null,
                     Set.of(subarea));
 
             final var organization = new Organization(DomainGenerators.randomSnapshotId(), rootOu, Instant.now());
@@ -159,18 +169,19 @@ class OrganizationTest {
         @Test
         @DisplayName("should find OU by Name in hierarchy")
         void should_findOuByName() {
+            final var rootId = DomainGenerators.randomOuId();
             final var subarea = OrganizationalUnit.leaf(
                     DomainGenerators.randomOuId(),
                     OuName.of("QA Team"),
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of());
+                    rootId);
 
             final var rootOu = OrganizationalUnit.withChildren(
-                    DomainGenerators.randomOuId(),
+                    rootId,
                     OuName.of("Company"),
                     OuType.ORGANIZATION,
                     Set.of(DomainGenerators.randomCorporateKey()),
-                    Set.of(),
+                    null,
                     Set.of(subarea));
 
             final var organization = new Organization(DomainGenerators.randomSnapshotId(), rootOu, Instant.now());

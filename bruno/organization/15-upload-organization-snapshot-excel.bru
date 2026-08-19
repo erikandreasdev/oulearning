@@ -13,3 +13,7 @@ post {
 body:multipart-form {
   file: @file(samples/organization.xlsx)
 }
+
+vars:pre-request {
+  baseUrl: http://localhost:8080
+}

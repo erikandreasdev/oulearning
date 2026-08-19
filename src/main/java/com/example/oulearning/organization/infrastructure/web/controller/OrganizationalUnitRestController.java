@@ -62,7 +62,7 @@ public class OrganizationalUnitRestController {
                 request.name(),
                 request.ouType(),
                 request.ownerCorporateKeys(),
-                request.parentIds(),
+                request.parentId(),
                 request.childIds());
 
         final var createdId = createUseCase.execute(command);

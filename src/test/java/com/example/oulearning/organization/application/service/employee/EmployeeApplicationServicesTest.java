@@ -50,7 +50,7 @@ class EmployeeApplicationServicesTest {
     @DisplayName("should register employee and retrieve by corporate key")
     void should_registerAndRetrieveEmployee() {
         final var ouId = UUID.randomUUID();
-        final var ou = OrganizationalUnit.leaf(OuId.of(ouId), OuName.of("Engineering"), Set.of(), Set.of());
+        final var ou = OrganizationalUnit.leaf(OuId.of(ouId), OuName.of("Engineering"), Set.of(), null);
         unitRepository.save(ou);
 
         final var command = new RegisterEmployeeCommand(
@@ -87,10 +87,10 @@ class EmployeeApplicationServicesTest {
         final var child2Id = OuId.of(UUID.randomUUID());
         final var parentId = OuId.of(UUID.randomUUID());
 
-        final var child1 = OrganizationalUnit.leaf(child1Id, OuName.of("Frontend"), Set.of(), Set.of(parentId));
-        final var child2 = OrganizationalUnit.leaf(child2Id, OuName.of("Backend"), Set.of(), Set.of(parentId));
+        final var child1 = OrganizationalUnit.leaf(child1Id, OuName.of("Frontend"), Set.of(), parentId);
+        final var child2 = OrganizationalUnit.leaf(child2Id, OuName.of("Backend"), Set.of(), parentId);
         final var parent = OrganizationalUnit.withChildren(
-                parentId, OuName.of("Engineering"), OuType.AREA, Set.of(), Set.of(), Set.of(child1, child2));
+                parentId, OuName.of("Engineering"), OuType.AREA, Set.of(), null, Set.of(child1, child2));
 
         unitRepository.save(parent);
         unitRepository.save(child1);

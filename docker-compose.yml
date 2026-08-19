@@ -1,0 +1,24 @@
+services:
+  oracle-db:
+    image: gvenzl/oracle-free:slim-faststart
+    container_name: oulearning-oracle-db
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=oracle
+      - ORACLE_DATABASE=OULEARNINGPDB
+      - APP_USER=oulearning
+      - APP_USER_PASSWORD=oulearning_pass
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  oracle_data:
+    driver: local

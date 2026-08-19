@@ -55,7 +55,7 @@ class OrganizationalUnitRestControllerTest {
                     OuId.of(unitId),
                     OuName.of("Engineering"),
                     Set.of(CorporateKey.of("CK0001")),
-                    Set.of());
+                    null);
 
             when(createUseCase.execute(any())).thenReturn(unitId);
             when(getUseCase.execute(any(GetOrganizationalUnitQuery.class))).thenReturn(Optional.of(unit));
@@ -66,7 +66,7 @@ class OrganizationalUnitRestControllerTest {
                         "name": "Engineering",
                         "ouType": "AREA",
                         "ownerCorporateKeys": ["CK0001"],
-                        "parentIds": [],
+                        "parentId": null,
                         "childIds": []
                     }
                     """.formatted(unitId);
@@ -112,7 +112,7 @@ class OrganizationalUnitRestControllerTest {
                     OuId.of(unitId),
                     OuName.of("Sales"),
                     Set.of(CorporateKey.of("CK1000")),
-                    Set.of());
+                    null);
 
             when(getUseCase.execute(any(GetOrganizationalUnitQuery.class))).thenReturn(Optional.of(unit));
 

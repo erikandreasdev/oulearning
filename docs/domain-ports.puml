@@ -1,0 +1,144 @@
+@startuml DomainPorts
+!theme plain
+skinparam monochrome false
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam classFontSize 12
+skinparam packageFontSize 14
+skinparam defaultFontName "Helvetica"
+skinparam linetype ortho
+
+title OULearning - Domain & Application Ports (DDD Architecture)
+
+' ====================================================================
+' ORGANIZATION BOUNDED CONTEXT PORTS
+' ====================================================================
+package "Organization Ports" as OrgPorts {
+
+    package "Output / Repository Ports" as OrgRepoPorts {
+        interface OrganizationRepository <<(P,#E8DAEF) Port>> {
+            + save(Organization): void
+            + findLatest(): Optional<Organization>
+            + findBySnapshotId(SnapshotId): Optional<Organization>
+            + findAt(Instant): Optional<Organization>
+            + findAllHistory(): List<Organization>
+        }
+
+        interface OrganizationalUnitRepository <<(P,#E8DAEF) Port>> {
+            + save(OrganizationalUnit): void
+            + find(OuSearchCriteria): Optional<OrganizationalUnit>
+        }
+
+        interface EmployeeRepository <<(P,#E8DAEF) Port>> {
+            + save(Employee): void
+            + findByCorporateKey(CorporateKey): Optional<Employee>
+            + findByOuId(OuId): List<Employee>
+            + findByOuIds(Collection<OuId>): List<Employee>
+            + delete(CorporateKey): void
+        }
+    }
+
+    package "Input Use Case Ports" as OrgInputPorts {
+        interface CreateOrganizationalUnitUseCase {
+            + execute(CreateOrganizationalUnitCommand): UUID
+        }
+        interface GetOrganizationalUnitUseCase {
+            + execute(GetOrganizationalUnitQuery): Optional<OrganizationalUnit>
+        }
+        interface CreateOrganizationSnapshotUseCase {
+            + execute(CreateOrganizationSnapshotCommand): UUID
+        }
+        interface GetLatestOrganizationUseCase {
+            + execute(): Optional<Organization>
+        }
+        interface GetOrganizationSnapshotUseCase {
+            + execute(GetOrganizationSnapshotQuery): Optional<Organization>
+        }
+        interface GetOrganizationHistoryUseCase {
+            + execute(): List<Organization>
+        }
+        interface UploadOrganizationSnapshotUseCase {
+            + execute(UploadOrganizationSnapshotCommand): UUID
+        }
+        interface RegisterEmployeeUseCase {
+            + execute(RegisterEmployeeCommand): String
+        }
+        interface GetEmployeeUseCase {
+            + execute(GetEmployeeQuery): Optional<Employee>
+        }
+        interface GetEmployeesByOuUseCase {
+            + execute(GetEmployeesByOuQuery): List<Employee>
+        }
+        interface UploadEmployeesUseCase {
+            + execute(UploadEmployeesCommand): int
+        }
+    }
+}
+
+' ====================================================================
+' BUDGETING BOUNDED CONTEXT PORTS
+' ====================================================================
+package "Budgeting Ports" as BudgetPorts {
+
+    package "Output / Repository Ports" as BudgetRepoPorts {
+        interface BudgetRepository <<(P,#E8DAEF) Port>> {
+            + save(Budget): void
+            + findById(BudgetId): Optional<Budget>
+            + findByOuIdAndFiscalYear(OuId, BudgetFiscalYear): Optional<Budget>
+        }
+
+        interface TrainingBudgetPort <<(P,#E8DAEF) Port>> {
+            + reserveBudget(OuId, Money): void
+            + releaseBudgetReservation(OuId, Money): void
+            + spendBudget(OuId, Money): void
+        }
+    }
+
+    package "Input Use Case Ports" as BudgetInputPorts {
+        interface AllocateBudgetUseCase {
+            + execute(AllocateBudgetCommand): UUID
+        }
+        interface DistributeBudgetUseCase {
+            + execute(DistributeBudgetCommand): Map<UUID, Money>
+        }
+        interface GetBudgetUseCase {
+            + execute(GetBudgetQuery): Optional<Budget>
+        }
+    }
+}
+
+' ====================================================================
+' TRAINING BOUNDED CONTEXT PORTS
+' ====================================================================
+package "Training Ports" as TrainingPorts {
+
+    package "Output / Repository Ports" as TrainingRepoPorts {
+        interface TrainingRequestRepository <<(P,#E8DAEF) Port>> {
+            + save(TrainingRequest): void
+            + findById(TrainingRequestId): Optional<TrainingRequest>
+            + findByEmployeeKey(CorporateKey): List<TrainingRequest>
+            + findByOuId(OuId): List<TrainingRequest>
+            + findByStatus(TrainingRequestStatus): List<TrainingRequest>
+        }
+    }
+
+    package "Input Use Case Ports" as TrainingInputPorts {
+        interface SubmitTrainingRequestUseCase {
+            + execute(SubmitTrainingRequestCommand): UUID
+        }
+        interface ApproveTrainingRequestUseCase {
+            + execute(ApproveTrainingRequestCommand): void
+        }
+        interface RejectTrainingRequestUseCase {
+            + execute(RejectTrainingRequestCommand): void
+        }
+        interface GetTrainingRequestUseCase {
+            + execute(GetTrainingRequestQuery): Optional<TrainingRequest>
+        }
+        interface GetTrainingRequestsUseCase {
+            + execute(GetTrainingRequestsQuery): List<TrainingRequest>
+        }
+    }
+}
+
+@enduml
