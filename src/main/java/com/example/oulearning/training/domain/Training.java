@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Domain object representing a Training.
+ * Domain object representing a Training request.
  */
 public final class Training {
 
@@ -27,48 +27,48 @@ public final class Training {
     private final Set<EmployeeId> attendees;
 
     public Training(
-            TrainingId id,
-            EmployeeId requestedBy,
-            OuId ouId,
-            TrainingName name,
-            Cost cost,
-            Hours hours,
-            TrainingPurpose purpose,
-            TypeId typeId,
-            TrainingStatus status,
-            ManagerReview managerReview,
-            Instant createdAt,
-            Instant updatedAt,
-            Set<EmployeeId> attendees) {
-        this.id = Objects.requireNonNull(id, "Training id cannot be null");
-        this.requestedBy = Objects.requireNonNull(requestedBy, "RequestedBy employee id cannot be null");
-        this.ouId = Objects.requireNonNull(ouId, "Ou id cannot be null");
-        this.name = Objects.requireNonNull(name, "Training name cannot be null");
-        this.cost = Objects.requireNonNull(cost, "Cost cannot be null");
-        this.hours = Objects.requireNonNull(hours, "Hours cannot be null");
-        this.purpose = Objects.requireNonNull(purpose, "TrainingPurpose cannot be null");
-        this.typeId = Objects.requireNonNull(typeId, "TypeId cannot be null");
-        this.status = Objects.requireNonNull(status, "TrainingStatus cannot be null");
+            final TrainingId id,
+            final EmployeeId requestedBy,
+            final OuId ouId,
+            final TrainingName name,
+            final Cost cost,
+            final Hours hours,
+            final TrainingPurpose purpose,
+            final TypeId typeId,
+            final TrainingStatus status,
+            final ManagerReview managerReview,
+            final Instant createdAt,
+            final Instant updatedAt,
+            final Set<EmployeeId> attendees) {
+        this.id = TrainingGuard.requireNonNull(id, "Training id");
+        this.requestedBy = TrainingGuard.requireNonNull(requestedBy, "RequestedBy employee id");
+        this.ouId = TrainingGuard.requireNonNull(ouId, "Ou id");
+        this.name = TrainingGuard.requireNonNull(name, "Name");
+        this.cost = TrainingGuard.requireNonNull(cost, "Cost");
+        this.hours = TrainingGuard.requireNonNull(hours, "Hours");
+        this.purpose = TrainingGuard.requireNonNull(purpose, "Purpose");
+        this.typeId = TrainingGuard.requireNonNull(typeId, "TypeId");
+        this.status = TrainingGuard.requireNonNull(status, "Status");
         this.managerReview = managerReview;
-        this.createdAt = Objects.requireNonNull(createdAt, "CreatedAt timestamp cannot be null");
-        this.updatedAt = Objects.requireNonNull(updatedAt, "UpdatedAt timestamp cannot be null");
+        this.createdAt = TrainingGuard.requireNonNull(createdAt, "CreatedAt");
+        this.updatedAt = TrainingGuard.requireNonNull(updatedAt, "UpdatedAt");
         this.attendees = (attendees != null) ? Set.copyOf(attendees) : Set.of();
     }
 
     public static Training of(
-            TrainingId id,
-            EmployeeId requestedBy,
-            OuId ouId,
-            TrainingName name,
-            Cost cost,
-            Hours hours,
-            TrainingPurpose purpose,
-            TypeId typeId,
-            TrainingStatus status,
-            ManagerReview managerReview,
-            Instant createdAt,
-            Instant updatedAt,
-            Set<EmployeeId> attendees) {
+            final TrainingId id,
+            final EmployeeId requestedBy,
+            final OuId ouId,
+            final TrainingName name,
+            final Cost cost,
+            final Hours hours,
+            final TrainingPurpose purpose,
+            final TypeId typeId,
+            final TrainingStatus status,
+            final ManagerReview managerReview,
+            final Instant createdAt,
+            final Instant updatedAt,
+            final Set<EmployeeId> attendees) {
         return new Training(
                 id,
                 requestedBy,
@@ -83,6 +83,32 @@ public final class Training {
                 createdAt,
                 updatedAt,
                 attendees);
+    }
+
+    public static Training create(
+            final TrainingId id,
+            final EmployeeId requestedBy,
+            final OuId ouId,
+            final TrainingName name,
+            final Cost cost,
+            final Hours hours,
+            final TrainingPurpose purpose,
+            final TypeId typeId,
+            final Instant createdAt) {
+        return new Training(
+                id,
+                requestedBy,
+                ouId,
+                name,
+                cost,
+                hours,
+                purpose,
+                typeId,
+                TrainingStatus.REQUESTED,
+                null,
+                createdAt,
+                createdAt,
+                Set.of());
     }
 
     public TrainingId id() {
@@ -138,7 +164,7 @@ public final class Training {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof Training training)) return false;
         return Objects.equals(id, training.id);
@@ -151,6 +177,7 @@ public final class Training {
 
     @Override
     public String toString() {
-        return "Training[id=" + id + ", name=" + name + ", status=" + status + "]";
+        return "Training[id=%s, requestedBy=%s, ouId=%s, name=%s, cost=%s, hours=%s, purpose=%s, typeId=%s, status=%s]"
+                .formatted(id, requestedBy, ouId, name, cost, hours, purpose, typeId, status);
     }
 }

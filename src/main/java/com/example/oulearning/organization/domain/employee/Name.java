@@ -1,23 +1,18 @@
 package com.example.oulearning.organization.domain.employee;
 
 /**
- * Value object representing an employee's first/given name.
+ * Value object representing an employee's first name.
  *
- * @param value the non-blank name string
+ * @param value the first name string
  */
 public record Name(String value) {
 
     public Name {
-        if (value == null) {
-            throw new InvalidEmployeeException("Name cannot be null");
-        }
-        value = value.strip();
-        if (value.isBlank()) {
-            throw new InvalidEmployeeException("Name cannot be blank");
-        }
+        value = EmployeeGuard.requireLengthBetween(
+                value, "Name", EmployeeConstants.MIN_NAME_LENGTH, EmployeeConstants.MAX_NAME_LENGTH);
     }
 
-    public static Name of(String value) {
+    public static Name of(final String value) {
         return new Name(value);
     }
 

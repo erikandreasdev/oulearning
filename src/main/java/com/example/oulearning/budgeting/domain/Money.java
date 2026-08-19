@@ -2,112 +2,110 @@ package com.example.oulearning.budgeting.domain;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Currency;
 import java.util.Objects;
+import javax.money.CurrencyUnit;
+import javax.money.Monetary;
+import javax.money.MonetaryAmount;
 
 /**
- * Value object representing monetary value with an amount and currency.
- *
- * @param amount the numeric amount
- * @param currency the ISO currency code (e.g., "USD", "EUR")
+ * Value object representing a monetary amount strictly in EUR backed by Moneta (JSR-354).
  */
-public record Money(BigDecimal amount, String currency) {
+public final class Money {
 
-    public static final int DEFAULT_SCALE = 2;
+    private static final CurrencyUnit EUR = Monetary.getCurrency(BudgetingConstants.DEFAULT_CURRENCY);
+    private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
-    public Money {
-        if (amount == null) {
-            throw new InvalidBudgetOperationException("Amount cannot be null");
-        }
-        if (currency == null || currency.isBlank()) {
-            throw new InvalidBudgetOperationException("Currency cannot be null or blank");
-        }
+    private final MonetaryAmount monetaryAmount;
 
-        currency = currency.strip().toUpperCase();
-        try {
-            Currency.getInstance(currency);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidBudgetOperationException("Invalid currency code: " + currency);
-        }
-
-        amount = amount.setScale(DEFAULT_SCALE, RoundingMode.HALF_UP);
+    public Money(final MonetaryAmount monetaryAmount) {
+        this.monetaryAmount = BudgetingGuard.requireNonNull(monetaryAmount, "MonetaryAmount");
     }
 
-    public static Money of(BigDecimal amount, String currency) {
-        return new Money(amount, currency);
+    public static Money of(final BigDecimal amount) {
+        BudgetingGuard.requireNonNull(amount, "Money amount");
+        final var scaledAmount = amount.setScale(BudgetingConstants.MONEY_SCALE, ROUNDING_MODE);
+        return new Money(org.javamoney.moneta.Money.of(scaledAmount, EUR));
     }
 
-    public static Money of(double amount, String currency) {
-        return new Money(BigDecimal.valueOf(amount), currency);
+    public static Money of(final double amount) {
+        return of(BigDecimal.valueOf(amount));
     }
 
-    public static Money of(String amount, String currency) {
-        if (amount == null || amount.isBlank()) {
-            throw new InvalidBudgetOperationException("Amount string cannot be null or blank");
-        }
-        try {
-            return new Money(new BigDecimal(amount.strip()), currency);
-        } catch (NumberFormatException e) {
-            throw new InvalidBudgetOperationException("Invalid amount format: " + amount);
-        }
+    public static Money zero() {
+        return of(BigDecimal.ZERO);
     }
 
-    public static Money zero(String currency) {
-        return new Money(BigDecimal.ZERO, currency);
+    public BigDecimal amount() {
+        return monetaryAmount
+                .getNumber()
+                .numberValue(BigDecimal.class)
+                .setScale(BudgetingConstants.MONEY_SCALE, ROUNDING_MODE);
     }
 
-    public Money add(Money other) {
-        validateSameCurrency(other);
-        return new Money(this.amount.add(other.amount), this.currency);
+    public String currency() {
+        return BudgetingConstants.DEFAULT_CURRENCY;
     }
 
-    public Money subtract(Money other) {
-        validateSameCurrency(other);
-        return new Money(this.amount.subtract(other.amount), this.currency);
+    public MonetaryAmount monetaryAmount() {
+        return monetaryAmount;
     }
 
-    public boolean isGreaterThan(Money other) {
-        validateSameCurrency(other);
-        return this.amount.compareTo(other.amount) > 0;
+    public Money add(final Money other) {
+        BudgetingGuard.requireNonNull(other, "Money to add");
+        return new Money(monetaryAmount.add(other.monetaryAmount));
     }
 
-    public boolean isGreaterThanOrEqual(Money other) {
-        validateSameCurrency(other);
-        return this.amount.compareTo(other.amount) >= 0;
+    public Money subtract(final Money other) {
+        BudgetingGuard.requireNonNull(other, "Money to subtract");
+        return new Money(monetaryAmount.subtract(other.monetaryAmount));
     }
 
-    public boolean isLessThan(Money other) {
-        validateSameCurrency(other);
-        return this.amount.compareTo(other.amount) < 0;
+    public boolean isGreaterThan(final Money other) {
+        BudgetingGuard.requireNonNull(other, "Money to compare");
+        return monetaryAmount.isGreaterThan(other.monetaryAmount);
     }
 
-    public boolean isLessThanOrEqual(Money other) {
-        validateSameCurrency(other);
-        return this.amount.compareTo(other.amount) <= 0;
+    public boolean isGreaterThanOrEqualTo(final Money other) {
+        BudgetingGuard.requireNonNull(other, "Money to compare");
+        return monetaryAmount.isGreaterThanOrEqualTo(other.monetaryAmount);
     }
 
-    public boolean isZero() {
-        return this.amount.compareTo(BigDecimal.ZERO) == 0;
+    public boolean isLessThan(final Money other) {
+        BudgetingGuard.requireNonNull(other, "Money to compare");
+        return monetaryAmount.isLessThan(other.monetaryAmount);
     }
 
-    public boolean isPositive() {
-        return this.amount.compareTo(BigDecimal.ZERO) > 0;
+    public boolean isLessThanOrEqualTo(final Money other) {
+        BudgetingGuard.requireNonNull(other, "Money to compare");
+        return monetaryAmount.isLessThanOrEqualTo(other.monetaryAmount);
     }
 
     public boolean isNegative() {
-        return this.amount.compareTo(BigDecimal.ZERO) < 0;
+        return monetaryAmount.isNegative();
     }
 
-    private void validateSameCurrency(Money other) {
-        Objects.requireNonNull(other, "Money operand cannot be null");
-        if (!this.currency.equalsIgnoreCase(other.currency)) {
-            throw new CurrencyMismatchException(
-                    "Cannot perform monetary operation on different currencies: " + this.currency + " and " + other.currency);
-        }
+    public boolean isZero() {
+        return monetaryAmount.isZero();
+    }
+
+    public boolean isPositive() {
+        return monetaryAmount.isPositive();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Money money)) return false;
+        return amount().compareTo(money.amount()) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(amount(), currency());
     }
 
     @Override
     public String toString() {
-        return amount + " " + currency;
+        return "%s %s".formatted(amount(), currency());
     }
 }

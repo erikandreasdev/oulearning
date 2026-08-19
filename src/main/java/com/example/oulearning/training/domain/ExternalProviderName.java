@@ -1,23 +1,18 @@
 package com.example.oulearning.training.domain;
 
 /**
- * Value object representing an external training provider's company name.
+ * Value object representing an external training provider name.
  *
- * @param value the non-blank provider name
+ * @param value the non-blank provider name string
  */
 public record ExternalProviderName(String value) {
 
     public ExternalProviderName {
-        if (value == null) {
-            throw new InvalidTrainingOperationException("External provider name cannot be null");
-        }
-        value = value.strip();
-        if (value.isBlank()) {
-            throw new InvalidTrainingOperationException("External provider name cannot be blank");
-        }
+        value = TrainingGuard.requireLengthBetween(
+                value, "External provider name", TrainingConstants.MIN_NAME_LENGTH, TrainingConstants.MAX_NAME_LENGTH);
     }
 
-    public static ExternalProviderName of(String value) {
+    public static ExternalProviderName of(final String value) {
         return new ExternalProviderName(value);
     }
 

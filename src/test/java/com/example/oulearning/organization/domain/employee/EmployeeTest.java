@@ -3,39 +3,54 @@ package com.example.oulearning.organization.domain.employee;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.organization.domain.employee.exception.InvalidEmployeeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class EmployeeTest {
 
-    private final EmployeeId id = EmployeeId.of("EMP-001");
-    private final FullName fullName = FullName.of("Jane", "Doe");
-    private final Email email = Email.of("jane.doe@example.com");
+    private final EmployeeId id = EmployeeTestFactory.randomEmployeeId();
+    private final FullName fullName = EmployeeTestFactory.randomFullName();
+    private final Email email = EmployeeTestFactory.randomEmail();
 
     @Nested
     @DisplayName("Creation and Invariants")
     class CreationAndInvariants {
 
         @Test
-        @DisplayName("should create employee when valid fields provided")
-        void should_createEmployee_when_validFields() {
-            Employee employee = Employee.of(id, fullName, email);
+        @DisplayName("given valid fields, when creating Employee, then employee is created successfully")
+        void givenValidFields_whenCreatingEmployee_thenEmployeeIsCreatedSuccessfully() {
+            // given
 
+            // when
+            final var employee = Employee.of(id, fullName, email);
+
+            // then
             assertThat(employee.id()).isEqualTo(id);
             assertThat(employee.fullName()).isEqualTo(fullName);
             assertThat(employee.email()).isEqualTo(email);
+            assertThat(employee.toString())
+                    .isEqualTo("Employee[id=%s, fullName=%s, email=%s]".formatted(id, fullName, email));
         }
 
         @Test
-        @DisplayName("should throw exception when creating employee with null parameters")
-        void should_throwException_when_nullParams() {
+        @DisplayName("given null parameters, when creating Employee, then throw InvalidEmployeeException")
+        void givenNullParameters_whenCreatingEmployee_thenThrowInvalidEmployeeException() {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> Employee.of(null, fullName, email))
-                    .isInstanceOf(NullPointerException.class);
+                    .isInstanceOf(InvalidEmployeeException.class)
+                    .hasMessageContaining("cannot be null");
             assertThatThrownBy(() -> Employee.of(id, null, email))
-                    .isInstanceOf(NullPointerException.class);
+                    .isInstanceOf(InvalidEmployeeException.class)
+                    .hasMessageContaining("cannot be null");
             assertThatThrownBy(() -> Employee.of(id, fullName, null))
-                    .isInstanceOf(NullPointerException.class);
+                    .isInstanceOf(InvalidEmployeeException.class)
+                    .hasMessageContaining("cannot be null");
         }
     }
 
@@ -44,21 +59,31 @@ class EmployeeTest {
     class IdentityAndEquality {
 
         @Test
-        @DisplayName("should be equal when ids match regardless of other fields")
-        void should_beEqual_when_idsMatch() {
-            Employee employee1 = Employee.of(id, fullName, email);
-            Employee employee2 = Employee.of(id, FullName.of("Other", "Name"), Email.of("other@example.com"));
+        @DisplayName("given employees with same id, when comparing, then they are equal")
+        void givenEmployeesWithSameId_whenComparing_thenTheyAreEqual() {
+            // given
+            final var employee1 = Employee.of(id, fullName, email);
+            final var employee2 = Employee.of(
+                    id, EmployeeTestFactory.randomFullName(), EmployeeTestFactory.randomEmail());
 
+            // when
+
+            // then
             assertThat(employee1).isEqualTo(employee2);
             assertThat(employee1.hashCode()).isEqualTo(employee2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when ids differ")
-        void should_notBeEqual_when_idsDiffer() {
-            Employee employee1 = Employee.of(id, fullName, email);
-            Employee employee2 = Employee.of(EmployeeId.of("EMP-002"), fullName, email);
+        @DisplayName("given employees with different ids, when comparing, then they are not equal")
+        void givenEmployeesWithDifferentIds_whenComparing_thenTheyAreNotEqual() {
+            // given
+            final var employee1 = Employee.of(id, fullName, email);
+            final var employee2 = Employee.of(
+                    EmployeeTestFactory.randomEmployeeId(), fullName, email);
 
+            // when
+
+            // then
             assertThat(employee1).isNotEqualTo(employee2);
         }
     }

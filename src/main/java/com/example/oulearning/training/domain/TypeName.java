@@ -3,21 +3,16 @@ package com.example.oulearning.training.domain;
 /**
  * Value object representing a training type name.
  *
- * @param value the non-blank type name string
+ * @param value the non-blank name string
  */
 public record TypeName(String value) {
 
     public TypeName {
-        if (value == null) {
-            throw new InvalidTrainingOperationException("TypeName cannot be null");
-        }
-        value = value.strip();
-        if (value.isBlank()) {
-            throw new InvalidTrainingOperationException("TypeName cannot be blank");
-        }
+        value = TrainingGuard.requireLengthBetween(
+                value, "TypeName", TrainingConstants.MIN_NAME_LENGTH, TrainingConstants.MAX_NAME_LENGTH);
     }
 
-    public static TypeName of(String value) {
+    public static TypeName of(final String value) {
         return new TypeName(value);
     }
 

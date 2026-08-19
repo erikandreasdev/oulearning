@@ -1,23 +1,18 @@
 package com.example.oulearning.organization.domain.employee;
 
 /**
- * Value object representing an employee's surname / last name.
+ * Value object representing an employee's surname.
  *
- * @param value the non-blank surname string
+ * @param value the surname string
  */
 public record Surname(String value) {
 
     public Surname {
-        if (value == null) {
-            throw new InvalidEmployeeException("Surname cannot be null");
-        }
-        value = value.strip();
-        if (value.isBlank()) {
-            throw new InvalidEmployeeException("Surname cannot be blank");
-        }
+        value = EmployeeGuard.requireLengthBetween(
+                value, "Surname", EmployeeConstants.MIN_SURNAME_LENGTH, EmployeeConstants.MAX_SURNAME_LENGTH);
     }
 
-    public static Surname of(String value) {
+    public static Surname of(final String value) {
         return new Surname(value);
     }
 

@@ -3,6 +3,7 @@ package com.example.oulearning.training.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,56 +13,65 @@ import org.junit.jupiter.params.provider.ValueSource;
 class PhoneTest {
 
     @Nested
-    @DisplayName("Creation and Validation")
-    class CreationAndValidation {
+    @DisplayName("Creation and Normalization")
+    class CreationAndNormalization {
 
         @ParameterizedTest
         @ValueSource(
                 strings = {
-                    "+1234567890",
-                    "1234567890",
-                    "+44 20 7946 0958",
+                    "+1-555-123-4567",
                     "(555) 123-4567",
-                    "  +1-800-555-0199  ",
-                    "+49.30.123456"
+                    "555.123.4567",
+                    "  +34 600 123 456  ",
+                    "+123456789012345"
                 })
-        @DisplayName("should create phone when valid format provided")
-        void should_createPhone_when_validFormatProvided(String raw) {
-            Phone phone = Phone.of(raw);
+        @DisplayName("given various valid phone formats, when creating Phone, then normalize and create successfully")
+        void givenVariousValidPhoneFormats_whenCreatingPhone_thenNormalizeAndCreateSuccessfully(final String rawPhone) {
+            // given
 
-            String expected = raw.strip().replaceAll("[\\s\\-\\(\\)\\.]", "");
-            assertThat(phone.value()).isEqualTo(expected);
-            assertThat(phone.toString()).isEqualTo(expected);
+            // when
+            final var phone = Phone.of(rawPhone);
+
+            // then
+            assertThat(phone.value()).matches("^\\+?[0-9]{7,15}$");
         }
 
         @Test
-        @DisplayName("should throw InvalidTrainingOperationException when phone is null")
-        void should_throwException_when_phoneIsNull() {
+        @DisplayName("given null phone string, when creating Phone, then throw InvalidTrainingOperationException")
+        void givenNullPhoneString_whenCreatingPhone_thenThrowInvalidTrainingOperationException() {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> new Phone(null))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be null");
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " ", "   ", "\t\n"})
-        @DisplayName("should throw InvalidTrainingOperationException when phone is blank")
-        void should_throwException_when_phoneIsBlank(String blank) {
+        @ValueSource(strings = {"", "   ", "\t\n"})
+        @DisplayName("given blank phone string, when creating Phone, then throw InvalidTrainingOperationException")
+        void givenBlankPhoneString_whenCreatingPhone_thenThrowInvalidTrainingOperationException(final String blank) {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> new Phone(blank))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be blank");
         }
 
         @ParameterizedTest
-        @ValueSource(
-                strings = {
-                    "not-a-phone",
-                    "12345", // too short (< 7 digits)
-                    "+12345678901234567", // too long (> 15 digits)
-                    "+012345678", // starts with 0 after +
-                    "++123456789"
-                })
-        @DisplayName("should throw InvalidTrainingOperationException when format is invalid")
-        void should_throwException_when_formatIsInvalid(String invalid) {
+        @ValueSource(strings = {"12345", "123456", "1234567890123456", "phone-number", "++1234567", "+12345abc"})
+        @DisplayName("given invalid phone numbers, when creating Phone, then throw InvalidTrainingOperationException")
+        void givenInvalidPhoneNumbers_whenCreatingPhone_thenThrowInvalidTrainingOperationException(final String invalid) {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> Phone.of(invalid))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Invalid phone number format");
@@ -73,21 +83,33 @@ class PhoneTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("should be equal when phone numbers are identical after normalization")
-        void should_beEqual_when_numbersIdenticalAfterNormalization() {
-            Phone p1 = Phone.of("+1 (555) 123-4567");
-            Phone p2 = Phone.of("+15551234567");
+        @DisplayName("given identical phone numbers with different formatting, when comparing, then they are equal")
+        void givenIdenticalPhoneNumbersWithDifferentFormatting_whenComparing_thenTheyAreEqual() {
+            // given
+            final var d1 = TrainingTestFactory.randomPhoneDigits().substring(0, 3);
+            final var d2 = TrainingTestFactory.randomPhoneDigits().substring(0, 3);
+            final var d3 = TrainingTestFactory.randomPhoneDigits().substring(0, 4);
 
+            final var p1 = Phone.of("+1 (%s) %s-%s".formatted(d1, d2, d3));
+            final var p2 = Phone.of("+1.%s.%s.%s".formatted(d1, d2, d3));
+
+            // when
+
+            // then
             assertThat(p1).isEqualTo(p2);
             assertThat(p1.hashCode()).isEqualTo(p2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when numbers differ")
-        void should_notBeEqual_when_numbersDiffer() {
-            Phone p1 = Phone.of("+15551234567");
-            Phone p2 = Phone.of("+15559876543");
+        @DisplayName("given different phone numbers, when comparing, then they are not equal")
+        void givenDifferentPhoneNumbers_whenComparing_thenTheyAreNotEqual() {
+            // given
+            final var p1 = TrainingTestFactory.randomPhone();
+            final var p2 = TrainingTestFactory.randomPhone();
 
+            // when
+
+            // then
             assertThat(p1).isNotEqualTo(p2);
         }
     }

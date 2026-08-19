@@ -3,6 +3,7 @@ package com.example.oulearning.budgeting.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.budgeting.domain.exception.InvalidBudgetOperationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,22 +17,31 @@ class FiscalYearTest {
     class CreationAndValidation {
 
         @ParameterizedTest
-        @ValueSource(ints = {1900, 2026, 2099, 3000})
-        @DisplayName("should create FiscalYear when valid year provided")
-        void should_createFiscalYear_when_validYearProvided(int year) {
-            FiscalYear fiscalYear = FiscalYear.of(year);
+        @ValueSource(ints = {1900, 2024, 2026, 3000})
+        @DisplayName("given valid year within bounds, when creating FiscalYear, then create successfully")
+        void givenValidYearWithinBounds_whenCreatingFiscalYear_thenCreateSuccessfully(final int year) {
+            // given
 
+            // when
+            final var fiscalYear = FiscalYear.of(year);
+
+            // then
             assertThat(fiscalYear.value()).isEqualTo(year);
             assertThat(fiscalYear.toString()).isEqualTo(String.valueOf(year));
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {-1, 0, 1899, 3001, 9999})
-        @DisplayName("should throw InvalidBudgetOperationException when year is out of range")
-        void should_throwException_when_yearOutOfRange(int invalidYear) {
+        @ValueSource(ints = {1899, 0, -2024, 3001})
+        @DisplayName("given year out of bounds, when creating FiscalYear, then throw InvalidBudgetOperationException")
+        void givenYearOutOfBounds_whenCreatingFiscalYear_thenThrowInvalidBudgetOperationException(final int invalidYear) {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> FiscalYear.of(invalidYear))
                     .isInstanceOf(InvalidBudgetOperationException.class)
-                    .hasMessageContaining("Fiscal year must be between 1900 and 3000");
+                    .hasMessageContaining("Fiscal year must be between");
         }
     }
 
@@ -40,22 +50,32 @@ class FiscalYearTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("should be equal when years match")
-        void should_beEqual_when_yearsMatch() {
-            FiscalYear year1 = FiscalYear.of(2026);
-            FiscalYear year2 = FiscalYear.of(2026);
+        @DisplayName("given identical years, when comparing FiscalYear, then they are equal")
+        void givenIdenticalYears_whenComparingFiscalYear_thenTheyAreEqual() {
+            // given
+            final var y = BudgetingTestFactory.randomFiscalYearValue();
+            final var y1 = FiscalYear.of(y);
+            final var y2 = FiscalYear.of(y);
 
-            assertThat(year1).isEqualTo(year2);
-            assertThat(year1.hashCode()).isEqualTo(year2.hashCode());
+            // when
+
+            // then
+            assertThat(y1).isEqualTo(y2);
+            assertThat(y1.hashCode()).isEqualTo(y2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when years differ")
-        void should_notBeEqual_when_yearsDiffer() {
-            FiscalYear year1 = FiscalYear.of(2026);
-            FiscalYear year2 = FiscalYear.of(2027);
+        @DisplayName("given different years, when comparing FiscalYear, then they are not equal")
+        void givenDifferentYears_whenComparingFiscalYear_thenTheyAreNotEqual() {
+            // given
+            final var y = BudgetingTestFactory.randomFiscalYearValue();
+            final var y1 = FiscalYear.of(y);
+            final var y2 = FiscalYear.of(y + 1);
 
-            assertThat(year1).isNotEqualTo(year2);
+            // when
+
+            // then
+            assertThat(y1).isNotEqualTo(y2);
         }
     }
 }

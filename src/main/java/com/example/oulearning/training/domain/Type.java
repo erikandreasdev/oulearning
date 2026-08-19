@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Domain object representing a training Type.
+ * Domain object representing a training type category.
  */
 public final class Type {
 
@@ -12,17 +12,17 @@ public final class Type {
     private final TypeName name;
     private final TypeId parentTypeId;
 
-    public Type(TypeId id, TypeName name, TypeId parentTypeId) {
-        this.id = Objects.requireNonNull(id, "TypeId cannot be null");
-        this.name = Objects.requireNonNull(name, "TypeName cannot be null");
+    public Type(final TypeId id, final TypeName name, final TypeId parentTypeId) {
+        this.id = TrainingGuard.requireNonNull(id, "TypeId");
+        this.name = TrainingGuard.requireNonNull(name, "Name");
         this.parentTypeId = parentTypeId;
     }
 
-    public static Type of(TypeId id, TypeName name, TypeId parentTypeId) {
+    public static Type of(final TypeId id, final TypeName name, final TypeId parentTypeId) {
         return new Type(id, name, parentTypeId);
     }
 
-    public static Type of(TypeId id, TypeName name) {
+    public static Type of(final TypeId id, final TypeName name) {
         return new Type(id, name, null);
     }
 
@@ -39,7 +39,7 @@ public final class Type {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof Type type)) return false;
         return Objects.equals(id, type.id);
@@ -52,6 +52,6 @@ public final class Type {
 
     @Override
     public String toString() {
-        return "Type[id=" + id + ", name=" + name + ", parentTypeId=" + parentTypeId + "]";
+        return "Type[id=%s, name=%s, parentTypeId=%s]".formatted(id, name, parentTypeId);
     }
 }

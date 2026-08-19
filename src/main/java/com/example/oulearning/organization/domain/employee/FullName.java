@@ -1,32 +1,42 @@
 package com.example.oulearning.organization.domain.employee;
 
+import com.example.oulearning.organization.domain.employee.exception.InvalidEmployeeException;
+
 /**
- * Value object representing an employee's full name composed of {@link Name} and {@link Surname}.
+ * Value object representing an employee's full name.
  *
- * @param name the first/given name
- * @param surname the last name / surname
+ * @param name the employee's first name
+ * @param surname the employee's surname
  */
 public record FullName(Name name, Surname surname) {
 
     public FullName {
         if (name == null) {
-            throw new InvalidEmployeeException("Name cannot be null");
+            throw InvalidEmployeeException.nullField("First name");
         }
         if (surname == null) {
-            throw new InvalidEmployeeException("Surname cannot be null");
+            throw InvalidEmployeeException.nullField("Surname");
+        }
+        final var formattedName = "%s %s".formatted(name.value(), surname.value());
+        if (formattedName.isBlank()) {
+            throw InvalidEmployeeException.blankField("Full name");
+        }
+        if (formattedName.length() > EmployeeConstants.MAX_FULL_NAME_LENGTH) {
+            throw InvalidEmployeeException.lengthExceedsMax(
+                    "Full name", EmployeeConstants.MAX_FULL_NAME_LENGTH, formattedName);
         }
     }
 
-    public static FullName of(Name name, Surname surname) {
+    public static FullName of(final Name name, final Surname surname) {
         return new FullName(name, surname);
     }
 
-    public static FullName of(String name, String surname) {
-        return new FullName(new Name(name), new Surname(surname));
+    public static FullName of(final String name, final String surname) {
+        return new FullName(Name.of(name), Surname.of(surname));
     }
 
     public String formatted() {
-        return name.value() + " " + surname.value();
+        return "%s %s".formatted(name.value(), surname.value());
     }
 
     @Override

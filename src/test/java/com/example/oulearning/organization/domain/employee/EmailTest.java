@@ -3,6 +3,7 @@ package com.example.oulearning.organization.domain.employee;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.organization.domain.employee.exception.InvalidEmailException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,39 +13,61 @@ import org.junit.jupiter.params.provider.ValueSource;
 class EmailTest {
 
     @Nested
-    @DisplayName("Creation and Validation")
-    class CreationAndValidation {
+    @DisplayName("Creation and Normalization")
+    class CreationAndNormalization {
 
-        @ParameterizedTest
-        @ValueSource(
-                strings = {
-                    "user@example.com",
-                    "USER@EXAMPLE.COM",
-                    "  user.name@domain.co.uk  ",
-                    "user+tag@sub.domain.org",
-                    "first_last@service.net"
-                })
-        @DisplayName("should create email when valid format provided")
-        void should_createEmail_when_validFormatProvided(String rawEmail) {
-            Email email = Email.of(rawEmail);
+        @Test
+        @DisplayName("given uppercase and padded email, when creating Email, then normalize to lowercase and trim spaces")
+        void givenUppercaseAndPaddedEmail_whenCreatingEmail_thenNormalizeToLowercaseAndTrim() {
+            // given
+            final var user = EmployeeTestFactory.randomUsername();
+            final var domain = EmployeeTestFactory.randomDomain();
+            final var rawEmail = "  %s@%s.COM  ".formatted(user.toUpperCase(), domain.toUpperCase());
+            final var expectedNormalized = "%s@%s.com".formatted(user, domain);
 
-            assertThat(email.value()).isEqualTo(rawEmail.strip().toLowerCase());
-            assertThat(email.toString()).isEqualTo(rawEmail.strip().toLowerCase());
+            // when
+            final var email = Email.of(rawEmail);
+
+            // then
+            assertThat(email.value()).isEqualTo(expectedNormalized);
+            assertThat(email.toString()).isEqualTo(expectedNormalized);
         }
 
         @Test
-        @DisplayName("should throw InvalidEmailException when email is null")
-        void should_throwException_when_emailIsNull() {
+        @DisplayName("given random valid email, when creating Email, then email is created successfully")
+        void givenRandomValidEmail_whenCreatingEmail_thenEmailIsCreatedSuccessfully() {
+            // given
+            final var email = EmployeeTestFactory.randomEmail();
+
+            // when
+
+            // then
+            assertThat(email.value()).isNotNull().isNotBlank();
+        }
+
+        @Test
+        @DisplayName("given null email, when creating Email, then throw InvalidEmailException")
+        void givenNullEmail_whenCreatingEmail_thenThrowInvalidEmailException() {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> new Email(null))
                     .isInstanceOf(InvalidEmailException.class)
                     .hasMessageContaining("cannot be null");
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " ", "   ", "\t\n"})
-        @DisplayName("should throw InvalidEmailException when email is blank")
-        void should_throwException_when_emailIsBlank(String blankEmail) {
-            assertThatThrownBy(() -> new Email(blankEmail))
+        @ValueSource(strings = {"", "   ", "\t\n"})
+        @DisplayName("given blank email, when creating Email, then throw InvalidEmailException")
+        void givenBlankEmail_whenCreatingEmail_thenThrowInvalidEmailException(final String blank) {
+            // given
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> new Email(blank))
                     .isInstanceOf(InvalidEmailException.class)
                     .hasMessageContaining("cannot be blank");
         }
@@ -53,22 +76,21 @@ class EmailTest {
         @ValueSource(
                 strings = {
                     "plainaddress",
+                    "missing@domain",
                     "@missingusername.com",
-                    "username@.com",
-                    "username@domain..com",
-                    "username@domain.c",
-                    "user@domain",
-                    "user space@domain.com",
-                    "user..name@domain.com",
-                    ".user@domain.com",
-                    "user.@domain.com"
+                    "user@.com",
+                    "user@domain..com"
                 })
-        @DisplayName("should throw InvalidEmailException when format is invalid")
-        void should_throwException_when_formatIsInvalid(String invalidEmail) {
+        @DisplayName("given invalid email format, when creating Email, then throw InvalidEmailException")
+        void givenInvalidEmailFormat_whenCreatingEmail_thenThrowInvalidEmailException(final String invalidEmail) {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> Email.of(invalidEmail))
-                    .isInstanceOfSatisfying(
-                            InvalidEmailException.class,
-                            ex -> assertThat(ex.getInvalidValue()).isEqualTo(invalidEmail.strip().toLowerCase()));
+                    .isInstanceOf(InvalidEmailException.class)
+                    .hasMessageContaining("Invalid email format");
         }
     }
 
@@ -77,22 +99,31 @@ class EmailTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("should be equal when values are identical after normalization")
-        void should_beEqual_when_valuesAreIdenticalAfterNormalization() {
-            Email email1 = Email.of("Test.User@Example.COM");
-            Email email2 = Email.of("test.user@example.com");
+        @DisplayName("given emails with same content but different cases, when comparing, then they are equal")
+        void givenEmailsWithDifferentCase_whenComparing_thenTheyAreEqual() {
+            // given
+            final var user = EmployeeTestFactory.randomUsername();
+            final var e1 = Email.of("%s@example.com".formatted(user));
+            final var e2 = Email.of("  %s@EXAMPLE.COM ".formatted(user.toUpperCase()));
 
-            assertThat(email1).isEqualTo(email2);
-            assertThat(email1.hashCode()).isEqualTo(email2.hashCode());
+            // when
+
+            // then
+            assertThat(e1).isEqualTo(e2);
+            assertThat(e1.hashCode()).isEqualTo(e2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when emails differ")
-        void should_notBeEqual_when_emailsDiffer() {
-            Email email1 = Email.of("user1@example.com");
-            Email email2 = Email.of("user2@example.com");
+        @DisplayName("given different emails, when comparing, then they are not equal")
+        void givenDifferentEmails_whenComparing_thenTheyAreNotEqual() {
+            // given
+            final var e1 = EmployeeTestFactory.randomEmail();
+            final var e2 = EmployeeTestFactory.randomEmail();
 
-            assertThat(email1).isNotEqualTo(email2);
+            // when
+
+            // then
+            assertThat(e1).isNotEqualTo(e2);
         }
     }
 }

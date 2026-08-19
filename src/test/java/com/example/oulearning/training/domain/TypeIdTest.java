@@ -3,7 +3,7 @@ package com.example.oulearning.training.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.UUID;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,37 +15,61 @@ class TypeIdTest {
     class CreationAndValidation {
 
         @Test
-        @DisplayName("should create TypeId when valid UUID provided")
-        void should_createTypeId_when_validUuidProvided() {
-            UUID uuid = UUID.randomUUID();
-            TypeId id = TypeId.of(uuid);
+        @DisplayName("given valid UUID, when creating TypeId, then create successfully")
+        void givenValidUuid_whenCreatingTypeId_thenCreateSuccessfully() {
+            // given
+            final var uuid = TrainingTestFactory.randomUuid();
 
+            // when
+            final var id = TypeId.of(uuid);
+
+            // then
             assertThat(id.value()).isEqualTo(uuid);
             assertThat(id.toString()).isEqualTo(uuid.toString());
         }
 
         @Test
-        @DisplayName("should create TypeId from valid string")
-        void should_createTypeId_fromValidString() {
-            UUID uuid = UUID.randomUUID();
-            TypeId id = TypeId.fromString(uuid.toString());
+        @DisplayName("given valid UUID string, when parsing TypeId, then parse successfully")
+        void givenValidUuidString_whenParsingTypeId_thenParseSuccessfully() {
+            // given
+            final var uuid = TrainingTestFactory.randomUuid();
 
+            // when
+            final var id = TypeId.fromString(" %s ".formatted(uuid));
+
+            // then
             assertThat(id.value()).isEqualTo(uuid);
         }
 
         @Test
-        @DisplayName("should throw InvalidTrainingOperationException when UUID is null")
-        void should_throwException_when_uuidIsNull() {
+        @DisplayName("given null UUID, when creating TypeId, then throw exception")
+        void givenNullUuid_whenCreatingTypeId_thenThrowException() {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> new TypeId(null))
-                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .isInstanceOf(RuntimeException.class)
                     .hasMessageContaining("cannot be null");
         }
 
         @Test
-        @DisplayName("should throw InvalidTrainingOperationException when string format invalid")
-        void should_throwException_when_stringFormatInvalid() {
-            assertThatThrownBy(() -> TypeId.fromString("not-uuid"))
-                    .isInstanceOf(InvalidTrainingOperationException.class);
+        @DisplayName("given invalid UUID string, when parsing TypeId, then throw exception")
+        void givenInvalidUuidString_whenParsingTypeId_thenThrowException() {
+            // given
+            final var invalidUuid = Instancio.create(String.class);
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> TypeId.fromString(invalidUuid))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("Invalid UUID format");
+
+            assertThatThrownBy(() -> TypeId.fromString(""))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("cannot be null or blank");
         }
     }
 
@@ -54,22 +78,30 @@ class TypeIdTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("should be equal when UUIDs match")
-        void should_beEqual_when_uuidsMatch() {
-            UUID uuid = UUID.randomUUID();
-            TypeId id1 = TypeId.of(uuid);
-            TypeId id2 = TypeId.of(uuid);
+        @DisplayName("given identical UUIDs, when comparing TypeIds, then they are equal")
+        void givenIdenticalUuids_whenComparingTypeIds_thenTheyAreEqual() {
+            // given
+            final var uuid = TrainingTestFactory.randomUuid();
+            final var id1 = TypeId.of(uuid);
+            final var id2 = TypeId.of(uuid);
 
+            // when
+
+            // then
             assertThat(id1).isEqualTo(id2);
             assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when UUIDs differ")
-        void should_notBeEqual_when_uuidsDiffer() {
-            TypeId id1 = TypeId.of(UUID.randomUUID());
-            TypeId id2 = TypeId.of(UUID.randomUUID());
+        @DisplayName("given different UUIDs, when comparing TypeIds, then they are not equal")
+        void givenDifferentUuids_whenComparingTypeIds_thenTheyAreNotEqual() {
+            // given
+            final var id1 = TrainingTestFactory.randomTypeId();
+            final var id2 = TrainingTestFactory.randomTypeId();
 
+            // when
+
+            // then
             assertThat(id1).isNotEqualTo(id2);
         }
     }

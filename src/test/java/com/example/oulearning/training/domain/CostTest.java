@@ -3,7 +3,9 @@ package com.example.oulearning.training.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,53 +19,102 @@ class CostTest {
     class CreationAndValidation {
 
         @Test
-        @DisplayName("should create Cost from BigDecimal and currency")
-        void should_createCost_fromBigDecimal() {
-            Cost cost = Cost.of(new BigDecimal("1500.5"), "EUR");
+        @DisplayName("given BigDecimal and currency, when creating Cost, then cost is created successfully")
+        void givenBigDecimalAndCurrency_whenCreatingCost_thenCostIsCreatedSuccessfully() {
+            // given
+            final var rawAmount = TrainingTestFactory.randomBigDecimalCostAmount().add(BigDecimal.ONE);
 
-            assertThat(cost.amount()).isEqualTo(new BigDecimal("1500.50"));
+            // when
+            final var cost = Cost.of(rawAmount, "EUR");
+
+            // then
+            final var expectedAmount = rawAmount.setScale(2, RoundingMode.HALF_EVEN);
+            assertThat(cost.amount()).isEqualTo(expectedAmount);
             assertThat(cost.currency()).isEqualTo("EUR");
-            assertThat(cost.toString()).isEqualTo("1500.50 EUR");
+            assertThat(cost.toString()).isEqualTo("%s EUR".formatted(expectedAmount));
         }
 
         @Test
-        @DisplayName("should create Cost from double and currency")
-        void should_createCost_fromDouble() {
-            Cost cost = Cost.of(200.0, "usd");
+        @DisplayName("given double and currency, when creating Cost, then cost is created successfully")
+        void givenDoubleAndCurrency_whenCreatingCost_thenCostIsCreatedSuccessfully() {
+            // given
+            final var rawAmount = TrainingTestFactory.randomDoubleCostAmount();
 
-            assertThat(cost.amount()).isEqualTo(new BigDecimal("200.00"));
+            // when
+            final var cost = Cost.of(rawAmount, "usd");
+
+            // then
+            final var expectedAmount = BigDecimal.valueOf(rawAmount).setScale(2, RoundingMode.HALF_EVEN);
+            assertThat(cost.amount()).isEqualTo(expectedAmount);
             assertThat(cost.currency()).isEqualTo("USD");
         }
 
         @Test
-        @DisplayName("should create zero Cost")
-        void should_createZeroCost() {
-            Cost cost = Cost.zero("EUR");
+        @DisplayName("given double without currency, when creating Cost, then default to EUR")
+        void givenDoubleWithoutCurrency_whenCreatingCost_thenDefaultToEur() {
+            // given
+            final var rawAmount = TrainingTestFactory.randomDoubleCostAmount();
 
-            assertThat(cost.amount()).isEqualTo(new BigDecimal("0.00"));
+            // when
+            final var cost = Cost.of(rawAmount);
+
+            // then
+            final var expectedAmount = BigDecimal.valueOf(rawAmount).setScale(2, RoundingMode.HALF_EVEN);
+            assertThat(cost.amount()).isEqualTo(expectedAmount);
+            assertThat(cost.currency()).isEqualTo("EUR");
         }
 
         @Test
-        @DisplayName("should throw InvalidTrainingOperationException when amount is null")
-        void should_throwException_when_amountIsNull() {
+        @DisplayName("given zero factory, when creating zero Cost, then amount is zero")
+        void givenZeroFactory_whenCreatingZeroCost_thenAmountIsZero() {
+            // given
+
+            // when
+            final var cost = Cost.zero();
+
+            // then
+            assertThat(cost.amount()).isEqualTo(new BigDecimal("0.00"));
+            assertThat(cost.currency()).isEqualTo("EUR");
+        }
+
+        @Test
+        @DisplayName("given null amount, when creating Cost, then throw InvalidTrainingOperationException")
+        void givenNullAmount_whenCreatingCost_thenThrowInvalidTrainingOperationException() {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> new Cost(null, "EUR"))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("amount cannot be null");
         }
 
         @Test
-        @DisplayName("should throw InvalidTrainingOperationException when amount is negative")
-        void should_throwException_when_amountIsNegative() {
-            assertThatThrownBy(() -> Cost.of(-10.0, "EUR"))
+        @DisplayName("given negative amount, when creating Cost, then throw InvalidTrainingOperationException")
+        void givenNegativeAmount_whenCreatingCost_thenThrowInvalidTrainingOperationException() {
+            // given
+            final var neg = -TrainingTestFactory.randomDoubleCostAmount();
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> Cost.of(neg, "EUR"))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be negative");
         }
 
         @ParameterizedTest
         @ValueSource(strings = {"", " ", "XYZ123"})
-        @DisplayName("should throw InvalidTrainingOperationException when currency is invalid")
-        void should_throwException_when_currencyIsInvalid(String invalidCurrency) {
-            assertThatThrownBy(() -> Cost.of(100.0, invalidCurrency))
+        @DisplayName("given invalid currency, when creating Cost, then throw InvalidTrainingOperationException")
+        void givenInvalidCurrency_whenCreatingCost_thenThrowInvalidTrainingOperationException(final String invalidCurrency) {
+            // given
+            final var amount = TrainingTestFactory.randomDoubleCostAmount();
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> Cost.of(amount, invalidCurrency))
                     .isInstanceOf(InvalidTrainingOperationException.class);
         }
     }
@@ -73,22 +124,31 @@ class CostTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("should be equal when amount and currency match")
-        void should_beEqual_when_amountAndCurrencyMatch() {
-            Cost c1 = Cost.of(500.0, "EUR");
-            Cost c2 = Cost.of(new BigDecimal("500.00"), "eur");
+        @DisplayName("given identical amounts and currencies, when comparing Cost, then they are equal")
+        void givenIdenticalAmountsAndCurrencies_whenComparingCost_thenTheyAreEqual() {
+            // given
+            final var amount = TrainingTestFactory.randomDoubleCostAmount();
+            final var c1 = Cost.of(amount, "EUR");
+            final var c2 = Cost.of(BigDecimal.valueOf(amount), "eur");
 
+            // when
+
+            // then
             assertThat(c1).isEqualTo(c2);
             assertThat(c1.hashCode()).isEqualTo(c2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when amounts or currencies differ")
-        void should_notBeEqual_when_amountsOrCurrenciesDiffer() {
-            Cost c1 = Cost.of(500.0, "EUR");
-            Cost c2 = Cost.of(500.0, "USD");
-            Cost c3 = Cost.of(600.0, "EUR");
+        @DisplayName("given different amounts or currencies, when comparing Cost, then they are not equal")
+        void givenDifferentAmountsOrCurrencies_whenComparingCost_thenTheyAreNotEqual() {
+            // given
+            final var c1 = TrainingTestFactory.randomCost();
+            final var c2 = Cost.of(c1.amount(), "USD");
+            final var c3 = Cost.of(c1.amount().add(BigDecimal.TEN), c1.currency());
 
+            // when
+
+            // then
             assertThat(c1).isNotEqualTo(c2);
             assertThat(c1).isNotEqualTo(c3);
         }

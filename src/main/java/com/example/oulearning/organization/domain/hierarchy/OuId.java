@@ -10,24 +10,15 @@ import java.util.UUID;
 public record OuId(UUID value) {
 
     public OuId {
-        if (value == null) {
-            throw new InvalidOuException("Ou id cannot be null");
-        }
+        HierarchyGuard.requireNonNull(value, "Ou id");
     }
 
-    public static OuId of(UUID value) {
+    public static OuId of(final UUID value) {
         return new OuId(value);
     }
 
-    public static OuId fromString(String value) {
-        if (value == null || value.isBlank()) {
-            throw new InvalidOuException("Ou id string cannot be null or blank");
-        }
-        try {
-            return new OuId(UUID.fromString(value.strip()));
-        } catch (IllegalArgumentException e) {
-            throw new InvalidOuException("Invalid UUID format: " + value);
-        }
+    public static OuId fromString(final String value) {
+        return new OuId(HierarchyGuard.requireValidUuid(value, "Ou id"));
     }
 
     @Override

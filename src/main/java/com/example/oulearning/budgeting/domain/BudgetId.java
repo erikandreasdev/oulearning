@@ -10,24 +10,15 @@ import java.util.UUID;
 public record BudgetId(UUID value) {
 
     public BudgetId {
-        if (value == null) {
-            throw new InvalidBudgetOperationException("Budget id cannot be null");
-        }
+        BudgetingGuard.requireNonNull(value, "Budget id");
     }
 
-    public static BudgetId of(UUID value) {
+    public static BudgetId of(final UUID value) {
         return new BudgetId(value);
     }
 
-    public static BudgetId fromString(String value) {
-        if (value == null || value.isBlank()) {
-            throw new InvalidBudgetOperationException("Budget id string cannot be null or blank");
-        }
-        try {
-            return new BudgetId(UUID.fromString(value.strip()));
-        } catch (IllegalArgumentException e) {
-            throw new InvalidBudgetOperationException("Invalid UUID format: " + value);
-        }
+    public static BudgetId fromString(final String value) {
+        return new BudgetId(BudgetingGuard.requireValidUuid(value, "Budget id"));
     }
 
     @Override

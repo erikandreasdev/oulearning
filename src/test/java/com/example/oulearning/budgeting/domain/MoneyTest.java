@@ -3,12 +3,12 @@ package com.example.oulearning.budgeting.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.budgeting.domain.exception.InvalidBudgetOperationException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class MoneyTest {
 
@@ -17,56 +17,61 @@ class MoneyTest {
     class CreationAndValidation {
 
         @Test
-        @DisplayName("should create Money from BigDecimal and currency")
-        void should_createMoney_fromBigDecimal() {
-            Money money = Money.of(new BigDecimal("100.5"), "EUR");
+        @DisplayName("given BigDecimal amount, when creating Money, then money has scaled amount and EUR currency")
+        void givenBigDecimalAmount_whenCreatingMoney_thenMoneyHasScaledAmountAndEurCurrency() {
+            // given
+            final var rawAmount = BudgetingTestFactory.randomBigDecimalAmount();
 
-            assertThat(money.amount()).isEqualTo(new BigDecimal("100.50"));
+            // when
+            final var money = Money.of(rawAmount);
+
+            // then
+            final var expectedAmount = rawAmount.setScale(2, RoundingMode.HALF_EVEN);
+            assertThat(money.amount()).isEqualTo(expectedAmount);
             assertThat(money.currency()).isEqualTo("EUR");
-            assertThat(money.toString()).isEqualTo("100.50 EUR");
+            assertThat(money.toString()).isEqualTo("%s EUR".formatted(expectedAmount));
         }
 
         @Test
-        @DisplayName("should create Money from double and currency")
-        void should_createMoney_fromDouble() {
-            Money money = Money.of(250.0, "usd");
+        @DisplayName("given double amount, when creating Money, then money has correct amount and EUR currency")
+        void givenDoubleAmount_whenCreatingMoney_thenMoneyHasCorrectAmountAndEurCurrency() {
+            // given
+            final var rawAmount = BudgetingTestFactory.randomDoubleAmount();
 
-            assertThat(money.amount()).isEqualTo(new BigDecimal("250.00"));
-            assertThat(money.currency()).isEqualTo("USD");
+            // when
+            final var money = Money.of(rawAmount);
+
+            // then
+            final var expectedAmount = BigDecimal.valueOf(rawAmount).setScale(2, RoundingMode.HALF_EVEN);
+            assertThat(money.amount()).isEqualTo(expectedAmount);
+            assertThat(money.currency()).isEqualTo("EUR");
         }
 
         @Test
-        @DisplayName("should create Money from string amount and currency")
-        void should_createMoney_fromString() {
-            Money money = Money.of(" 49.99 ", "GBP");
+        @DisplayName("given zero factory, when creating zero Money, then amount is zero and EUR currency")
+        void givenZeroFactory_whenCreatingZeroMoney_thenAmountIsZeroAndEurCurrency() {
+            // given
 
-            assertThat(money.amount()).isEqualTo(new BigDecimal("49.99"));
-            assertThat(money.currency()).isEqualTo("GBP");
+            // when
+            final var money = Money.zero();
+
+            // then
+            assertThat(money.amount()).isEqualTo(new BigDecimal("0.00"));
+            assertThat(money.currency()).isEqualTo("EUR");
+            assertThat(money.isZero()).isTrue();
         }
 
         @Test
-        @DisplayName("should create zero Money")
-        void should_createZeroMoney() {
-            Money zero = Money.zero("USD");
+        @DisplayName("given null amount, when creating Money, then throw InvalidBudgetOperationException")
+        void givenNullAmount_whenCreatingMoney_thenThrowInvalidBudgetOperationException() {
+            // given
 
-            assertThat(zero.amount()).isEqualTo(new BigDecimal("0.00"));
-            assertThat(zero.isZero()).isTrue();
-        }
+            // when
 
-        @Test
-        @DisplayName("should throw InvalidBudgetOperationException when amount is null")
-        void should_throwException_when_amountIsNull() {
-            assertThatThrownBy(() -> new Money(null, "EUR"))
+            // then
+            assertThatThrownBy(() -> Money.of((BigDecimal) null))
                     .isInstanceOf(InvalidBudgetOperationException.class)
-                    .hasMessageContaining("Amount cannot be null");
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = {"", " ", "INVALID_CURRENCY", "123"})
-        @DisplayName("should throw InvalidBudgetOperationException when currency is invalid")
-        void should_throwException_when_currencyIsInvalid(String invalidCurrency) {
-            assertThatThrownBy(() -> new Money(BigDecimal.TEN, invalidCurrency))
-                    .isInstanceOf(InvalidBudgetOperationException.class);
+                    .hasMessageContaining("Money amount cannot be null");
         }
     }
 
@@ -75,46 +80,33 @@ class MoneyTest {
     class ArithmeticOperations {
 
         @Test
-        @DisplayName("should add money of same currency")
-        void should_addMoney_ofSameCurrency() {
-            Money m1 = Money.of(100.0, "EUR");
-            Money m2 = Money.of(50.25, "EUR");
+        @DisplayName("given two Money amounts, when adding, then return summed Money amount")
+        void givenTwoMoneyAmounts_whenAdding_thenReturnSummedMoneyAmount() {
+            // given
+            final var m1 = BudgetingTestFactory.randomMoney();
+            final var m2 = BudgetingTestFactory.randomMoney();
 
-            Money result = m1.add(m2);
+            // when
+            final var result = m1.add(m2);
 
-            assertThat(result).isEqualTo(Money.of(150.25, "EUR"));
+            // then
+            assertThat(result.amount()).isEqualTo(m1.amount().add(m2.amount()));
+            assertThat(result.currency()).isEqualTo("EUR");
         }
 
         @Test
-        @DisplayName("should subtract money of same currency")
-        void should_subtractMoney_ofSameCurrency() {
-            Money m1 = Money.of(100.0, "EUR");
-            Money m2 = Money.of(40.0, "EUR");
+        @DisplayName("given two Money amounts, when subtracting, then return deducted Money amount")
+        void givenTwoMoneyAmounts_whenSubtracting_thenReturnDeductedMoneyAmount() {
+            // given
+            final var m1 = BudgetingTestFactory.randomMoney();
+            final var m2 = BudgetingTestFactory.randomMoney();
 
-            Money result = m1.subtract(m2);
+            // when
+            final var result = m1.subtract(m2);
 
-            assertThat(result).isEqualTo(Money.of(60.0, "EUR"));
-        }
-
-        @Test
-        @DisplayName("should throw CurrencyMismatchException on add with different currencies")
-        void should_throwException_onAddDifferentCurrencies() {
-            Money eur = Money.of(100.0, "EUR");
-            Money usd = Money.of(100.0, "USD");
-
-            assertThatThrownBy(() -> eur.add(usd))
-                    .isInstanceOf(CurrencyMismatchException.class)
-                    .hasMessageContaining("Cannot perform monetary operation on different currencies");
-        }
-
-        @Test
-        @DisplayName("should throw CurrencyMismatchException on subtract with different currencies")
-        void should_throwException_onSubtractDifferentCurrencies() {
-            Money eur = Money.of(100.0, "EUR");
-            Money usd = Money.of(100.0, "USD");
-
-            assertThatThrownBy(() -> eur.subtract(usd))
-                    .isInstanceOf(CurrencyMismatchException.class);
+            // then
+            assertThat(result.amount()).isEqualTo(m1.amount().subtract(m2.amount()));
+            assertThat(result.currency()).isEqualTo("EUR");
         }
     }
 
@@ -123,30 +115,40 @@ class MoneyTest {
     class ComparisonAndPredicates {
 
         @Test
-        @DisplayName("should correctly compare money values")
-        void should_compareMoneyValues() {
-            Money smaller = Money.of(50.0, "EUR");
-            Money equal = Money.of(100.0, "EUR");
-            Money larger = Money.of(100.0, "EUR");
-            Money biggest = Money.of(150.0, "EUR");
+        @DisplayName("given various Money amounts, when comparing, then comparisons return expected boolean values")
+        void givenVariousMoneyAmounts_whenComparing_thenComparisonsReturnExpectedValues() {
+            // given
+            final var smallerAmount = BudgetingTestFactory.randomDoubleAmount();
+            final var largerAmount = smallerAmount + 100.0;
+            final var mSmall = Money.of(smallerAmount);
+            final var mLarg = Money.of(largerAmount);
+            final var mLargCopy = Money.of(largerAmount);
 
-            assertThat(biggest.isGreaterThan(equal)).isTrue();
-            assertThat(equal.isGreaterThan(biggest)).isFalse();
-            assertThat(equal.isGreaterThanOrEqual(larger)).isTrue();
-            assertThat(smaller.isLessThan(equal)).isTrue();
-            assertThat(equal.isLessThanOrEqual(larger)).isTrue();
+            // when
+
+            // then
+            assertThat(mLarg.isGreaterThan(mSmall)).isTrue();
+            assertThat(mSmall.isLessThan(mLarg)).isTrue();
+            assertThat(mLarg.isGreaterThanOrEqualTo(mLargCopy)).isTrue();
+            assertThat(mLarg.isLessThanOrEqualTo(mLargCopy)).isTrue();
         }
 
         @Test
-        @DisplayName("should test zero, positive, negative predicates")
-        void should_testPredicates() {
-            Money zero = Money.of(0.0, "USD");
-            Money positive = Money.of(10.0, "USD");
-            Money negative = Money.of(-5.0, "USD");
+        @DisplayName("given positive, negative, and zero Money, when checking sign predicates, then correct flags returned")
+        void givenDifferentSignedMoney_whenCheckingSignPredicates_thenCorrectFlagsReturned() {
+            // given
+            final var posAmount = BudgetingTestFactory.randomDoubleAmount();
+            final var negAmount = -posAmount;
+            final var positive = Money.of(posAmount);
+            final var negative = Money.of(negAmount);
+            final var zero = Money.zero();
 
-            assertThat(zero.isZero()).isTrue();
+            // when
+
+            // then
             assertThat(positive.isPositive()).isTrue();
             assertThat(negative.isNegative()).isTrue();
+            assertThat(zero.isZero()).isTrue();
         }
     }
 
@@ -155,24 +157,31 @@ class MoneyTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("should be equal when amounts and currencies match")
-        void should_beEqual_when_amountsAndCurrenciesMatch() {
-            Money m1 = Money.of(100.0, "EUR");
-            Money m2 = Money.of(new BigDecimal("100.00"), "eur");
+        @DisplayName("given identical amounts, when comparing Money, then they are equal")
+        void givenIdenticalAmounts_whenComparingMoney_thenTheyAreEqual() {
+            // given
+            final var amount = BudgetingTestFactory.randomBigDecimalAmount();
+            final var m1 = Money.of(amount);
+            final var m2 = Money.of(amount);
 
+            // when
+
+            // then
             assertThat(m1).isEqualTo(m2);
             assertThat(m1.hashCode()).isEqualTo(m2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when amounts or currencies differ")
-        void should_notBeEqual_when_amountsOrCurrenciesDiffer() {
-            Money m1 = Money.of(100.0, "EUR");
-            Money m2 = Money.of(100.0, "USD");
-            Money m3 = Money.of(101.0, "EUR");
+        @DisplayName("given different amounts, when comparing Money, then they are not equal")
+        void givenDifferentAmounts_whenComparingMoney_thenTheyAreNotEqual() {
+            // given
+            final var m1 = BudgetingTestFactory.randomMoney();
+            final var m2 = Money.of(m1.amount().add(BigDecimal.TEN));
 
+            // when
+
+            // then
             assertThat(m1).isNotEqualTo(m2);
-            assertThat(m1).isNotEqualTo(m3);
         }
     }
 }

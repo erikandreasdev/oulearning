@@ -3,69 +3,146 @@ package com.example.oulearning.training.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.example.oulearning.organization.domain.employee.Email;
+import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class ManagerReviewTest {
 
-    private final Instant start = Instant.parse("2026-09-01T09:00:00Z");
-    private final Instant end = Instant.parse("2026-09-03T17:00:00Z");
-    private final Instant reviewedAt = Instant.parse("2026-08-20T10:00:00Z");
-    private final ExternalProvider provider = ExternalProvider.of(
-            ExternalProviderName.of("Tech Training Ltd"),
-            ExternalProviderContact.of(Email.of("info@techtraining.com"), Phone.of("+1234567890")));
+    private final Instant now = Instant.now();
+    private final Instant startDate = now.plus(1, ChronoUnit.DAYS);
+    private final Instant endDate = now.plus(3, ChronoUnit.DAYS);
+    private final Modality modality = Modality.VIRTUAL;
+    private final ExternalProvider provider = TrainingTestFactory.randomExternalProvider();
 
     @Nested
-    @DisplayName("Creation and Invariants")
-    class CreationAndInvariants {
+    @DisplayName("Creation and Validation")
+    class CreationAndValidation {
 
         @Test
-        @DisplayName("should create ManagerReview when valid parameters provided")
-        void should_createManagerReview_when_validParams() {
-            ManagerReview review = new ManagerReview(
-                    "Approved for Q3 skills enhancement", Modality.VIRTUAL, start, end, provider, reviewedAt);
+        @DisplayName("given valid review data, when creating ManagerReview, then create successfully")
+        void givenValidReviewData_whenCreatingManagerReview_thenCreateSuccessfully() {
+            // given
+            final var comments = TrainingTestFactory.randomComments();
 
-            assertThat(review.comments()).isEqualTo("Approved for Q3 skills enhancement");
-            assertThat(review.modality()).isEqualTo(Modality.VIRTUAL);
-            assertThat(review.startDate()).isEqualTo(start);
-            assertThat(review.endDate()).isEqualTo(end);
+            // when
+            final var review = new ManagerReview(comments, modality, startDate, endDate, provider, now);
+
+            // then
+            assertThat(review.comments()).isEqualTo(comments);
+            assertThat(review.modality()).isEqualTo(modality);
+            assertThat(review.startDate()).isEqualTo(startDate);
+            assertThat(review.endDate()).isEqualTo(endDate);
             assertThat(review.optionalExternalProvider()).contains(provider);
-            assertThat(review.reviewedAt()).isEqualTo(reviewedAt);
+            assertThat(review.reviewedAt()).isEqualTo(now);
         }
 
         @Test
-        @DisplayName("should create ManagerReview without external provider")
-        void should_createManagerReview_withoutProvider() {
-            ManagerReview review = new ManagerReview("Internal workshop", Modality.ON_SITE, start, end, null, reviewedAt);
+        @DisplayName("given review without external provider, when creating ManagerReview, then optionalProvider is empty")
+        void givenReviewWithoutExternalProvider_whenCreatingManagerReview_thenOptionalProviderIsEmpty() {
+            // given
+            final var comments = TrainingTestFactory.randomComments();
 
+            // when
+            final var review = new ManagerReview(comments, modality, startDate, endDate, null, now);
+
+            // then
             assertThat(review.optionalExternalProvider()).isEmpty();
         }
 
         @Test
-        @DisplayName("should throw InvalidTrainingOperationException when end date is before start date")
-        void should_throwException_when_endDateBeforeStartDate() {
-            Instant invalidEnd = start.minusSeconds(3600);
+        @DisplayName("given null comments, when creating ManagerReview, then throw InvalidTrainingOperationException")
+        void givenNullComments_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException() {
+            // given
 
-            assertThatThrownBy(() -> new ManagerReview(
-                            "Comments", Modality.BLENDED, start, invalidEnd, provider, reviewedAt))
+            // when
+
+            // then
+            assertThatThrownBy(() -> new ManagerReview(null, modality, startDate, endDate, provider, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("Comments cannot be null");
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"", "   ", "\t\n"})
+        @DisplayName("given blank comments, when creating ManagerReview, then throw InvalidTrainingOperationException")
+        void givenBlankComments_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException(final String blank) {
+            // given
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> new ManagerReview(blank, modality, startDate, endDate, provider, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("Comments cannot be blank");
+        }
+
+        @Test
+        @DisplayName("given comments exceeding max length, when creating ManagerReview, then throw InvalidTrainingOperationException")
+        void givenCommentsExceedingMaxLength_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException() {
+            // given
+            final var longComments = "A".repeat(TrainingConstants.MAX_COMMENTS_LENGTH + 1);
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> new ManagerReview(longComments, modality, startDate, endDate, provider, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("Comments length must be between");
+        }
+
+        @Test
+        @DisplayName("given end date before start date, when creating ManagerReview, then throw InvalidTrainingOperationException")
+        void givenEndDateBeforeStartDate_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException() {
+            // given
+            final var invalidEnd = startDate.minus(1, ChronoUnit.DAYS);
+            final var comments = TrainingTestFactory.randomComments();
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> new ManagerReview(comments, modality, startDate, invalidEnd, provider, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be before start date");
         }
 
         @Test
-        @DisplayName("should throw NullPointerException when required parameters are null")
-        void should_throwException_when_requiredNull() {
-            assertThatThrownBy(() -> new ManagerReview("Comments", null, start, end, provider, reviewedAt))
-                    .isInstanceOf(NullPointerException.class);
-            assertThatThrownBy(() -> new ManagerReview("Comments", Modality.VIRTUAL, null, end, provider, reviewedAt))
-                    .isInstanceOf(NullPointerException.class);
-            assertThatThrownBy(() -> new ManagerReview("Comments", Modality.VIRTUAL, start, null, provider, reviewedAt))
-                    .isInstanceOf(NullPointerException.class);
-            assertThatThrownBy(() -> new ManagerReview("Comments", Modality.VIRTUAL, start, end, provider, null))
-                    .isInstanceOf(NullPointerException.class);
+        @DisplayName("given null modality, when creating ManagerReview, then throw InvalidTrainingOperationException")
+        void givenNullModality_whenCreatingManagerReview_thenThrowInvalidTrainingOperationException() {
+            // given
+            final var comments = TrainingTestFactory.randomComments();
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> new ManagerReview(comments, null, startDate, endDate, provider, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("Modality cannot be null");
+        }
+    }
+
+    @Nested
+    @DisplayName("Value Object Semantics")
+    class ValueObjectSemantics {
+
+        @Test
+        @DisplayName("given identical reviews, when comparing, then they are equal")
+        void givenIdenticalReviews_whenComparing_thenTheyAreEqual() {
+            // given
+            final var comments = TrainingTestFactory.randomComments();
+            final var r1 = new ManagerReview(comments, modality, startDate, endDate, provider, now);
+            final var r2 = new ManagerReview(comments, modality, startDate, endDate, provider, now);
+
+            // when
+
+            // then
+            assertThat(r1).isEqualTo(r2);
+            assertThat(r1.hashCode()).isEqualTo(r2.hashCode());
         }
     }
 }

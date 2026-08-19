@@ -1,24 +1,23 @@
 package com.example.oulearning.budgeting.domain;
 
 /**
- * Value object representing a fiscal year (e.g., 2026).
+ * Value object representing a fiscal year.
  *
- * @param value the 4-digit fiscal year
+ * @param value the fiscal year (e.g. 2026)
  */
 public record FiscalYear(int value) {
 
     public FiscalYear {
-        if (value < 1900 || value > 3000) {
-            throw new InvalidBudgetOperationException("Fiscal year must be between 1900 and 3000: " + value);
-        }
+        value = BudgetingGuard.requireFiscalYearBetween(
+                value, BudgetingConstants.MIN_FISCAL_YEAR, BudgetingConstants.MAX_FISCAL_YEAR);
     }
 
-    public static FiscalYear of(int value) {
+    public static FiscalYear of(final int value) {
         return new FiscalYear(value);
     }
 
     @Override
     public String toString() {
-        return String.valueOf(value);
+        return "%d".formatted(value);
     }
 }

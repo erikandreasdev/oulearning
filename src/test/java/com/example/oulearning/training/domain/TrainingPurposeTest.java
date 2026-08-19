@@ -3,6 +3,7 @@ package com.example.oulearning.training.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,47 +17,87 @@ class TrainingPurposeTest {
     class CreationAndValidation {
 
         @Test
-        @DisplayName("should create IDP purpose")
-        void should_createIdpPurpose() {
-            TrainingPurpose purpose = TrainingPurpose.idp();
+        @DisplayName("given IDP purpose, when creating TrainingPurpose, then create successfully with no description")
+        void givenIdpPurpose_whenCreatingTrainingPurpose_thenCreateSuccessfullyWithNoDescription() {
+            // given
 
+            // when
+            final var purpose = TrainingPurpose.idp();
+
+            // then
             assertThat(purpose.type()).isEqualTo(TrainingPurposeType.IDP);
+            assertThat(purpose.otherPurpose()).isNull();
             assertThat(purpose.optionalOtherPurpose()).isEmpty();
         }
 
         @Test
-        @DisplayName("should create Department Goals purpose")
-        void should_createDepartmentGoalsPurpose() {
-            TrainingPurpose purpose = TrainingPurpose.departmentGoals();
+        @DisplayName("given Department Goals purpose, when creating TrainingPurpose, then create successfully with no description")
+        void givenDepartmentGoalsPurpose_whenCreatingTrainingPurpose_thenCreateSuccessfullyWithNoDescription() {
+            // given
 
+            // when
+            final var purpose = TrainingPurpose.departmentGoals();
+
+            // then
             assertThat(purpose.type()).isEqualTo(TrainingPurposeType.DEPARTMENT_GOALS);
+            assertThat(purpose.otherPurpose()).isNull();
             assertThat(purpose.optionalOtherPurpose()).isEmpty();
         }
 
         @Test
-        @DisplayName("should create OTHER purpose with details")
-        void should_createOtherPurpose_withDetails() {
-            TrainingPurpose purpose = TrainingPurpose.other("Career transition preparation");
+        @DisplayName("given OTHER purpose with valid text, when creating TrainingPurpose, then create successfully with description")
+        void givenOtherPurposeWithValidText_whenCreatingTrainingPurpose_thenCreateSuccessfullyWithDescription() {
+            // given
+            final var text = TrainingTestFactory.randomPurposeDescription();
 
+            // when
+            final var purpose = TrainingPurpose.other(text);
+
+            // then
             assertThat(purpose.type()).isEqualTo(TrainingPurposeType.OTHER);
-            assertThat(purpose.optionalOtherPurpose()).contains("Career transition preparation");
+            assertThat(purpose.otherPurpose()).isEqualTo(text);
+            assertThat(purpose.optionalOtherPurpose()).contains(text);
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", "   "})
-        @DisplayName("should throw InvalidTrainingOperationException when OTHER purpose is blank")
-        void should_throwException_when_otherPurposeIsBlank(String blank) {
+        @ValueSource(strings = {"", "   ", "\t\n"})
+        @DisplayName("given OTHER purpose with blank text, when creating TrainingPurpose, then throw InvalidTrainingOperationException")
+        void givenOtherPurposeWithBlankText_whenCreatingTrainingPurpose_thenThrowInvalidTrainingOperationException(final String blank) {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> TrainingPurpose.other(blank))
                     .isInstanceOf(InvalidTrainingOperationException.class)
-                    .hasMessageContaining("Purpose description cannot be blank");
+                    .hasMessageContaining("cannot be blank");
         }
 
         @Test
-        @DisplayName("should throw InvalidTrainingOperationException when OTHER purpose is null")
-        void should_throwException_when_otherPurposeIsNull() {
+        @DisplayName("given null text for OTHER purpose, when creating TrainingPurpose, then throw InvalidTrainingOperationException")
+        void givenNullTextForOtherPurpose_whenCreatingTrainingPurpose_thenThrowInvalidTrainingOperationException() {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> TrainingPurpose.other(null))
                     .isInstanceOf(InvalidTrainingOperationException.class)
-                    .hasMessageContaining("Purpose description cannot be blank");
+                    .hasMessageContaining("cannot be null");
+        }
+
+        @Test
+        @DisplayName("given OTHER purpose exceeding max length, when creating TrainingPurpose, then throw InvalidTrainingOperationException")
+        void givenOtherPurposeExceedingMaxLength_whenCreatingTrainingPurpose_thenThrowInvalidTrainingOperationException() {
+            // given
+            final var longText = "A".repeat(TrainingConstants.MAX_PURPOSE_LENGTH + 1);
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> TrainingPurpose.other(longText))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("Purpose description length must be between");
         }
     }
 
@@ -65,21 +106,29 @@ class TrainingPurposeTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("should be equal when purpose type and details match")
-        void should_beEqual_when_match() {
-            TrainingPurpose p1 = TrainingPurpose.other("Certification");
-            TrainingPurpose p2 = TrainingPurpose.other("Certification");
+        @DisplayName("given identical purposes, when comparing TrainingPurpose, then they are equal")
+        void givenIdenticalPurposes_whenComparingTrainingPurpose_thenTheyAreEqual() {
+            // given
+            final var p1 = TrainingPurpose.idp();
+            final var p2 = TrainingPurpose.idp();
 
+            // when
+
+            // then
             assertThat(p1).isEqualTo(p2);
             assertThat(p1.hashCode()).isEqualTo(p2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when details differ")
-        void should_notBeEqual_when_detailsDiffer() {
-            TrainingPurpose p1 = TrainingPurpose.other("Certification A");
-            TrainingPurpose p2 = TrainingPurpose.other("Certification B");
+        @DisplayName("given different purposes, when comparing TrainingPurpose, then they are not equal")
+        void givenDifferentPurposes_whenComparingTrainingPurpose_thenTheyAreNotEqual() {
+            // given
+            final var p1 = TrainingPurpose.idp();
+            final var p2 = TrainingPurpose.departmentGoals();
 
+            // when
+
+            // then
             assertThat(p1).isNotEqualTo(p2);
         }
     }

@@ -3,6 +3,7 @@ package com.example.oulearning.organization.domain.hierarchy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.organization.domain.hierarchy.exception.InvalidOuException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,19 +16,41 @@ class NameTest {
     @DisplayName("Creation and Validation")
     class CreationAndValidation {
 
-        @ParameterizedTest
-        @ValueSource(strings = {"Engineering", "  Human Resources  ", "R&D Department"})
-        @DisplayName("should create Name when valid value provided")
-        void should_createName_when_validValueProvided(String rawValue) {
-            Name name = Name.of(rawValue);
+        @Test
+        @DisplayName("given valid string, when creating Name, then create successfully")
+        void givenValidString_whenCreatingName_thenCreateSuccessfully() {
+            // given
+            final var raw = HierarchyTestFactory.randomOuNameString();
 
-            assertThat(name.value()).isEqualTo(rawValue.strip());
-            assertThat(name.toString()).isEqualTo(rawValue.strip());
+            // when
+            final var name = Name.of(raw);
+
+            // then
+            assertThat(name.value()).isEqualTo(raw);
+            assertThat(name.toString()).isEqualTo(raw);
         }
 
         @Test
-        @DisplayName("should throw InvalidOuException when name is null")
-        void should_throwException_when_nameIsNull() {
+        @DisplayName("given padded string, when creating Name, then trim and create successfully")
+        void givenPaddedString_whenCreatingName_thenTrimAndCreateSuccessfully() {
+            // given
+            final var raw = HierarchyTestFactory.randomOuNameString();
+
+            // when
+            final var name = Name.of("  %s  ".formatted(raw));
+
+            // then
+            assertThat(name.value()).isEqualTo(raw);
+        }
+
+        @Test
+        @DisplayName("given null name string, when creating Name, then throw InvalidOuException")
+        void givenNullNameString_whenCreatingName_thenThrowInvalidOuException() {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> new Name(null))
                     .isInstanceOf(InvalidOuException.class)
                     .hasMessageContaining("cannot be null");
@@ -35,11 +58,30 @@ class NameTest {
 
         @ParameterizedTest
         @ValueSource(strings = {"", "   ", "\t\n"})
-        @DisplayName("should throw InvalidOuException when name is blank")
-        void should_throwException_when_nameIsBlank(String blankValue) {
-            assertThatThrownBy(() -> new Name(blankValue))
+        @DisplayName("given blank name string, when creating Name, then throw InvalidOuException")
+        void givenBlankNameString_whenCreatingName_thenThrowInvalidOuException(final String blank) {
+            // given
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> new Name(blank))
                     .isInstanceOf(InvalidOuException.class)
                     .hasMessageContaining("cannot be blank");
+        }
+
+        @Test
+        @DisplayName("given name exceeding max length, when creating Name, then throw InvalidOuException")
+        void givenNameExceedingMaxLength_whenCreatingName_thenThrowInvalidOuException() {
+            // given
+            final var longName = "A".repeat(HierarchyConstants.MAX_NAME_LENGTH + 1);
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> new Name(longName))
+                    .isInstanceOf(InvalidOuException.class)
+                    .hasMessageContaining("Ou name length must be between");
         }
     }
 
@@ -48,22 +90,31 @@ class NameTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("should be equal when names match")
-        void should_beEqual_when_namesMatch() {
-            Name name1 = Name.of("Engineering");
-            Name name2 = Name.of("Engineering");
+        @DisplayName("given identical names, when comparing Name, then they are equal")
+        void givenIdenticalNames_whenComparingName_thenTheyAreEqual() {
+            // given
+            final var raw = HierarchyTestFactory.randomOuNameString();
+            final var n1 = Name.of(raw);
+            final var n2 = Name.of(raw);
 
-            assertThat(name1).isEqualTo(name2);
-            assertThat(name1.hashCode()).isEqualTo(name2.hashCode());
+            // when
+
+            // then
+            assertThat(n1).isEqualTo(n2);
+            assertThat(n1.hashCode()).isEqualTo(n2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when names differ")
-        void should_notBeEqual_when_namesDiffer() {
-            Name name1 = Name.of("Engineering");
-            Name name2 = Name.of("Marketing");
+        @DisplayName("given different names, when comparing Name, then they are not equal")
+        void givenDifferentNames_whenComparingName_thenTheyAreNotEqual() {
+            // given
+            final var n1 = HierarchyTestFactory.randomName();
+            final var n2 = HierarchyTestFactory.randomName();
 
-            assertThat(name1).isNotEqualTo(name2);
+            // when
+
+            // then
+            assertThat(n1).isNotEqualTo(n2);
         }
     }
 }

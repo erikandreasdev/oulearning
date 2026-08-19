@@ -1,10 +1,10 @@
-package com.example.oulearning.budgeting.domain;
+package com.example.oulearning.budgeting.domain.exception;
 
 /**
- * Base sealed exception for all domain invariant violations in the budgeting context.
+ * Base sealed exception for all domain errors within the budgeting bounded context.
  */
 public abstract sealed class BudgetingException extends RuntimeException
-        permits CurrencyMismatchException, InsufficientBudgetException, InvalidBudgetOperationException {
+        permits InsufficientBudgetException, InvalidBudgetOperationException {
 
     protected BudgetingException(String message) {
         super(message);

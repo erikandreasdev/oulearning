@@ -3,6 +3,7 @@ package com.example.oulearning.training.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,19 +16,28 @@ class TypeNameTest {
     @DisplayName("Creation and Validation")
     class CreationAndValidation {
 
-        @ParameterizedTest
-        @ValueSource(strings = {"Power Skills", "  Technical  ", "Languages"})
-        @DisplayName("should create TypeName when valid string provided")
-        void should_createTypeName_when_validStringProvided(String raw) {
-            TypeName name = TypeName.of(raw);
+        @Test
+        @DisplayName("given valid type name string, when creating TypeName, then create successfully")
+        void givenValidTypeNameString_whenCreatingTypeName_thenCreateSuccessfully() {
+            // given
+            final var raw = TrainingTestFactory.randomTypeNameString();
 
-            assertThat(name.value()).isEqualTo(raw.strip());
-            assertThat(name.toString()).isEqualTo(raw.strip());
+            // when
+            final var name = TypeName.of("  %s  ".formatted(raw));
+
+            // then
+            assertThat(name.value()).isEqualTo(raw);
+            assertThat(name.toString()).isEqualTo(raw);
         }
 
         @Test
-        @DisplayName("should throw InvalidTrainingOperationException when name is null")
-        void should_throwException_when_nameIsNull() {
+        @DisplayName("given null name, when creating TypeName, then throw InvalidTrainingOperationException")
+        void givenNullName_whenCreatingTypeName_thenThrowInvalidTrainingOperationException() {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> new TypeName(null))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be null");
@@ -35,11 +45,30 @@ class TypeNameTest {
 
         @ParameterizedTest
         @ValueSource(strings = {"", "   ", "\t\n"})
-        @DisplayName("should throw InvalidTrainingOperationException when name is blank")
-        void should_throwException_when_nameIsBlank(String blank) {
+        @DisplayName("given blank name, when creating TypeName, then throw InvalidTrainingOperationException")
+        void givenBlankName_whenCreatingTypeName_thenThrowInvalidTrainingOperationException(final String blank) {
+            // given
+
+            // when
+
+            // then
             assertThatThrownBy(() -> new TypeName(blank))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be blank");
+        }
+
+        @Test
+        @DisplayName("given type name exceeding max length, when creating, then throw InvalidTrainingOperationException")
+        void givenTypeNameExceedingMaxLength_whenCreating_thenThrowInvalidTrainingOperationException() {
+            // given
+            final var longName = "A".repeat(TrainingConstants.MAX_NAME_LENGTH + 1);
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> new TypeName(longName))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("TypeName length must be between");
         }
     }
 
@@ -48,21 +77,30 @@ class TypeNameTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("should be equal when names match")
-        void should_beEqual_when_namesMatch() {
-            TypeName n1 = TypeName.of("Leadership");
-            TypeName n2 = TypeName.of("Leadership");
+        @DisplayName("given identical type names, when comparing, then they are equal")
+        void givenIdenticalTypeNames_whenComparing_thenTheyAreEqual() {
+            // given
+            final var raw = TrainingTestFactory.randomTypeNameString();
+            final var n1 = TypeName.of(raw);
+            final var n2 = TypeName.of(raw);
 
+            // when
+
+            // then
             assertThat(n1).isEqualTo(n2);
             assertThat(n1.hashCode()).isEqualTo(n2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when names differ")
-        void should_notBeEqual_when_namesDiffer() {
-            TypeName n1 = TypeName.of("Leadership");
-            TypeName n2 = TypeName.of("Onboarding");
+        @DisplayName("given different type names, when comparing, then they are not equal")
+        void givenDifferentTypeNames_whenComparing_thenTheyAreNotEqual() {
+            // given
+            final var n1 = TrainingTestFactory.randomTypeName();
+            final var n2 = TrainingTestFactory.randomTypeName();
 
+            // when
+
+            // then
             assertThat(n1).isNotEqualTo(n2);
         }
     }

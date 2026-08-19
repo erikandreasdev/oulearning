@@ -1,23 +1,18 @@
 package com.example.oulearning.training.domain;
 
 /**
- * Value object representing a training program name.
+ * Value object representing a training name.
  *
- * @param value the non-blank training name string
+ * @param value the non-blank name string
  */
 public record TrainingName(String value) {
 
     public TrainingName {
-        if (value == null) {
-            throw new InvalidTrainingOperationException("Training name cannot be null");
-        }
-        value = value.strip();
-        if (value.isBlank()) {
-            throw new InvalidTrainingOperationException("Training name cannot be blank");
-        }
+        value = TrainingGuard.requireLengthBetween(
+                value, "Training name", TrainingConstants.MIN_NAME_LENGTH, TrainingConstants.MAX_NAME_LENGTH);
     }
 
-    public static TrainingName of(String value) {
+    public static TrainingName of(final String value) {
         return new TrainingName(value);
     }
 

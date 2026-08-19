@@ -10,24 +10,15 @@ import java.util.UUID;
 public record TrainingId(UUID value) {
 
     public TrainingId {
-        if (value == null) {
-            throw new InvalidTrainingOperationException("Training id cannot be null");
-        }
+        TrainingGuard.requireNonNull(value, "Training id");
     }
 
-    public static TrainingId of(UUID value) {
+    public static TrainingId of(final UUID value) {
         return new TrainingId(value);
     }
 
-    public static TrainingId fromString(String value) {
-        if (value == null || value.isBlank()) {
-            throw new InvalidTrainingOperationException("Training id string cannot be null or blank");
-        }
-        try {
-            return new TrainingId(UUID.fromString(value.strip()));
-        } catch (IllegalArgumentException e) {
-            throw new InvalidTrainingOperationException("Invalid UUID format: " + value);
-        }
+    public static TrainingId fromString(final String value) {
+        return new TrainingId(TrainingGuard.requireValidUuid(value, "Training id"));
     }
 
     @Override

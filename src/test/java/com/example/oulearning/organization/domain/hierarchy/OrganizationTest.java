@@ -3,34 +3,43 @@ package com.example.oulearning.organization.domain.hierarchy;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Set;
-import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class OrganizationTest {
 
     @Test
-    @DisplayName("should add and remove OU ids from organization")
-    void should_addAndRemoveOuIds() {
-        Organization organization = new Organization();
-        OuId ou1 = OuId.of(UUID.randomUUID());
-        OuId ou2 = OuId.of(UUID.randomUUID());
+    @DisplayName("given empty Organization, when adding and removing OuIds, then set is updated accordingly")
+    void givenEmptyOrganization_whenAddingAndRemovingOuIds_thenSetIsUpdatedAccordingly() {
+        // given
+        final var organization = new Organization();
+        final var ou1 = HierarchyTestFactory.randomOuId();
+        final var ou2 = HierarchyTestFactory.randomOuId();
 
+        // when
         organization.addOu(ou1);
         organization.addOu(ou2);
 
+        // then
         assertThat(organization.ouIds()).containsExactlyInAnyOrder(ou1, ou2);
 
+        // when
         organization.removeOu(ou1);
+
+        // then
         assertThat(organization.ouIds()).containsExactly(ou2);
     }
 
     @Test
-    @DisplayName("should initialize organization with OU ids")
-    void should_initializeWithOuIds() {
-        OuId ou1 = OuId.of(UUID.randomUUID());
-        Organization organization = new Organization(Set.of(ou1));
+    @DisplayName("given initial set of OuIds, when creating Organization, then contains all initial OuIds")
+    void givenInitialSetOfOuIds_whenCreatingOrganization_thenContainsAllInitialOuIds() {
+        // given
+        final var ou1 = HierarchyTestFactory.randomOuId();
 
+        // when
+        final var organization = new Organization(Set.of(ou1));
+
+        // then
         assertThat(organization.ouIds()).containsExactly(ou1);
     }
 }

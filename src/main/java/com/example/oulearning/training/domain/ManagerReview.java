@@ -1,18 +1,18 @@
 package com.example.oulearning.training.domain;
 
+import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import java.time.Instant;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Value object representing a manager's review, scheduling, and provider assignment for a training request.
+ * Value object representing a manager's review details for a training request.
  *
- * @param comments review comments from the manager
- * @param modality training delivery modality
- * @param startDate scheduled training start timestamp
- * @param endDate scheduled training end timestamp
- * @param externalProvider optional external training provider
- * @param reviewedAt timestamp when the review was conducted
+ * @param comments the manager's comments or notes
+ * @param modality the training modality
+ * @param startDate the start timestamp
+ * @param endDate the end timestamp
+ * @param externalProvider the optional external provider details
+ * @param reviewedAt the timestamp when the review occurred
  */
 public record ManagerReview(
         String comments,
@@ -23,17 +23,16 @@ public record ManagerReview(
         Instant reviewedAt) {
 
     public ManagerReview {
-        Objects.requireNonNull(modality, "Modality cannot be null");
-        Objects.requireNonNull(startDate, "Start date cannot be null");
-        Objects.requireNonNull(endDate, "End date cannot be null");
-        Objects.requireNonNull(reviewedAt, "ReviewedAt timestamp cannot be null");
+        comments = TrainingGuard.requireLengthBetween(
+                comments, "Comments", TrainingConstants.MIN_COMMENTS_LENGTH, TrainingConstants.MAX_COMMENTS_LENGTH);
+        TrainingGuard.requireNonNull(modality, "Modality");
+        TrainingGuard.requireNonNull(startDate, "Start date");
+        TrainingGuard.requireNonNull(endDate, "End date");
+        TrainingGuard.requireNonNull(reviewedAt, "ReviewedAt");
 
         if (endDate.isBefore(startDate)) {
-            throw new InvalidTrainingOperationException(
-                    "Training end date (" + endDate + ") cannot be before start date (" + startDate + ")");
+            throw InvalidTrainingOperationException.invalidDateRange(startDate, endDate);
         }
-
-        comments = (comments != null) ? comments.strip() : "";
     }
 
     public Optional<ExternalProvider> optionalExternalProvider() {

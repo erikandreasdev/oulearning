@@ -2,7 +2,6 @@ package com.example.oulearning.training.domain;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Currency;
 
 /**
  * Value object representing training cost.
@@ -12,43 +11,39 @@ import java.util.Currency;
  */
 public record Cost(BigDecimal amount, String currency) {
 
-    public static final int DEFAULT_SCALE = 2;
+    private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
     public Cost {
-        if (amount == null) {
-            throw new InvalidTrainingOperationException("Cost amount cannot be null");
-        }
-        if (currency == null || currency.isBlank()) {
-            throw new InvalidTrainingOperationException("Currency cannot be null or blank");
-        }
-        if (amount.compareTo(BigDecimal.ZERO) < 0) {
-            throw new InvalidTrainingOperationException("Cost amount cannot be negative: " + amount);
-        }
-
-        currency = currency.strip().toUpperCase();
-        try {
-            Currency.getInstance(currency);
-        } catch (IllegalArgumentException e) {
-            throw new InvalidTrainingOperationException("Invalid currency code: " + currency);
-        }
-
-        amount = amount.setScale(DEFAULT_SCALE, RoundingMode.HALF_UP);
+        amount = TrainingGuard.requireNonNegativeCost(amount).setScale(TrainingConstants.COST_SCALE, ROUNDING_MODE);
+        currency = TrainingGuard.requireValidCurrency(currency);
     }
 
-    public static Cost of(BigDecimal amount, String currency) {
+    public static Cost of(final BigDecimal amount, final String currency) {
         return new Cost(amount, currency);
     }
 
-    public static Cost of(double amount, String currency) {
+    public static Cost of(final BigDecimal amount) {
+        return new Cost(amount, TrainingConstants.DEFAULT_CURRENCY);
+    }
+
+    public static Cost of(final double amount, final String currency) {
         return new Cost(BigDecimal.valueOf(amount), currency);
     }
 
-    public static Cost zero(String currency) {
+    public static Cost of(final double amount) {
+        return new Cost(BigDecimal.valueOf(amount), TrainingConstants.DEFAULT_CURRENCY);
+    }
+
+    public static Cost zero(final String currency) {
         return new Cost(BigDecimal.ZERO, currency);
+    }
+
+    public static Cost zero() {
+        return new Cost(BigDecimal.ZERO, TrainingConstants.DEFAULT_CURRENCY);
     }
 
     @Override
     public String toString() {
-        return amount + " " + currency;
+        return "%s %s".formatted(amount, currency);
     }
 }

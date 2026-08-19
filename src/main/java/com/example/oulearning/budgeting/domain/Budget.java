@@ -16,27 +16,27 @@ public final class Budget {
     private final Money available;
 
     public Budget(
-            BudgetId id,
-            OuId ouId,
-            FiscalYear fiscalYear,
-            Money total,
-            Money reserved,
-            Money available) {
-        this.id = Objects.requireNonNull(id, "Budget id cannot be null");
-        this.ouId = Objects.requireNonNull(ouId, "Ou id cannot be null");
-        this.fiscalYear = Objects.requireNonNull(fiscalYear, "FiscalYear cannot be null");
-        this.total = Objects.requireNonNull(total, "Total cannot be null");
-        this.reserved = Objects.requireNonNull(reserved, "Reserved cannot be null");
-        this.available = Objects.requireNonNull(available, "Available cannot be null");
+            final BudgetId id,
+            final OuId ouId,
+            final FiscalYear fiscalYear,
+            final Money total,
+            final Money reserved,
+            final Money available) {
+        this.id = BudgetingGuard.requireNonNull(id, "Budget id");
+        this.ouId = BudgetingGuard.requireNonNull(ouId, "Ou id");
+        this.fiscalYear = BudgetingGuard.requireNonNull(fiscalYear, "FiscalYear");
+        this.total = BudgetingGuard.requireNonNull(total, "Total");
+        this.reserved = BudgetingGuard.requireNonNull(reserved, "Reserved");
+        this.available = BudgetingGuard.requireNonNull(available, "Available");
     }
 
     public static Budget of(
-            BudgetId id,
-            OuId ouId,
-            FiscalYear fiscalYear,
-            Money total,
-            Money reserved,
-            Money available) {
+            final BudgetId id,
+            final OuId ouId,
+            final FiscalYear fiscalYear,
+            final Money total,
+            final Money reserved,
+            final Money available) {
         return new Budget(id, ouId, fiscalYear, total, reserved, available);
     }
 
@@ -65,7 +65,7 @@ public final class Budget {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof Budget budget)) return false;
         return Objects.equals(id, budget.id);
@@ -78,7 +78,7 @@ public final class Budget {
 
     @Override
     public String toString() {
-        return "Budget[id=" + id + ", ouId=" + ouId + ", fiscalYear=" + fiscalYear + ", total=" + total
-                + ", reserved=" + reserved + ", available=" + available + "]";
+        return "Budget[id=%s, ouId=%s, fiscalYear=%s, total=%s, reserved=%s, available=%s]"
+                .formatted(id, ouId, fiscalYear, total, reserved, available);
     }
 }

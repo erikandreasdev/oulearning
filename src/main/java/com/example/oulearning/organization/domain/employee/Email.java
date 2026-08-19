@@ -1,47 +1,32 @@
 package com.example.oulearning.organization.domain.employee;
 
+import com.example.oulearning.organization.domain.employee.exception.InvalidEmailException;
 import java.util.regex.Pattern;
 
 /**
- * Value object representing an electronic mail address.
- * <p>
- * Ensures the email is normalized (trimmed and converted to lowercase) and validated against standard email format
- * constraints.
- * </p>
+ * Value object representing a valid employee email address.
  *
- * @param value the normalized email string
+ * @param value the normalized email address string
  */
 public record Email(String value) {
 
-    private static final Pattern EMAIL_PATTERN =
-            Pattern.compile("^[a-z0-9]+(?:[._%+-][a-z0-9]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}$");
+    private static final Pattern PATTERN = Pattern.compile(EmployeeConstants.EMAIL_REGEX);
 
-    /**
-     * Compact constructor enforcing email invariants.
-     */
     public Email {
         if (value == null) {
-            throw new InvalidEmailException(null, "Email cannot be null");
+            throw InvalidEmailException.nullField();
         }
-
-        value = value.strip().toLowerCase();
-
-        if (value.isBlank()) {
-            throw new InvalidEmailException(value, "Email cannot be blank");
+        final var stripped = value.strip().toLowerCase();
+        if (stripped.isBlank()) {
+            throw InvalidEmailException.blankField();
         }
-
-        if (!EMAIL_PATTERN.matcher(value).matches()) {
-            throw new InvalidEmailException(value, "Invalid email format: " + value);
+        if (!PATTERN.matcher(stripped).matches()) {
+            throw InvalidEmailException.invalidFormat(stripped);
         }
+        value = stripped;
     }
 
-    /**
-     * Factory method to create an {@link Email}.
-     *
-     * @param value the raw email string
-     * @return a validated {@link Email} value object
-     */
-    public static Email of(String value) {
+    public static Email of(final String value) {
         return new Email(value);
     }
 

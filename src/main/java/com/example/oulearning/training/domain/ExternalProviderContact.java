@@ -1,22 +1,21 @@
 package com.example.oulearning.training.domain;
 
 import com.example.oulearning.organization.domain.employee.Email;
-import java.util.Objects;
 
 /**
- * Value object representing an external training provider's contact details.
+ * Value object representing contact information for an external training provider.
  *
- * @param email the provider's email address
- * @param phone the provider's phone number
+ * @param email the contact email
+ * @param phone the contact phone number
  */
 public record ExternalProviderContact(Email email, Phone phone) {
 
     public ExternalProviderContact {
-        Objects.requireNonNull(email, "External provider email cannot be null");
-        Objects.requireNonNull(phone, "External provider phone cannot be null");
+        TrainingGuard.requireNonNull(email, "Email");
+        TrainingGuard.requireNonNull(phone, "Phone");
     }
 
-    public static ExternalProviderContact of(Email email, Phone phone) {
+    public static ExternalProviderContact of(final Email email, final Phone phone) {
         return new ExternalProviderContact(email, phone);
     }
 }

@@ -2,7 +2,6 @@ package com.example.oulearning.organization.domain.hierarchy;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -14,19 +13,20 @@ public final class Organization {
 
     public Organization() {}
 
-    public Organization(Set<OuId> ouIds) {
+    public Organization(final Set<OuId> ouIds) {
         if (ouIds != null) {
+            ouIds.forEach(id -> HierarchyGuard.requireNonNull(id, "Ou id"));
             this.ouIds.addAll(ouIds);
         }
     }
 
-    public void addOu(OuId ouId) {
-        Objects.requireNonNull(ouId, "ouId cannot be null");
+    public void addOu(final OuId ouId) {
+        HierarchyGuard.requireNonNull(ouId, "Ou id");
         this.ouIds.add(ouId);
     }
 
-    public void removeOu(OuId ouId) {
-        Objects.requireNonNull(ouId, "ouId cannot be null");
+    public void removeOu(final OuId ouId) {
+        HierarchyGuard.requireNonNull(ouId, "Ou id");
         this.ouIds.remove(ouId);
     }
 
@@ -36,6 +36,6 @@ public final class Organization {
 
     @Override
     public String toString() {
-        return "Organization[ouIds=" + ouIds + "]";
+        return "Organization[ouIds=%s]".formatted(ouIds);
     }
 }

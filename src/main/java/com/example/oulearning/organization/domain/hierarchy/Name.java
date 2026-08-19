@@ -8,16 +8,11 @@ package com.example.oulearning.organization.domain.hierarchy;
 public record Name(String value) {
 
     public Name {
-        if (value == null) {
-            throw new InvalidOuException("Name cannot be null");
-        }
-        value = value.strip();
-        if (value.isBlank()) {
-            throw new InvalidOuException("Name cannot be blank");
-        }
+        value = HierarchyGuard.requireLengthBetween(
+                value, "Ou name", HierarchyConstants.MIN_NAME_LENGTH, HierarchyConstants.MAX_NAME_LENGTH);
     }
 
-    public static Name of(String value) {
+    public static Name of(final String value) {
         return new Name(value);
     }
 

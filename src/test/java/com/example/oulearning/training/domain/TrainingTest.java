@@ -3,88 +3,95 @@ package com.example.oulearning.training.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.example.oulearning.organization.domain.employee.Email;
 import com.example.oulearning.organization.domain.employee.EmployeeId;
+import com.example.oulearning.organization.domain.employee.EmployeeTestFactory;
+import com.example.oulearning.organization.domain.hierarchy.HierarchyTestFactory;
 import com.example.oulearning.organization.domain.hierarchy.OuId;
+import com.example.oulearning.training.domain.exception.InvalidTrainingOperationException;
 import java.time.Instant;
 import java.util.Set;
-import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class TrainingTest {
 
-    private final TrainingId id = TrainingId.of(UUID.randomUUID());
-    private final EmployeeId requestedBy = EmployeeId.of("EMP-001");
-    private final OuId ouId = OuId.of(UUID.randomUUID());
-    private final TrainingName name = TrainingName.of("Domain-Driven Design Masterclass");
-    private final Cost cost = Cost.of(1200.0, "EUR");
-    private final Hours hours = Hours.of(16);
-    private final TrainingPurpose purpose = TrainingPurpose.idp();
-    private final TypeId typeId = TypeId.of(UUID.randomUUID());
-    private final Instant now = Instant.parse("2026-08-19T10:00:00Z");
-
-    private final ManagerReview review = new ManagerReview(
-            "Approved budget and schedule",
-            Modality.VIRTUAL,
-            Instant.parse("2026-09-01T09:00:00Z"),
-            Instant.parse("2026-09-02T17:00:00Z"),
-            ExternalProvider.of(
-                    ExternalProviderName.of("DDD Academy"),
-                    ExternalProviderContact.of(Email.of("contact@dddacademy.com"), Phone.of("+1234567890"))),
-            Instant.parse("2026-08-20T10:00:00Z"));
+    private final TrainingId id = TrainingTestFactory.randomTrainingId();
+    private final OuId ouId = HierarchyTestFactory.randomOuId();
+    private final EmployeeId employeeId = EmployeeTestFactory.randomEmployeeId();
+    private final TypeId typeId = TrainingTestFactory.randomTypeId();
+    private final TrainingName name = TrainingTestFactory.randomTrainingName();
+    private final Hours hours = TrainingTestFactory.randomHours();
+    private final Cost cost = TrainingTestFactory.randomCost();
+    private final TrainingPurpose purpose = TrainingTestFactory.randomTrainingPurpose();
+    private final Instant now = Instant.now();
 
     @Nested
     @DisplayName("Creation and Invariants")
     class CreationAndInvariants {
 
         @Test
-        @DisplayName("should create training with all fields")
-        void should_createTraining_withAllFields() {
-            EmployeeId attendee = EmployeeId.of("EMP-002");
+        @DisplayName("given required fields, when creating Training with REQUESTED status, then training is created successfully")
+        void givenRequiredFields_whenCreatingTrainingWithRequestedStatus_thenTrainingIsCreatedSuccessfully() {
+            // given
 
-            Training training = Training.of(
-                    id,
-                    requestedBy,
-                    ouId,
-                    name,
-                    cost,
-                    hours,
-                    purpose,
-                    typeId,
-                    TrainingStatus.APPROVED,
-                    review,
-                    now,
-                    now.plusSeconds(3600),
-                    Set.of(attendee));
+            // when
+            final var training = Training.create(id, employeeId, ouId, name, cost, hours, purpose, typeId, now);
 
+            // then
             assertThat(training.id()).isEqualTo(id);
-            assertThat(training.requestedBy()).isEqualTo(requestedBy);
+            assertThat(training.requestedBy()).isEqualTo(employeeId);
             assertThat(training.ouId()).isEqualTo(ouId);
             assertThat(training.name()).isEqualTo(name);
             assertThat(training.cost()).isEqualTo(cost);
             assertThat(training.hours()).isEqualTo(hours);
             assertThat(training.purpose()).isEqualTo(purpose);
             assertThat(training.typeId()).isEqualTo(typeId);
-            assertThat(training.status()).isEqualTo(TrainingStatus.APPROVED);
-            assertThat(training.managerReview()).contains(review);
+            assertThat(training.status()).isEqualTo(TrainingStatus.REQUESTED);
+            assertThat(training.managerReview()).isEmpty();
             assertThat(training.createdAt()).isEqualTo(now);
-            assertThat(training.updatedAt()).isEqualTo(now.plusSeconds(3600));
-            assertThat(training.attendees()).containsExactly(attendee);
+            assertThat(training.updatedAt()).isEqualTo(now);
+            assertThat(training.attendees()).isEmpty();
+            assertThat(training.toString())
+                    .isEqualTo("Training[id=%s, requestedBy=%s, ouId=%s, name=%s, cost=%s, hours=%s, purpose=%s, typeId=%s, status=%s]"
+                            .formatted(id, employeeId, ouId, name, cost, hours, purpose, typeId, TrainingStatus.REQUESTED));
         }
 
         @Test
-        @DisplayName("should throw NullPointerException when required parameters are null")
-        void should_throwException_when_requiredNull() {
-            assertThatThrownBy(() -> new Training(
-                            null, requestedBy, ouId, name, cost, hours, purpose, typeId,
-                            TrainingStatus.REQUESTED, null, now, now, Set.of()))
-                    .isInstanceOf(NullPointerException.class);
-            assertThatThrownBy(() -> new Training(
-                            id, null, ouId, name, cost, hours, purpose, typeId,
-                            TrainingStatus.REQUESTED, null, now, now, Set.of()))
-                    .isInstanceOf(NullPointerException.class);
+        @DisplayName("given null required parameters, when creating Training, then throw InvalidTrainingOperationException")
+        void givenNullRequiredParameters_whenCreatingTraining_thenThrowInvalidTrainingOperationException() {
+            // given
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> Training.create(null, employeeId, ouId, name, cost, hours, purpose, typeId, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("cannot be null");
+            assertThatThrownBy(() -> Training.create(id, null, ouId, name, cost, hours, purpose, typeId, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("cannot be null");
+            assertThatThrownBy(() -> Training.create(id, employeeId, null, name, cost, hours, purpose, typeId, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("cannot be null");
+            assertThatThrownBy(() -> Training.create(id, employeeId, ouId, null, cost, hours, purpose, typeId, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("cannot be null");
+            assertThatThrownBy(() -> Training.create(id, employeeId, ouId, name, null, hours, purpose, typeId, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("cannot be null");
+            assertThatThrownBy(() -> Training.create(id, employeeId, ouId, name, cost, null, purpose, typeId, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("cannot be null");
+            assertThatThrownBy(() -> Training.create(id, employeeId, ouId, name, cost, hours, null, typeId, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("cannot be null");
+            assertThatThrownBy(() -> Training.create(id, employeeId, ouId, name, cost, hours, purpose, null, now))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("cannot be null");
+            assertThatThrownBy(() -> Training.create(id, employeeId, ouId, name, cost, hours, purpose, typeId, null))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("cannot be null");
         }
     }
 
@@ -93,40 +100,43 @@ class TrainingTest {
     class IdentityAndEquality {
 
         @Test
-        @DisplayName("should be equal when ids match")
-        void should_beEqual_when_idsMatch() {
-            Training t1 = Training.of(
-                    id, requestedBy, ouId, name, cost, hours, purpose, typeId,
-                    TrainingStatus.REQUESTED, null, now, now, Set.of());
-            Training t2 = Training.of(
+        @DisplayName("given trainings with same id, when comparing, then they are equal")
+        void givenTrainingsWithSameId_whenComparing_thenTheyAreEqual() {
+            // given
+            final var t1 = Training.create(id, employeeId, ouId, name, cost, hours, purpose, typeId, now);
+            final var t2 = Training.of(
                     id,
-                    EmployeeId.of("OTHER"),
-                    OuId.of(UUID.randomUUID()),
-                    TrainingName.of("Other Training"),
-                    Cost.of(500.0, "EUR"),
-                    Hours.of(8),
+                    EmployeeTestFactory.randomEmployeeId(),
+                    HierarchyTestFactory.randomOuId(),
+                    TrainingTestFactory.randomTrainingName(),
+                    TrainingTestFactory.randomCost(),
+                    TrainingTestFactory.randomHours(),
                     TrainingPurpose.departmentGoals(),
-                    TypeId.of(UUID.randomUUID()),
+                    TrainingTestFactory.randomTypeId(),
                     TrainingStatus.APPROVED,
                     null,
                     now,
                     now,
-                    Set.of());
+                    Set.of(EmployeeTestFactory.randomEmployeeId()));
 
+            // when
+
+            // then
             assertThat(t1).isEqualTo(t2);
             assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
         }
 
         @Test
-        @DisplayName("should not be equal when ids differ")
-        void should_notBeEqual_when_idsDiffer() {
-            Training t1 = Training.of(
-                    id, requestedBy, ouId, name, cost, hours, purpose, typeId,
-                    TrainingStatus.REQUESTED, null, now, now, Set.of());
-            Training t2 = Training.of(
-                    TrainingId.of(UUID.randomUUID()), requestedBy, ouId, name, cost, hours, purpose, typeId,
-                    TrainingStatus.REQUESTED, null, now, now, Set.of());
+        @DisplayName("given trainings with different ids, when comparing, then they are not equal")
+        void givenTrainingsWithDifferentIds_whenComparing_thenTheyAreNotEqual() {
+            // given
+            final var t1 = Training.create(id, employeeId, ouId, name, cost, hours, purpose, typeId, now);
+            final var t2 = Training.create(
+                    TrainingTestFactory.randomTrainingId(), employeeId, ouId, name, cost, hours, purpose, typeId, now);
 
+            // when
+
+            // then
             assertThat(t1).isNotEqualTo(t2);
         }
     }

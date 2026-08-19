@@ -1,5 +1,6 @@
 package com.example.oulearning;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -7,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class OulearningApplicationTests {
 
     @Test
-    void contextLoads() {
-    }
-
+    @DisplayName("given application context, when starting up, then context loads successfully")
+    void givenApplicationContext_whenStartingUp_thenContextLoadsSuccessfully() {}
 }

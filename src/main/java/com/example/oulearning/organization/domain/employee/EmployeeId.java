@@ -1,28 +1,28 @@
 package com.example.oulearning.organization.domain.employee;
 
+import java.util.UUID;
+
 /**
- * Value object representing an employee identifier (e.g. Workday ID, Corporate Key).
+ * Value object representing an employee identifier.
  *
- * @param value the non-blank employee identifier string
+ * @param value the UUID value
  */
-public record EmployeeId(String value) {
+public record EmployeeId(UUID value) {
 
     public EmployeeId {
-        if (value == null) {
-            throw new InvalidEmployeeException("Employee id cannot be null");
-        }
-        value = value.strip();
-        if (value.isBlank()) {
-            throw new InvalidEmployeeException("Employee id cannot be blank");
-        }
+        EmployeeGuard.requireNonNull(value, "Employee id");
     }
 
-    public static EmployeeId of(String value) {
+    public static EmployeeId of(final UUID value) {
         return new EmployeeId(value);
+    }
+
+    public static EmployeeId fromString(final String value) {
+        return new EmployeeId(EmployeeGuard.requireValidUuid(value, "Employee id"));
     }
 
     @Override
     public String toString() {
-        return value;
+        return value.toString();
     }
 }

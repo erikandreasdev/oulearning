@@ -18,14 +18,14 @@ public final class Ou {
     private final Set<EmployeeId> members;
 
     public Ou(
-            OuId id,
-            Name name,
-            OuId parentId,
-            Set<OuId> childIds,
-            Set<EmployeeId> owners,
-            Set<EmployeeId> members) {
-        this.id = Objects.requireNonNull(id, "Ou id cannot be null");
-        this.name = Objects.requireNonNull(name, "Name cannot be null");
+            final OuId id,
+            final Name name,
+            final OuId parentId,
+            final Set<OuId> childIds,
+            final Set<EmployeeId> owners,
+            final Set<EmployeeId> members) {
+        this.id = HierarchyGuard.requireNonNull(id, "Ou id");
+        this.name = HierarchyGuard.requireNonNull(name, "Name");
         this.parentId = parentId;
         this.childIds = (childIds != null) ? Set.copyOf(childIds) : Set.of();
         this.owners = (owners != null) ? Set.copyOf(owners) : Set.of();
@@ -33,16 +33,16 @@ public final class Ou {
     }
 
     public static Ou of(
-            OuId id,
-            Name name,
-            OuId parentId,
-            Set<OuId> childIds,
-            Set<EmployeeId> owners,
-            Set<EmployeeId> members) {
+            final OuId id,
+            final Name name,
+            final OuId parentId,
+            final Set<OuId> childIds,
+            final Set<EmployeeId> owners,
+            final Set<EmployeeId> members) {
         return new Ou(id, name, parentId, childIds, owners, members);
     }
 
-    public static Ou of(OuId id, Name name) {
+    public static Ou of(final OuId id, final Name name) {
         return new Ou(id, name, null, Set.of(), Set.of(), Set.of());
     }
 
@@ -71,7 +71,7 @@ public final class Ou {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof Ou ou)) return false;
         return Objects.equals(id, ou.id);
@@ -84,6 +84,6 @@ public final class Ou {
 
     @Override
     public String toString() {
-        return "Ou[id=" + id + ", name=" + name + ", parentId=" + parentId + "]";
+        return "Ou[id=%s, name=%s, parentId=%s]".formatted(id, name, parentId);
     }
 }
