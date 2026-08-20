@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Suppress all Javadoc checks across the entire project (per pure code / DDD rules) -->
+    <suppress checks="Javadoc.*" files=".*"/>
+    <suppress checks="MissingJavadoc.*" files=".*"/>
+    <suppress checks="SummaryJavadoc" files=".*"/>
+    <suppress checks="SingleLineJavadoc" files=".*"/>
+    <suppress checks="NonEmptyAtclauseDescription" files=".*"/>
+    <suppress checks="AtclauseOrder" files=".*"/>
+    <suppress checks="JavadocTagContinuationIndentation" files=".*"/>
+
+    <!-- Suppress LineLength and MethodName pattern/length ONLY in test files -->
+    <suppress checks="LineLength" files="[/\\]src[/\\]test[/\\]"/>
+    <suppress checks="MethodName" files="[/\\]src[/\\]test[/\\]"/>
+</suppressions>

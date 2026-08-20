@@ -44,7 +44,7 @@ domain <- application <- infrastructure (adapters) <- bootstrap (Spring config)
 2. For non-trivial tasks produce an implementation plan listing changes per layer (domain → application → adapters → tests). Wait for approval when the change touches aggregate invariants, public APIs, or the schema.
 3. Implement inside-out: domain + unit tests → use case → adapters → wiring.
 4. Small, focused diffs. No unrelated refactors "while here".
-5. Before reporting done, run `./mvnw spotless:apply verify` and include the real result. Never claim tests pass without running them.
+5. Before reporting done, run `./mvnw spotless:apply checkstyle:check pmd:check verify` and include the real result. Verify zero Checkstyle errors and no static analysis / PMD / SonarQube quality warnings. Never claim tests pass without running them.
 6. No new dependencies without stating why. Never any framework in `domain`.
 7. Never delete, weaken, or `@Disabled` tests to make a build green.
 8. No hardcoded secrets; use `application-*.yml` + environment variables.
