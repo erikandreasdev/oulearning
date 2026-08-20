@@ -170,6 +170,16 @@
 											<value>COVEREDRATIO</value>
 											<minimum>0.85</minimum>
 										</limit>
+										<limit>
+											<counter>METHOD</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.85</minimum>
+										</limit>
+										<limit>
+											<counter>CLASS</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.85</minimum>
+										</limit>
 									</limits>
 								</rule>
 							</rules>
