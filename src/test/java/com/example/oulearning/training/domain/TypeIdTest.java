@@ -15,57 +15,58 @@ class TypeIdTest {
     class CreationAndValidation {
 
         @Test
-        @DisplayName("given valid UUID, when creating TypeId, then create successfully")
-        void givenValidUuid_whenCreatingTypeId_thenCreateSuccessfully() {
+        @DisplayName("given valid id, when creating TypeId, then create successfully")
+        void givenValidId_whenCreatingTypeId_thenCreateSuccessfully() {
             // given
-            final var uuid = TrainingTestFactory.randomUuid();
+            final var value = TrainingTestFactory.randomId();
 
             // when
-            final var id = TypeId.of(uuid);
+            final var id = TypeId.of(value);
 
             // then
-            assertThat(id.value()).isEqualTo(uuid);
-            assertThat(id).hasToString(uuid.toString());
+            assertThat(id.value()).isEqualTo(value);
+            assertThat(id).hasToString(String.valueOf(value));
         }
 
         @Test
-        @DisplayName("given valid UUID string, when parsing TypeId, then parse successfully")
-        void givenValidUuidString_whenParsingTypeId_thenParseSuccessfully() {
+        @DisplayName("given valid id string, when parsing TypeId, then parse successfully")
+        void givenValidIdString_whenParsingTypeId_thenParseSuccessfully() {
             // given
-            final var uuid = TrainingTestFactory.randomUuid();
+            final var value = TrainingTestFactory.randomId();
 
             // when
-            final var id = TypeId.fromString(" %s ".formatted(uuid));
+            final var id = TypeId.fromString(" %d ".formatted(value));
 
             // then
-            assertThat(id.value()).isEqualTo(uuid);
+            assertThat(id.value()).isEqualTo(value);
         }
 
         @Test
-        @DisplayName("given null UUID, when creating TypeId, then throw exception")
-        void givenNullUuid_whenCreatingTypeId_thenThrowException() {
+        @DisplayName("given non-positive id, when creating TypeId, then throw exception")
+        void givenNonPositiveId_whenCreatingTypeId_thenThrowException() {
             // given
+            final var nonPositiveValue = Instancio.gen().longs().range(Long.MIN_VALUE, 0L).get();
 
             // when
 
             // then
-            assertThatThrownBy(() -> new TypeId(null))
+            assertThatThrownBy(() -> new TypeId(nonPositiveValue))
                     .isInstanceOf(RuntimeException.class)
-                    .hasMessageContaining("cannot be null");
+                    .hasMessageContaining("must be strictly positive");
         }
 
         @Test
-        @DisplayName("given invalid UUID string, when parsing TypeId, then throw exception")
-        void givenInvalidUuidString_whenParsingTypeId_thenThrowException() {
+        @DisplayName("given invalid id string, when parsing TypeId, then throw exception")
+        void givenInvalidIdString_whenParsingTypeId_thenThrowException() {
             // given
-            final var invalidUuid = Instancio.create(String.class);
+            final var invalidId = Instancio.create(String.class);
 
             // when
 
             // then
-            assertThatThrownBy(() -> TypeId.fromString(invalidUuid))
+            assertThatThrownBy(() -> TypeId.fromString(invalidId))
                     .isInstanceOf(RuntimeException.class)
-                    .hasMessageContaining("Invalid UUID format");
+                    .hasMessageContaining("Invalid TypeId format");
 
             assertThatThrownBy(() -> TypeId.fromString(""))
                     .isInstanceOf(RuntimeException.class)
@@ -78,12 +79,12 @@ class TypeIdTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("given identical UUIDs, when comparing TypeIds, then they are equal")
-        void givenIdenticalUuids_whenComparingTypeIds_thenTheyAreEqual() {
+        @DisplayName("given identical ids, when comparing TypeIds, then they are equal")
+        void givenIdenticalIds_whenComparingTypeIds_thenTheyAreEqual() {
             // given
-            final var uuid = TrainingTestFactory.randomUuid();
-            final var id1 = TypeId.of(uuid);
-            final var id2 = TypeId.of(uuid);
+            final var value = TrainingTestFactory.randomId();
+            final var id1 = TypeId.of(value);
+            final var id2 = TypeId.of(value);
 
             // when
 
@@ -92,11 +93,11 @@ class TypeIdTest {
         }
 
         @Test
-        @DisplayName("given different UUIDs, when comparing TypeIds, then they are not equal")
-        void givenDifferentUuids_whenComparingTypeIds_thenTheyAreNotEqual() {
+        @DisplayName("given different ids, when comparing TypeIds, then they are not equal")
+        void givenDifferentIds_whenComparingTypeIds_thenTheyAreNotEqual() {
             // given
             final var id1 = TrainingTestFactory.randomTypeId();
-            final var id2 = TrainingTestFactory.randomTypeId();
+            final var id2 = TypeId.of(id1.value() + 1L);
 
             // when
 

@@ -16,49 +16,50 @@ class OrganizationalUnitIdTest {
     class CreationAndValidation {
 
         @Test
-        @DisplayName("given valid UUID, when creating OrganizationalUnitId, then id is created successfully")
-        void givenValidUuid_whenCreatingOrganizationalUnitId_thenIdIsCreatedSuccessfully() {
+        @DisplayName("given valid id, when creating OrganizationalUnitId, then id is created successfully")
+        void givenValidId_whenCreatingOrganizationalUnitId_thenIdIsCreatedSuccessfully() {
             // given
-            final var uuid = HierarchyTestFactory.randomUuid();
+            final var value = HierarchyTestFactory.randomId();
 
             // when
-            final var id = OrganizationalUnitId.of(uuid);
+            final var id = OrganizationalUnitId.of(value);
 
             // then
-            assertThat(id.value()).isEqualTo(uuid);
-            assertThat(id).hasToString(uuid.toString());
+            assertThat(id.value()).isEqualTo(value);
+            assertThat(id).hasToString(String.valueOf(value));
         }
 
         @Test
-        @DisplayName("given valid UUID string, when parsing OrganizationalUnitId, then id is parsed successfully")
-        void givenValidUuidString_whenParsingOrganizationalUnitId_thenIdIsParsedSuccessfully() {
+        @DisplayName("given valid id string, when parsing OrganizationalUnitId, then id is parsed successfully")
+        void givenValidIdString_whenParsingOrganizationalUnitId_thenIdIsParsedSuccessfully() {
             // given
-            final var uuid = HierarchyTestFactory.randomUuid();
-            final var uuidString = " %s ".formatted(uuid);
+            final var value = HierarchyTestFactory.randomId();
+            final var idString = " %d ".formatted(value);
 
             // when
-            final var id = OrganizationalUnitId.fromString(uuidString);
+            final var id = OrganizationalUnitId.fromString(idString);
 
             // then
-            assertThat(id.value()).isEqualTo(uuid);
+            assertThat(id.value()).isEqualTo(value);
         }
 
         @Test
-        @DisplayName("given null UUID, when creating OrganizationalUnitId, then throw InvalidOrganizationalUnitException")
-        void givenNullUuid_whenCreatingOrganizationalUnitId_thenThrowInvalidOrganizationalUnitException() {
+        @DisplayName("given non-positive id, when creating OrganizationalUnitId, then throw InvalidOrganizationalUnitException")
+        void givenNonPositiveId_whenCreatingOrganizationalUnitId_thenThrowInvalidOrganizationalUnitException() {
             // given
+            final var nonPositiveValue = Instancio.gen().longs().range(Long.MIN_VALUE, 0L).get();
 
             // when
 
             // then
-            assertThatThrownBy(() -> new OrganizationalUnitId(null))
+            assertThatThrownBy(() -> new OrganizationalUnitId(nonPositiveValue))
                     .isInstanceOf(InvalidOrganizationalUnitException.class)
-                    .hasMessageContaining("cannot be null");
+                    .hasMessageContaining("must be strictly positive");
         }
 
         @Test
-        @DisplayName("given blank UUID string, when parsing OrganizationalUnitId, then throw InvalidOrganizationalUnitException")
-        void givenBlankUuidString_whenParsingOrganizationalUnitId_thenThrowInvalidOrganizationalUnitException() {
+        @DisplayName("given blank id string, when parsing OrganizationalUnitId, then throw InvalidOrganizationalUnitException")
+        void givenBlankIdString_whenParsingOrganizationalUnitId_thenThrowInvalidOrganizationalUnitException() {
             // given
 
             // when
@@ -70,17 +71,17 @@ class OrganizationalUnitIdTest {
         }
 
         @Test
-        @DisplayName("given invalid UUID string, when parsing OrganizationalUnitId, then throw InvalidOrganizationalUnitException")
-        void givenInvalidUuidString_whenParsingOrganizationalUnitId_thenThrowInvalidOrganizationalUnitException() {
+        @DisplayName("given invalid id string, when parsing OrganizationalUnitId, then throw InvalidOrganizationalUnitException")
+        void givenInvalidIdString_whenParsingOrganizationalUnitId_thenThrowInvalidOrganizationalUnitException() {
             // given
-            final var invalidUuid = Instancio.create(String.class);
+            final var invalidId = Instancio.create(String.class);
 
             // when
 
             // then
-            assertThatThrownBy(() -> OrganizationalUnitId.fromString(invalidUuid))
+            assertThatThrownBy(() -> OrganizationalUnitId.fromString(invalidId))
                     .isInstanceOf(InvalidOrganizationalUnitException.class)
-                    .hasMessageContaining("Invalid UUID format");
+                    .hasMessageContaining("Invalid Organizational unit id format");
         }
     }
 
@@ -89,12 +90,12 @@ class OrganizationalUnitIdTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("given identical UUIDs, when comparing OrganizationalUnitIds, then they are equal")
-        void givenIdenticalUuids_whenComparingOrganizationalUnitIds_thenTheyAreEqual() {
+        @DisplayName("given identical ids, when comparing OrganizationalUnitIds, then they are equal")
+        void givenIdenticalIds_whenComparingOrganizationalUnitIds_thenTheyAreEqual() {
             // given
-            final var uuid = HierarchyTestFactory.randomUuid();
-            final var id1 = OrganizationalUnitId.of(uuid);
-            final var id2 = OrganizationalUnitId.of(uuid);
+            final var value = HierarchyTestFactory.randomId();
+            final var id1 = OrganizationalUnitId.of(value);
+            final var id2 = OrganizationalUnitId.of(value);
 
             // when
 
@@ -103,11 +104,11 @@ class OrganizationalUnitIdTest {
         }
 
         @Test
-        @DisplayName("given different UUIDs, when comparing OrganizationalUnitIds, then they are not equal")
-        void givenDifferentUuids_whenComparingOrganizationalUnitIds_thenTheyAreNotEqual() {
+        @DisplayName("given different ids, when comparing OrganizationalUnitIds, then they are not equal")
+        void givenDifferentIds_whenComparingOrganizationalUnitIds_thenTheyAreNotEqual() {
             // given
             final var id1 = HierarchyTestFactory.randomOrganizationalUnitId();
-            final var id2 = HierarchyTestFactory.randomOrganizationalUnitId();
+            final var id2 = OrganizationalUnitId.of(id1.value() + 1L);
 
             // when
 

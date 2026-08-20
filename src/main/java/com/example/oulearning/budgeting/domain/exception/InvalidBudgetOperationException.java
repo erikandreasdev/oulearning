@@ -1,5 +1,6 @@
 package com.example.oulearning.budgeting.domain.exception;
 
+import com.example.oulearning.budgeting.domain.BudgetingConstants;
 
 public final class InvalidBudgetOperationException extends BudgetingException {
 
@@ -28,11 +29,13 @@ public final class InvalidBudgetOperationException extends BudgetingException {
                 "Fiscal year must be between %d and %d: %d".formatted(min, max, actual));
     }
 
-    public static InvalidBudgetOperationException invalidUuid(final String value) {
-        return new InvalidBudgetOperationException("Invalid UUID format: %s".formatted(value));
+    public static InvalidBudgetOperationException nonPositiveId(final String fieldName, final long value) {
+        return new InvalidBudgetOperationException(
+                "%s must be strictly positive (at least %d): %d".formatted(fieldName, BudgetingConstants.MIN_ID, value));
     }
 
-    public static InvalidBudgetOperationException invalidUuid(final String value, final Throwable cause) {
-        return new InvalidBudgetOperationException("Invalid UUID format: %s".formatted(value), cause);
+    public static InvalidBudgetOperationException invalidId(
+            final String fieldName, final String value, final Throwable cause) {
+        return new InvalidBudgetOperationException("Invalid %s format: %s".formatted(fieldName, value), cause);
     }
 }

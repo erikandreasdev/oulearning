@@ -1,6 +1,5 @@
 package com.example.oulearning.organization.domain.employee;
 
-import java.util.UUID;
 import org.instancio.Instancio;
 
 public final class EmployeeTestFactory {
@@ -19,12 +18,12 @@ public final class EmployeeTestFactory {
     private EmployeeTestFactory() {
     }
 
-    public static UUID randomUuid() {
-        return Instancio.create(UUID.class);
+    public static long randomId() {
+        return Instancio.gen().longs().range(EmployeeConstants.MIN_ID, Long.MAX_VALUE).get();
     }
 
     public static EmployeeId randomEmployeeId() {
-        return EmployeeId.of(randomUuid());
+        return EmployeeId.of(randomId());
     }
 
     public static String randomNameString() {

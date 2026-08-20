@@ -16,49 +16,50 @@ class EmployeeIdTest {
     class CreationAndValidation {
 
         @Test
-        @DisplayName("given valid UUID, when creating EmployeeId, then id is created successfully")
-        void givenValidUuid_whenCreatingEmployeeId_thenIdIsCreatedSuccessfully() {
+        @DisplayName("given valid id, when creating EmployeeId, then id is created successfully")
+        void givenValidId_whenCreatingEmployeeId_thenIdIsCreatedSuccessfully() {
             // given
-            final var uuid = EmployeeTestFactory.randomUuid();
+            final var value = EmployeeTestFactory.randomId();
 
             // when
-            final var id = EmployeeId.of(uuid);
+            final var id = EmployeeId.of(value);
 
             // then
-            assertThat(id.value()).isEqualTo(uuid);
-            assertThat(id).hasToString(uuid.toString());
+            assertThat(id.value()).isEqualTo(value);
+            assertThat(id).hasToString(String.valueOf(value));
         }
 
         @Test
-        @DisplayName("given valid UUID string, when parsing EmployeeId, then id is parsed successfully")
-        void givenValidUuidString_whenParsingEmployeeId_thenIdIsParsedSuccessfully() {
+        @DisplayName("given valid id string, when parsing EmployeeId, then id is parsed successfully")
+        void givenValidIdString_whenParsingEmployeeId_thenIdIsParsedSuccessfully() {
             // given
-            final var uuid = EmployeeTestFactory.randomUuid();
-            final var uuidString = " %s ".formatted(uuid);
+            final var value = EmployeeTestFactory.randomId();
+            final var idString = " %d ".formatted(value);
 
             // when
-            final var id = EmployeeId.fromString(uuidString);
+            final var id = EmployeeId.fromString(idString);
 
             // then
-            assertThat(id.value()).isEqualTo(uuid);
+            assertThat(id.value()).isEqualTo(value);
         }
 
         @Test
-        @DisplayName("given null UUID, when creating EmployeeId, then throw InvalidEmployeeException")
-        void givenNullUuid_whenCreatingEmployeeId_thenThrowInvalidEmployeeException() {
+        @DisplayName("given non-positive id, when creating EmployeeId, then throw InvalidEmployeeException")
+        void givenNonPositiveId_whenCreatingEmployeeId_thenThrowInvalidEmployeeException() {
             // given
+            final var nonPositiveValue = Instancio.gen().longs().range(Long.MIN_VALUE, 0L).get();
 
             // when
 
             // then
-            assertThatThrownBy(() -> new EmployeeId(null))
+            assertThatThrownBy(() -> new EmployeeId(nonPositiveValue))
                     .isInstanceOf(InvalidEmployeeException.class)
-                    .hasMessageContaining("cannot be null");
+                    .hasMessageContaining("must be strictly positive");
         }
 
         @Test
-        @DisplayName("given blank UUID string, when parsing EmployeeId, then throw InvalidEmployeeException")
-        void givenBlankUuidString_whenParsingEmployeeId_thenThrowInvalidEmployeeException() {
+        @DisplayName("given blank id string, when parsing EmployeeId, then throw InvalidEmployeeException")
+        void givenBlankIdString_whenParsingEmployeeId_thenThrowInvalidEmployeeException() {
             // given
 
             // when
@@ -70,17 +71,17 @@ class EmployeeIdTest {
         }
 
         @Test
-        @DisplayName("given invalid UUID string, when parsing EmployeeId, then throw InvalidEmployeeException")
-        void givenInvalidUuidString_whenParsingEmployeeId_thenThrowInvalidEmployeeException() {
+        @DisplayName("given invalid id string, when parsing EmployeeId, then throw InvalidEmployeeException")
+        void givenInvalidIdString_whenParsingEmployeeId_thenThrowInvalidEmployeeException() {
             // given
-            final var invalidUuid = Instancio.create(String.class);
+            final var invalidId = Instancio.create(String.class);
 
             // when
 
             // then
-            assertThatThrownBy(() -> EmployeeId.fromString(invalidUuid))
+            assertThatThrownBy(() -> EmployeeId.fromString(invalidId))
                     .isInstanceOf(InvalidEmployeeException.class)
-                    .hasMessageContaining("Invalid UUID format");
+                    .hasMessageContaining("Invalid Employee id format");
         }
     }
 
@@ -89,12 +90,12 @@ class EmployeeIdTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("given identical UUIDs, when comparing EmployeeIds, then they are equal")
-        void givenIdenticalUuids_whenComparingEmployeeIds_thenTheyAreEqual() {
+        @DisplayName("given identical ids, when comparing EmployeeIds, then they are equal")
+        void givenIdenticalIds_whenComparingEmployeeIds_thenTheyAreEqual() {
             // given
-            final var uuid = EmployeeTestFactory.randomUuid();
-            final var id1 = EmployeeId.of(uuid);
-            final var id2 = EmployeeId.of(uuid);
+            final var value = EmployeeTestFactory.randomId();
+            final var id1 = EmployeeId.of(value);
+            final var id2 = EmployeeId.of(value);
 
             // when
 
@@ -103,11 +104,11 @@ class EmployeeIdTest {
         }
 
         @Test
-        @DisplayName("given different UUIDs, when comparing EmployeeIds, then they are not equal")
-        void givenDifferentUuids_whenComparingEmployeeIds_thenTheyAreNotEqual() {
+        @DisplayName("given different ids, when comparing EmployeeIds, then they are not equal")
+        void givenDifferentIds_whenComparingEmployeeIds_thenTheyAreNotEqual() {
             // given
             final var id1 = EmployeeTestFactory.randomEmployeeId();
-            final var id2 = EmployeeTestFactory.randomEmployeeId();
+            final var id2 = EmployeeId.of(id1.value() + 1L);
 
             // when
 

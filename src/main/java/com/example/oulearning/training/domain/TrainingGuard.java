@@ -7,7 +7,6 @@ import com.example.oulearning.training.domain.exception.InvalidTrainingOperation
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Currency;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 final class TrainingGuard {
@@ -21,12 +20,12 @@ final class TrainingGuard {
         return requireNonNull(id, "Training id");
     }
 
-    static UUID requireTrainingId(final UUID value) {
-        return requireNonNull(value, "Training id");
+    static long requireTrainingId(final long value) {
+        return requirePositiveId(value, "Training id");
     }
 
-    static UUID requireValidTrainingId(final String value) {
-        return requireValidUuid(value, "Training id");
+    static long requireValidTrainingId(final String value) {
+        return requireValidId(value, "Training id");
     }
 
     static EmployeeId requireRequestedBy(final EmployeeId requestedBy) {
@@ -103,12 +102,12 @@ final class TrainingGuard {
         return requireNonNull(typeId, "TypeId");
     }
 
-    static UUID requireTypeId(final UUID value) {
-        return requireNonNull(value, "TypeId");
+    static long requireTypeId(final long value) {
+        return requirePositiveId(value, "TypeId");
     }
 
-    static UUID requireValidTypeId(final String value) {
-        return requireValidUuid(value, "TypeId");
+    static long requireValidTypeId(final String value) {
+        return requireValidId(value, "TypeId");
     }
 
     static TypeName requireTypeName(final TypeName name) {
@@ -217,14 +216,22 @@ final class TrainingGuard {
         return stripped;
     }
 
-    private static UUID requireValidUuid(final String value, final String fieldName) {
+    private static long requirePositiveId(final long value, final String fieldName) {
+        if (value < TrainingConstants.MIN_ID) {
+            throw InvalidTrainingOperationException.nonPositiveId(fieldName, value);
+        }
+        return value;
+    }
+
+    private static long requireValidId(final String value, final String fieldName) {
         if (value == null || value.isBlank()) {
             throw InvalidTrainingOperationException.nullOrBlank(fieldName);
         }
         try {
-            return UUID.fromString(value.strip());
-        } catch (final IllegalArgumentException e) {
-            throw InvalidTrainingOperationException.invalidUuid(value, e);
+            final var parsed = Long.parseLong(value.strip());
+            return requirePositiveId(parsed, fieldName);
+        } catch (final NumberFormatException e) {
+            throw InvalidTrainingOperationException.invalidId(fieldName, value, e);
         }
     }
 }

@@ -2,7 +2,6 @@ package com.example.oulearning.organization.domain.employee;
 
 import com.example.oulearning.organization.domain.employee.exception.InvalidEmailException;
 import com.example.oulearning.organization.domain.employee.exception.InvalidEmployeeException;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 final class EmployeeGuard {
@@ -16,12 +15,12 @@ final class EmployeeGuard {
         return requireNonNull(id, "Employee id");
     }
 
-    static UUID requireEmployeeId(final UUID value) {
-        return requireNonNull(value, "Employee id");
+    static long requireEmployeeId(final long value) {
+        return requirePositiveId(value, "Employee id");
     }
 
-    static UUID requireValidEmployeeId(final String value) {
-        return requireValidUuid(value, "Employee id");
+    static long requireValidEmployeeId(final String value) {
+        return requireValidId(value, "Employee id");
     }
 
     static FullName requireFullName(final FullName fullName) {
@@ -98,14 +97,22 @@ final class EmployeeGuard {
         return stripped;
     }
 
-    private static UUID requireValidUuid(final String value, final String fieldName) {
+    private static long requirePositiveId(final long value, final String fieldName) {
+        if (value < EmployeeConstants.MIN_ID) {
+            throw InvalidEmployeeException.nonPositiveId(fieldName, value);
+        }
+        return value;
+    }
+
+    private static long requireValidId(final String value, final String fieldName) {
         if (value == null || value.isBlank()) {
             throw InvalidEmployeeException.nullOrBlank(fieldName);
         }
         try {
-            return UUID.fromString(value.strip());
-        } catch (final IllegalArgumentException e) {
-            throw InvalidEmployeeException.invalidUuid(value, e);
+            final var parsed = Long.parseLong(value.strip());
+            return requirePositiveId(parsed, fieldName);
+        } catch (final NumberFormatException e) {
+            throw InvalidEmployeeException.invalidId(fieldName, value, e);
         }
     }
 }

@@ -1,15 +1,13 @@
 package com.example.oulearning.organization.domain.employee;
 
-import java.util.UUID;
 
-
-public record EmployeeId(UUID value) {
+public record EmployeeId(long value) {
 
     public EmployeeId {
         EmployeeGuard.requireEmployeeId(value);
     }
 
-    public static EmployeeId of(final UUID value) {
+    public static EmployeeId of(final long value) {
         return new EmployeeId(value);
     }
 
@@ -19,6 +17,6 @@ public record EmployeeId(UUID value) {
 
     @Override
     public String toString() {
-        return value.toString();
+        return String.valueOf(value);
     }
 }

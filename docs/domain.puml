@@ -8,7 +8,7 @@ package "organization" {
     package "Hierarchy" {
 
         class OrganizationalUnitId <<Value Object>> {
-            - value : UUID
+            - value : long
         }
 
         class Name <<Value Object>> {
@@ -41,7 +41,7 @@ package "organization" {
     package "Employee" {
 
         class EmployeeId <<Value Object>> {
-            - value : UUID
+            - value : long
         }
 
         class Name <<Value Object>> {
@@ -79,7 +79,7 @@ package "organization" {
 package "budgeting" {
 
     class BudgetId <<Value Object>> {
-        - value : UUID
+        - value : long
     }
 
     class FiscalYear <<Value Object>> {
@@ -111,7 +111,7 @@ package "budgeting" {
 package "training" {
 
     class TrainingId <<Value Object>> {
-        - value : UUID
+        - value : long
     }
 
     class TrainingName <<Value Object>> {
@@ -128,7 +128,7 @@ package "training" {
     }
 
     class TypeId <<Value Object>> {
-        - value : UUID
+        - value : long
     }
 
     class TypeName <<Value Object>> {

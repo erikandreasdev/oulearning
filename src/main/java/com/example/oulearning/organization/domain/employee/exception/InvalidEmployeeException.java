@@ -1,5 +1,6 @@
 package com.example.oulearning.organization.domain.employee.exception;
 
+import com.example.oulearning.organization.domain.employee.EmployeeConstants;
 
 public final class InvalidEmployeeException extends EmployeeException {
 
@@ -35,11 +36,13 @@ public final class InvalidEmployeeException extends EmployeeException {
                 "%s length exceeds maximum of %d characters: %s".formatted(fieldName, max, actual));
     }
 
-    public static InvalidEmployeeException invalidUuid(final String value) {
-        return new InvalidEmployeeException("Invalid UUID format: %s".formatted(value));
+    public static InvalidEmployeeException nonPositiveId(final String fieldName, final long value) {
+        return new InvalidEmployeeException(
+                "%s must be strictly positive (at least %d): %d".formatted(fieldName, EmployeeConstants.MIN_ID, value));
     }
 
-    public static InvalidEmployeeException invalidUuid(final String value, final Throwable cause) {
-        return new InvalidEmployeeException("Invalid UUID format: %s".formatted(value), cause);
+    public static InvalidEmployeeException invalidId(
+            final String fieldName, final String value, final Throwable cause) {
+        return new InvalidEmployeeException("Invalid %s format: %s".formatted(fieldName, value), cause);
     }
 }

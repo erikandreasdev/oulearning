@@ -6,7 +6,6 @@ import com.example.oulearning.organization.domain.hierarchy.HierarchyTestFactory
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 import org.instancio.Instancio;
 
 public final class TrainingTestFactory {
@@ -26,16 +25,16 @@ public final class TrainingTestFactory {
     private TrainingTestFactory() {
     }
 
-    public static UUID randomUuid() {
-        return Instancio.create(UUID.class);
+    public static long randomId() {
+        return Instancio.gen().longs().range(TrainingConstants.MIN_ID, Long.MAX_VALUE).get();
     }
 
     public static TrainingId randomTrainingId() {
-        return TrainingId.of(randomUuid());
+        return TrainingId.of(randomId());
     }
 
     public static TypeId randomTypeId() {
-        return TypeId.of(randomUuid());
+        return TypeId.of(randomId());
     }
 
     public static String randomTypeNameString() {

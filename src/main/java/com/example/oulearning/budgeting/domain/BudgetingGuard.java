@@ -3,7 +3,6 @@ package com.example.oulearning.budgeting.domain;
 import com.example.oulearning.budgeting.domain.exception.InvalidBudgetOperationException;
 import com.example.oulearning.organization.domain.hierarchy.OrganizationalUnitId;
 import java.math.BigDecimal;
-import java.util.UUID;
 import javax.money.MonetaryAmount;
 
 final class BudgetingGuard {
@@ -15,12 +14,12 @@ final class BudgetingGuard {
         return requireNonNull(id, "Budget id");
     }
 
-    static UUID requireBudgetId(final UUID value) {
-        return requireNonNull(value, "Budget id");
+    static long requireBudgetId(final long value) {
+        return requirePositiveId(value, "Budget id");
     }
 
-    static UUID requireValidBudgetId(final String value) {
-        return requireValidUuid(value, "Budget id");
+    static long requireValidBudgetId(final String value) {
+        return requireValidId(value, "Budget id");
     }
 
     static OrganizationalUnitId requireOrganizationalUnitId(final OrganizationalUnitId organizationalUnitId) {
@@ -77,14 +76,22 @@ final class BudgetingGuard {
         return value;
     }
 
-    private static UUID requireValidUuid(final String value, final String fieldName) {
+    private static long requirePositiveId(final long value, final String fieldName) {
+        if (value < BudgetingConstants.MIN_ID) {
+            throw InvalidBudgetOperationException.nonPositiveId(fieldName, value);
+        }
+        return value;
+    }
+
+    private static long requireValidId(final String value, final String fieldName) {
         if (value == null || value.isBlank()) {
             throw InvalidBudgetOperationException.nullOrBlank(fieldName);
         }
         try {
-            return UUID.fromString(value.strip());
-        } catch (final IllegalArgumentException e) {
-            throw InvalidBudgetOperationException.invalidUuid(value, e);
+            final var parsed = Long.parseLong(value.strip());
+            return requirePositiveId(parsed, fieldName);
+        } catch (final NumberFormatException e) {
+            throw InvalidBudgetOperationException.invalidId(fieldName, value, e);
         }
     }
 }

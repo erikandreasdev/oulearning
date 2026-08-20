@@ -15,57 +15,58 @@ class BudgetIdTest {
     class CreationAndValidation {
 
         @Test
-        @DisplayName("given valid UUID, when creating BudgetId, then create successfully")
-        void givenValidUuid_whenCreatingBudgetId_thenCreateSuccessfully() {
+        @DisplayName("given valid id, when creating BudgetId, then create successfully")
+        void givenValidId_whenCreatingBudgetId_thenCreateSuccessfully() {
             // given
-            final var uuid = BudgetingTestFactory.randomUuid();
+            final var value = BudgetingTestFactory.randomId();
 
             // when
-            final var id = BudgetId.of(uuid);
+            final var id = BudgetId.of(value);
 
             // then
-            assertThat(id.value()).isEqualTo(uuid);
-            assertThat(id).hasToString(uuid.toString());
+            assertThat(id.value()).isEqualTo(value);
+            assertThat(id).hasToString(String.valueOf(value));
         }
 
         @Test
-        @DisplayName("given valid UUID string, when parsing BudgetId, then parse successfully")
-        void givenValidUuidString_whenParsingBudgetId_thenParseSuccessfully() {
+        @DisplayName("given valid id string, when parsing BudgetId, then parse successfully")
+        void givenValidIdString_whenParsingBudgetId_thenParseSuccessfully() {
             // given
-            final var uuid = BudgetingTestFactory.randomUuid();
+            final var value = BudgetingTestFactory.randomId();
 
             // when
-            final var id = BudgetId.fromString(" %s ".formatted(uuid));
+            final var id = BudgetId.fromString(" %d ".formatted(value));
 
             // then
-            assertThat(id.value()).isEqualTo(uuid);
+            assertThat(id.value()).isEqualTo(value);
         }
 
         @Test
-        @DisplayName("given null UUID, when creating BudgetId, then throw exception")
-        void givenNullUuid_whenCreatingBudgetId_thenThrowException() {
+        @DisplayName("given non-positive id, when creating BudgetId, then throw exception")
+        void givenNonPositiveId_whenCreatingBudgetId_thenThrowException() {
             // given
+            final var nonPositiveValue = Instancio.gen().longs().range(Long.MIN_VALUE, 0L).get();
 
             // when
 
             // then
-            assertThatThrownBy(() -> new BudgetId(null))
+            assertThatThrownBy(() -> new BudgetId(nonPositiveValue))
                     .isInstanceOf(RuntimeException.class)
-                    .hasMessageContaining("cannot be null");
+                    .hasMessageContaining("must be strictly positive");
         }
 
         @Test
-        @DisplayName("given invalid UUID string, when parsing BudgetId, then throw exception")
-        void givenInvalidUuidString_whenParsingBudgetId_thenThrowException() {
+        @DisplayName("given invalid id string, when parsing BudgetId, then throw exception")
+        void givenInvalidIdString_whenParsingBudgetId_thenThrowException() {
             // given
-            final var invalidUuid = Instancio.create(String.class);
+            final var invalidId = Instancio.create(String.class);
 
             // when
 
             // then
-            assertThatThrownBy(() -> BudgetId.fromString(invalidUuid))
+            assertThatThrownBy(() -> BudgetId.fromString(invalidId))
                     .isInstanceOf(RuntimeException.class)
-                    .hasMessageContaining("Invalid UUID format");
+                    .hasMessageContaining("Invalid Budget id format");
 
             assertThatThrownBy(() -> BudgetId.fromString(""))
                     .isInstanceOf(RuntimeException.class)
@@ -78,12 +79,12 @@ class BudgetIdTest {
     class ValueObjectSemantics {
 
         @Test
-        @DisplayName("given identical UUIDs, when comparing BudgetIds, then they are equal")
-        void givenIdenticalUuids_whenComparingBudgetIds_thenTheyAreEqual() {
+        @DisplayName("given identical ids, when comparing BudgetIds, then they are equal")
+        void givenIdenticalIds_whenComparingBudgetIds_thenTheyAreEqual() {
             // given
-            final var uuid = BudgetingTestFactory.randomUuid();
-            final var id1 = BudgetId.of(uuid);
-            final var id2 = BudgetId.of(uuid);
+            final var value = BudgetingTestFactory.randomId();
+            final var id1 = BudgetId.of(value);
+            final var id2 = BudgetId.of(value);
 
             // when
 
@@ -92,11 +93,11 @@ class BudgetIdTest {
         }
 
         @Test
-        @DisplayName("given different UUIDs, when comparing BudgetIds, then they are not equal")
-        void givenDifferentUuids_whenComparingBudgetIds_thenTheyAreNotEqual() {
+        @DisplayName("given different ids, when comparing BudgetIds, then they are not equal")
+        void givenDifferentIds_whenComparingBudgetIds_thenTheyAreNotEqual() {
             // given
             final var id1 = BudgetingTestFactory.randomBudgetId();
-            final var id2 = BudgetingTestFactory.randomBudgetId();
+            final var id2 = BudgetId.of(id1.value() + 1L);
 
             // when
 

@@ -1,15 +1,13 @@
 package com.example.oulearning.training.domain;
 
-import java.util.UUID;
 
-
-public record TrainingId(UUID value) {
+public record TrainingId(long value) {
 
     public TrainingId {
         TrainingGuard.requireTrainingId(value);
     }
 
-    public static TrainingId of(final UUID value) {
+    public static TrainingId of(final long value) {
         return new TrainingId(value);
     }
 
@@ -19,6 +17,6 @@ public record TrainingId(UUID value) {
 
     @Override
     public String toString() {
-        return value.toString();
+        return String.valueOf(value);
     }
 }

@@ -3,6 +3,7 @@ package com.example.oulearning.organization.domain.employee;
 
 public final class EmployeeConstants {
 
+    public static final long MIN_ID = 1L;
     public static final String EMAIL_REGEX =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}$";
     public static final int MIN_NAME_LENGTH = 1;

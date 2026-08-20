@@ -1,15 +1,13 @@
 package com.example.oulearning.budgeting.domain;
 
-import java.util.UUID;
 
-
-public record BudgetId(UUID value) {
+public record BudgetId(long value) {
 
     public BudgetId {
         BudgetingGuard.requireBudgetId(value);
     }
 
-    public static BudgetId of(final UUID value) {
+    public static BudgetId of(final long value) {
         return new BudgetId(value);
     }
 
@@ -19,6 +17,6 @@ public record BudgetId(UUID value) {
 
     @Override
     public String toString() {
-        return value.toString();
+        return String.valueOf(value);
     }
 }

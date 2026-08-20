@@ -1,7 +1,6 @@
 package com.example.oulearning.organization.domain.hierarchy;
 
 import com.example.oulearning.organization.domain.hierarchy.exception.InvalidOrganizationalUnitException;
-import java.util.UUID;
 
 final class HierarchyGuard {
 
@@ -12,12 +11,12 @@ final class HierarchyGuard {
         return requireNonNull(id, "Organizational unit id");
     }
 
-    static UUID requireOrganizationalUnitId(final UUID value) {
-        return requireNonNull(value, "Organizational unit id");
+    static long requireOrganizationalUnitId(final long value) {
+        return requirePositiveId(value, "Organizational unit id");
     }
 
-    static UUID requireValidOrganizationalUnitId(final String value) {
-        return requireValidUuid(value, "Organizational unit id");
+    static long requireValidOrganizationalUnitId(final String value) {
+        return requireValidId(value, "Organizational unit id");
     }
 
     static Name requireName(final Name name) {
@@ -56,14 +55,22 @@ final class HierarchyGuard {
         return stripped;
     }
 
-    private static UUID requireValidUuid(final String value, final String fieldName) {
+    private static long requirePositiveId(final long value, final String fieldName) {
+        if (value < HierarchyConstants.MIN_ID) {
+            throw InvalidOrganizationalUnitException.nonPositiveId(fieldName, value);
+        }
+        return value;
+    }
+
+    private static long requireValidId(final String value, final String fieldName) {
         if (value == null || value.isBlank()) {
             throw InvalidOrganizationalUnitException.nullOrBlank(fieldName);
         }
         try {
-            return UUID.fromString(value.strip());
-        } catch (final IllegalArgumentException e) {
-            throw InvalidOrganizationalUnitException.invalidUuid(value, e);
+            final var parsed = Long.parseLong(value.strip());
+            return requirePositiveId(parsed, fieldName);
+        } catch (final NumberFormatException e) {
+            throw InvalidOrganizationalUnitException.invalidId(fieldName, value, e);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.oulearning.training.domain.exception;
 
+import com.example.oulearning.training.domain.TrainingConstants;
 
 public final class InvalidTrainingOperationException extends TrainingException {
 
@@ -29,12 +30,14 @@ public final class InvalidTrainingOperationException extends TrainingException {
                 "%s length must be between %d and %d characters: %s".formatted(fieldName, min, max, actual));
     }
 
-    public static InvalidTrainingOperationException invalidUuid(final String value) {
-        return new InvalidTrainingOperationException("Invalid UUID format: %s".formatted(value));
+    public static InvalidTrainingOperationException nonPositiveId(final String fieldName, final long value) {
+        return new InvalidTrainingOperationException(
+                "%s must be strictly positive (at least %d): %d".formatted(fieldName, TrainingConstants.MIN_ID, value));
     }
 
-    public static InvalidTrainingOperationException invalidUuid(final String value, final Throwable cause) {
-        return new InvalidTrainingOperationException("Invalid UUID format: %s".formatted(value), cause);
+    public static InvalidTrainingOperationException invalidId(
+            final String fieldName, final String value, final Throwable cause) {
+        return new InvalidTrainingOperationException("Invalid %s format: %s".formatted(fieldName, value), cause);
     }
 
     public static InvalidTrainingOperationException negativeCost(final Object amount) {

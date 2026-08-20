@@ -3,7 +3,6 @@ package com.example.oulearning.budgeting.domain;
 import com.example.oulearning.organization.domain.hierarchy.HierarchyTestFactory;
 import com.example.oulearning.organization.domain.hierarchy.OrganizationalUnitId;
 import java.math.BigDecimal;
-import java.util.UUID;
 import org.instancio.Instancio;
 
 public final class BudgetingTestFactory {
@@ -14,12 +13,12 @@ public final class BudgetingTestFactory {
     private BudgetingTestFactory() {
     }
 
-    public static UUID randomUuid() {
-        return Instancio.create(UUID.class);
+    public static long randomId() {
+        return Instancio.gen().longs().range(BudgetingConstants.MIN_ID, Long.MAX_VALUE).get();
     }
 
     public static BudgetId randomBudgetId() {
-        return BudgetId.of(randomUuid());
+        return BudgetId.of(randomId());
     }
 
     public static int randomFiscalYearValue() {
