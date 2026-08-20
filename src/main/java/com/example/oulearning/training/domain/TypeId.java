@@ -4,7 +4,7 @@ package com.example.oulearning.training.domain;
 public record TypeId(long value) {
 
     public TypeId {
-        TrainingGuard.requireTypeId(value);
+        TrainingGuard.requirePositiveTypeId(value);
     }
 
     public static TypeId of(final long value) {

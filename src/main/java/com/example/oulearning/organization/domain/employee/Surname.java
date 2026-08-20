@@ -4,7 +4,7 @@ package com.example.oulearning.organization.domain.employee;
 public record Surname(String value) {
 
     public Surname {
-        value = EmployeeGuard.requireSurname(value);
+        value = EmployeeGuard.requireValidSurname(value);
     }
 
     public static Surname of(final String value) {

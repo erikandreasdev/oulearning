@@ -8,7 +8,7 @@ public record TrainingPurpose(TrainingPurposeType type, String otherPurpose) {
     public TrainingPurpose {
         TrainingGuard.requirePurposeType(type);
         if (type == TrainingPurposeType.OTHER) {
-            otherPurpose = TrainingGuard.requireOtherPurposeDescription(otherPurpose);
+            otherPurpose = TrainingGuard.requireValidOtherPurposeDescription(otherPurpose);
         } else {
             otherPurpose = null;
         }

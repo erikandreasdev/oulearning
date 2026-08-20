@@ -11,50 +11,84 @@ import java.util.regex.Pattern;
 
 final class TrainingGuard {
 
-    private static final Pattern PHONE_PATTERN = Pattern.compile(TrainingConstants.PHONE_REGEX);
+    private static final String FIELD_TRAINING_ID = "Training id";
+    private static final String FIELD_TYPE_ID = "TypeId";
+    private static final String FIELD_REQUESTED_BY = "RequestedBy employee id";
+    private static final String FIELD_ATTENDEE = "Attendee";
+    private static final String FIELD_OU_ID = "Organizational unit id";
+    private static final String FIELD_TRAINING_NAME_VO = "Name";
+    private static final String FIELD_TRAINING_NAME = "Training name";
+    private static final String FIELD_COST = "Cost";
+    private static final String FIELD_COST_AMOUNT = "Cost amount";
+    private static final String FIELD_CURRENCY = "Currency";
+    private static final String FIELD_HOURS = "Hours";
+    private static final String FIELD_PURPOSE = "Purpose";
+    private static final String FIELD_PURPOSE_TYPE = "TrainingPurposeType";
+    private static final String FIELD_PURPOSE_DESC = "Purpose description";
+    private static final String FIELD_TYPE_NAME_VO = "Name";
+    private static final String FIELD_TYPE_NAME = "TypeName";
+    private static final String FIELD_STATUS = "Status";
+    private static final String FIELD_CREATED_AT = "CreatedAt";
+    private static final String FIELD_UPDATED_AT = "UpdatedAt";
+    private static final String FIELD_REVIEWED_AT = "ReviewedAt";
+    private static final String FIELD_MODALITY = "Modality";
+    private static final String FIELD_COMMENTS = "Comments";
+    private static final String FIELD_START_DATE = "Start date";
+    private static final String FIELD_END_DATE = "End date";
+    private static final String FIELD_EXT_PROVIDER_NAME_VO = "ExternalProviderName";
+    private static final String FIELD_EXT_PROVIDER_NAME = "External provider name";
+    private static final String FIELD_EXT_PROVIDER_CONTACT = "ExternalProviderContact";
+    private static final String FIELD_EMAIL = "Email";
+    private static final String FIELD_PHONE = "Phone";
+
+    private static final Pattern PHONE_PATTERN =
+            Pattern.compile(TrainingConstants.PHONE_REGEX);
 
     private TrainingGuard() {
     }
 
-    static TrainingId requireTrainingId(final TrainingId id) {
-        return requireNonNull(id, "Training id");
+    static void requireTrainingId(final TrainingId id) {
+        requireNonNull(id, FIELD_TRAINING_ID);
     }
 
-    static long requireTrainingId(final long value) {
-        return requirePositiveId(value, "Training id");
+    static void requirePositiveTrainingId(final long value) {
+        requirePositiveId(value, FIELD_TRAINING_ID);
     }
 
     static long requireValidTrainingId(final String value) {
-        return requireValidId(value, "Training id");
+        return requireValidId(value, FIELD_TRAINING_ID);
     }
 
-    static EmployeeId requireRequestedBy(final EmployeeId requestedBy) {
-        return requireNonNull(requestedBy, "RequestedBy employee id");
+    static void requireRequestedBy(final EmployeeId requestedBy) {
+        requireNonNull(requestedBy, FIELD_REQUESTED_BY);
     }
 
-    static EmployeeId requireAttendee(final EmployeeId attendee) {
-        return requireNonNull(attendee, "Attendee");
+    static void requireAttendee(final EmployeeId attendee) {
+        requireNonNull(attendee, FIELD_ATTENDEE);
     }
 
-    static OrganizationalUnitId requireOrganizationalUnitId(final OrganizationalUnitId organizationalUnitId) {
-        return requireNonNull(organizationalUnitId, "Organizational unit id");
+    static void requireOrganizationalUnitId(final OrganizationalUnitId organizationalUnitId) {
+        requireNonNull(organizationalUnitId, FIELD_OU_ID);
     }
 
-    static TrainingName requireTrainingName(final TrainingName name) {
-        return requireNonNull(name, "Name");
+    static void requireTrainingName(final TrainingName name) {
+        requireNonNull(name, FIELD_TRAINING_NAME_VO);
     }
 
-    static String requireTrainingName(final String value) {
+    static String requireValidTrainingName(final String value) {
         return requireLengthBetween(
-                value, "Training name", TrainingConstants.MIN_NAME_LENGTH, TrainingConstants.MAX_NAME_LENGTH);
+                value,
+                FIELD_TRAINING_NAME,
+                TrainingConstants.MIN_NAME_LENGTH,
+                TrainingConstants.MAX_NAME_LENGTH);
     }
 
-    static Cost requireCost(final Cost cost) {
-        return requireNonNull(cost, "Cost");
+    static void requireCost(final Cost cost) {
+        requireNonNull(cost, FIELD_COST);
     }
 
     static BigDecimal requireNonNegativeCost(final BigDecimal amount) {
-        requireNonNull(amount, "Cost amount");
+        requireNonNull(amount, FIELD_COST_AMOUNT);
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             throw InvalidTrainingOperationException.negativeCost(amount);
         }
@@ -62,7 +96,7 @@ final class TrainingGuard {
     }
 
     static String requireValidCurrency(final String currency) {
-        final var stripped = requireNonBlank(currency, "Currency").toUpperCase();
+        final var stripped = requireNonBlank(currency, FIELD_CURRENCY).toUpperCase();
         try {
             Currency.getInstance(stripped);
         } catch (final IllegalArgumentException e) {
@@ -71,85 +105,90 @@ final class TrainingGuard {
         return stripped;
     }
 
-    static Hours requireHours(final Hours hours) {
-        return requireNonNull(hours, "Hours");
+    static void requireHours(final Hours hours) {
+        requireNonNull(hours, FIELD_HOURS);
     }
 
-    static int requireHoursAtLeast(final int value, final int minHours) {
+    static void requireHoursAtLeast(final int value, final int minHours) {
         if (value < minHours) {
             throw InvalidTrainingOperationException.invalidHours(minHours, value);
         }
-        return value;
     }
 
-    static TrainingPurpose requirePurpose(final TrainingPurpose purpose) {
-        return requireNonNull(purpose, "Purpose");
+    static void requirePurpose(final TrainingPurpose purpose) {
+        requireNonNull(purpose, FIELD_PURPOSE);
     }
 
-    static TrainingPurposeType requirePurposeType(final TrainingPurposeType type) {
-        return requireNonNull(type, "TrainingPurposeType");
+    static void requirePurposeType(final TrainingPurposeType type) {
+        requireNonNull(type, FIELD_PURPOSE_TYPE);
     }
 
-    static String requireOtherPurposeDescription(final String description) {
+    static String requireValidOtherPurposeDescription(final String description) {
         return requireLengthBetween(
                 description,
-                "Purpose description",
+                FIELD_PURPOSE_DESC,
                 TrainingConstants.MIN_PURPOSE_LENGTH,
                 TrainingConstants.MAX_PURPOSE_LENGTH);
     }
 
-    static TypeId requireTypeId(final TypeId typeId) {
-        return requireNonNull(typeId, "TypeId");
+    static void requireTypeId(final TypeId typeId) {
+        requireNonNull(typeId, FIELD_TYPE_ID);
     }
 
-    static long requireTypeId(final long value) {
-        return requirePositiveId(value, "TypeId");
+    static void requirePositiveTypeId(final long value) {
+        requirePositiveId(value, FIELD_TYPE_ID);
     }
 
     static long requireValidTypeId(final String value) {
-        return requireValidId(value, "TypeId");
+        return requireValidId(value, FIELD_TYPE_ID);
     }
 
-    static TypeName requireTypeName(final TypeName name) {
-        return requireNonNull(name, "Name");
+    static void requireTypeName(final TypeName name) {
+        requireNonNull(name, FIELD_TYPE_NAME_VO);
     }
 
-    static String requireTypeName(final String value) {
+    static String requireValidTypeName(final String value) {
         return requireLengthBetween(
-                value, "TypeName", TrainingConstants.MIN_NAME_LENGTH, TrainingConstants.MAX_NAME_LENGTH);
+                value,
+                FIELD_TYPE_NAME,
+                TrainingConstants.MIN_NAME_LENGTH,
+                TrainingConstants.MAX_NAME_LENGTH);
     }
 
-    static TrainingStatus requireStatus(final TrainingStatus status) {
-        return requireNonNull(status, "Status");
+    static void requireStatus(final TrainingStatus status) {
+        requireNonNull(status, FIELD_STATUS);
     }
 
-    static Instant requireCreatedAt(final Instant createdAt) {
-        return requireNonNull(createdAt, "CreatedAt");
+    static void requireCreatedAt(final Instant createdAt) {
+        requireNonNull(createdAt, FIELD_CREATED_AT);
     }
 
-    static Instant requireUpdatedAt(final Instant updatedAt) {
-        return requireNonNull(updatedAt, "UpdatedAt");
+    static void requireUpdatedAt(final Instant updatedAt) {
+        requireNonNull(updatedAt, FIELD_UPDATED_AT);
     }
 
-    static Instant requireReviewedAt(final Instant reviewedAt) {
-        return requireNonNull(reviewedAt, "ReviewedAt");
+    static void requireReviewedAt(final Instant reviewedAt) {
+        requireNonNull(reviewedAt, FIELD_REVIEWED_AT);
     }
 
-    static Modality requireModality(final Modality modality) {
-        return requireNonNull(modality, "Modality");
+    static void requireModality(final Modality modality) {
+        requireNonNull(modality, FIELD_MODALITY);
     }
 
-    static String requireComments(final String comments) {
+    static String requireValidComments(final String comments) {
         return requireLengthBetween(
-                comments, "Comments", TrainingConstants.MIN_COMMENTS_LENGTH, TrainingConstants.MAX_COMMENTS_LENGTH);
+                comments,
+                FIELD_COMMENTS,
+                TrainingConstants.MIN_COMMENTS_LENGTH,
+                TrainingConstants.MAX_COMMENTS_LENGTH);
     }
 
-    static Instant requireStartDate(final Instant startDate) {
-        return requireNonNull(startDate, "Start date");
+    static void requireStartDate(final Instant startDate) {
+        requireNonNull(startDate, FIELD_START_DATE);
     }
 
-    static Instant requireEndDate(final Instant endDate) {
-        return requireNonNull(endDate, "End date");
+    static void requireEndDate(final Instant endDate) {
+        requireNonNull(endDate, FIELD_END_DATE);
     }
 
     static void requireDateRange(final Instant startDate, final Instant endDate) {
@@ -158,49 +197,51 @@ final class TrainingGuard {
         }
     }
 
-    static ExternalProviderName requireExternalProviderName(final ExternalProviderName name) {
-        return requireNonNull(name, "ExternalProviderName");
+    static void requireExternalProviderName(final ExternalProviderName name) {
+        requireNonNull(name, FIELD_EXT_PROVIDER_NAME_VO);
     }
 
-    static String requireExternalProviderName(final String value) {
+    static String requireValidExternalProviderName(final String value) {
         return requireLengthBetween(
                 value,
-                "External provider name",
+                FIELD_EXT_PROVIDER_NAME,
                 TrainingConstants.MIN_NAME_LENGTH,
                 TrainingConstants.MAX_NAME_LENGTH);
     }
 
-    static ExternalProviderContact requireExternalProviderContact(final ExternalProviderContact contact) {
-        return requireNonNull(contact, "ExternalProviderContact");
+    static void requireExternalProviderContact(final ExternalProviderContact contact) {
+        requireNonNull(contact, FIELD_EXT_PROVIDER_CONTACT);
     }
 
-    static Email requireContactEmail(final Email email) {
-        return requireNonNull(email, "Email");
+    static void requireContactEmail(final Email email) {
+        requireNonNull(email, FIELD_EMAIL);
     }
 
-    static Phone requireContactPhone(final Phone phone) {
-        return requireNonNull(phone, "Phone");
+    static void requireContactPhone(final Phone phone) {
+        requireNonNull(phone, FIELD_PHONE);
     }
 
     static String requireValidPhone(final String value) {
-        final var stripped = requireNonBlank(value, "Phone");
+        final var stripped = requireNonBlank(value, FIELD_PHONE);
         final var normalized = stripped.replaceAll("[\\s\\-\\(\\)\\.]", "");
         if (!PHONE_PATTERN.matcher(normalized).matches()) {
             throw InvalidTrainingOperationException.invalidPhoneFormat(
-                    stripped, TrainingConstants.PHONE_DIGITS_MIN, TrainingConstants.PHONE_DIGITS_MAX);
+                    stripped,
+                    TrainingConstants.PHONE_DIGITS_MIN,
+                    TrainingConstants.PHONE_DIGITS_MAX);
         }
         return normalized;
     }
 
-    private static <T> T requireNonNull(final T value, final String fieldName) {
+    private static <T> void requireNonNull(final T value, final String fieldName) {
         if (value == null) {
             throw InvalidTrainingOperationException.nullField(fieldName);
         }
-        return value;
     }
 
     private static String requireNonBlank(final String value, final String fieldName) {
-        final var notNull = requireNonNull(value, fieldName).strip();
+        requireNonNull(value, fieldName);
+        final var notNull = value.strip();
         if (notNull.isBlank()) {
             throw InvalidTrainingOperationException.blankField(fieldName);
         }
@@ -211,16 +252,16 @@ final class TrainingGuard {
             final String value, final String fieldName, final int min, final int max) {
         final var stripped = requireNonBlank(value, fieldName);
         if (stripped.length() < min || stripped.length() > max) {
-            throw InvalidTrainingOperationException.lengthOutOfRange(fieldName, min, max, stripped);
+            throw InvalidTrainingOperationException.lengthOutOfRange(
+                    fieldName, min, max, stripped);
         }
         return stripped;
     }
 
-    private static long requirePositiveId(final long value, final String fieldName) {
+    private static void requirePositiveId(final long value, final String fieldName) {
         if (value < TrainingConstants.MIN_ID) {
             throw InvalidTrainingOperationException.nonPositiveId(fieldName, value);
         }
-        return value;
     }
 
     private static long requireValidId(final String value, final String fieldName) {
@@ -229,7 +270,8 @@ final class TrainingGuard {
         }
         try {
             final var parsed = Long.parseLong(value.strip());
-            return requirePositiveId(parsed, fieldName);
+            requirePositiveId(parsed, fieldName);
+            return parsed;
         } catch (final NumberFormatException e) {
             throw InvalidTrainingOperationException.invalidId(fieldName, value, e);
         }

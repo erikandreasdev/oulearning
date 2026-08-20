@@ -4,7 +4,7 @@ package com.example.oulearning.organization.domain.employee;
 public record EmployeeId(long value) {
 
     public EmployeeId {
-        EmployeeGuard.requireEmployeeId(value);
+        EmployeeGuard.requirePositiveEmployeeId(value);
     }
 
     public static EmployeeId of(final long value) {

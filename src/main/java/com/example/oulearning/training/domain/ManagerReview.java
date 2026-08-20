@@ -13,7 +13,7 @@ public record ManagerReview(
         Instant reviewedAt) {
 
     public ManagerReview {
-        comments = TrainingGuard.requireComments(comments);
+        comments = TrainingGuard.requireValidComments(comments);
         TrainingGuard.requireModality(modality);
         TrainingGuard.requireStartDate(startDate);
         TrainingGuard.requireEndDate(endDate);

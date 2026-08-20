@@ -4,7 +4,7 @@ package com.example.oulearning.training.domain;
 public record ExternalProviderName(String value) {
 
     public ExternalProviderName {
-        value = TrainingGuard.requireExternalProviderName(value);
+        value = TrainingGuard.requireValidExternalProviderName(value);
     }
 
     public static ExternalProviderName of(final String value) {

@@ -4,7 +4,7 @@ package com.example.oulearning.training.domain;
 public record TrainingName(String value) {
 
     public TrainingName {
-        value = TrainingGuard.requireTrainingName(value);
+        value = TrainingGuard.requireValidTrainingName(value);
     }
 
     public static TrainingName of(final String value) {

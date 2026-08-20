@@ -4,7 +4,7 @@ package com.example.oulearning.budgeting.domain;
 public record BudgetId(long value) {
 
     public BudgetId {
-        BudgetingGuard.requireBudgetId(value);
+        BudgetingGuard.requirePositiveBudgetId(value);
     }
 
     public static BudgetId of(final long value) {

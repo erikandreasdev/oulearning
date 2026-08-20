@@ -3,7 +3,7 @@ package com.example.oulearning.organization.domain.hierarchy;
 public record OrganizationalUnitId(long value) {
 
     public OrganizationalUnitId {
-        HierarchyGuard.requireOrganizationalUnitId(value);
+        HierarchyGuard.requirePositiveOrganizationalUnitId(value);
     }
 
     public static OrganizationalUnitId of(final long value) {
