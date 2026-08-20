@@ -27,14 +27,6 @@ final class EmployeeGuard {
         return requireNonNull(fullName, "FullName");
     }
 
-    static Name requireFirstName(final Name name) {
-        return requireNonNull(name, "First name");
-    }
-
-    static Surname requireSurname(final Surname surname) {
-        return requireNonNull(surname, "Surname");
-    }
-
     static void requireValidFullName(final String formattedName) {
         if (formattedName.isBlank()) {
             throw InvalidEmployeeException.blankField("Full name");
@@ -45,9 +37,17 @@ final class EmployeeGuard {
         }
     }
 
+    static Name requireFirstName(final Name name) {
+        return requireNonNull(name, "First name");
+    }
+
     static String requireName(final String value) {
         return requireLengthBetween(
                 value, "Name", EmployeeConstants.MIN_NAME_LENGTH, EmployeeConstants.MAX_NAME_LENGTH);
+    }
+
+    static Surname requireSurname(final Surname surname) {
+        return requireNonNull(surname, "Surname");
     }
 
     static String requireSurname(final String value) {
