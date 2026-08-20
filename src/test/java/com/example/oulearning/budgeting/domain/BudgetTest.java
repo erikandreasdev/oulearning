@@ -107,5 +107,29 @@ class BudgetTest {
             // then
             assertThat(b1).isNotEqualTo(b2);
         }
+
+        @Test
+        @DisplayName("given same budget instance, when comparing, then they are equal")
+        void givenSameBudgetInstance_whenComparing_thenTheyAreEqual() {
+            // given
+            final var b = Budget.of(id, ouId, fiscalYear, total, reserved, available);
+
+            // when
+
+            // then
+            assertThat(b).isEqualTo(b);
+        }
+
+        @Test
+        @DisplayName("given null or different object type, when comparing, then they are not equal")
+        void givenNullOrDifferentType_whenComparing_thenTheyAreNotEqual() {
+            // given
+            final var b = Budget.of(id, ouId, fiscalYear, total, reserved, available);
+
+            // when
+
+            // then
+            assertThat(b).isNotEqualTo(null).isNotEqualTo(new Object());
+        }
     }
 }

@@ -102,6 +102,21 @@ class FullNameTest {
                     .isInstanceOf(InvalidEmployeeException.class)
                     .hasMessageContaining("Surname length must be between");
         }
+
+        @Test
+        @DisplayName("given name and surname exceeding max full name length, when creating, then throw InvalidEmployeeException")
+        void givenCombinedLengthExceeded_whenCreating_thenThrowInvalidEmployeeException() {
+            // given
+            final var longName = Name.of("A".repeat(EmployeeConstants.MAX_NAME_LENGTH));
+            final var longSurname = Surname.of("B".repeat(EmployeeConstants.MAX_SURNAME_LENGTH));
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> new FullName(longName, longSurname))
+                    .isInstanceOf(InvalidEmployeeException.class)
+                    .hasMessageContaining("Full name length exceeds maximum of");
+        }
     }
 
     @Nested

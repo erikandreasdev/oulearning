@@ -85,5 +85,29 @@ class EmployeeTest {
             // then
             assertThat(employee1).isNotEqualTo(employee2);
         }
+
+        @Test
+        @DisplayName("given same employee instance, when comparing, then they are equal")
+        void givenSameEmployeeInstance_whenComparing_thenTheyAreEqual() {
+            // given
+            final var employee = Employee.of(id, fullName, email);
+
+            // when
+
+            // then
+            assertThat(employee).isEqualTo(employee);
+        }
+
+        @Test
+        @DisplayName("given null or different object type, when comparing, then they are not equal")
+        void givenNullOrDifferentType_whenComparing_thenTheyAreNotEqual() {
+            // given
+            final var employee = Employee.of(id, fullName, email);
+
+            // when
+
+            // then
+            assertThat(employee).isNotEqualTo(null).isNotEqualTo(new Object());
+        }
     }
 }

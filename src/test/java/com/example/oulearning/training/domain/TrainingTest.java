@@ -138,5 +138,29 @@ class TrainingTest {
             // then
             assertThat(t1).isNotEqualTo(t2);
         }
+
+        @Test
+        @DisplayName("given same training instance, when comparing, then they are equal")
+        void givenSameTrainingInstance_whenComparing_thenTheyAreEqual() {
+            // given
+            final var training = Training.create(id, employeeId, ouId, name, cost, hours, purpose, typeId, now);
+
+            // when
+
+            // then
+            assertThat(training).isEqualTo(training);
+        }
+
+        @Test
+        @DisplayName("given null or different object type, when comparing, then they are not equal")
+        void givenNullOrDifferentType_whenComparing_thenTheyAreNotEqual() {
+            // given
+            final var training = Training.create(id, employeeId, ouId, name, cost, hours, purpose, typeId, now);
+
+            // when
+
+            // then
+            assertThat(training).isNotEqualTo(null).isNotEqualTo(new Object());
+        }
     }
 }

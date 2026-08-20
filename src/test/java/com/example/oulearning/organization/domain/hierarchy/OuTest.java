@@ -109,5 +109,29 @@ class OuTest {
             // then
             assertThat(ou1).isNotEqualTo(ou2);
         }
+
+        @Test
+        @DisplayName("given same OU instance, when comparing, then they are equal")
+        void givenSameOuInstance_whenComparing_thenTheyAreEqual() {
+            // given
+            final var ou = Ou.of(id, name);
+
+            // when
+
+            // then
+            assertThat(ou).isEqualTo(ou);
+        }
+
+        @Test
+        @DisplayName("given null or different object type, when comparing, then they are not equal")
+        void givenNullOrDifferentType_whenComparing_thenTheyAreNotEqual() {
+            // given
+            final var ou = Ou.of(id, name);
+
+            // when
+
+            // then
+            assertThat(ou).isNotEqualTo(null).isNotEqualTo(new Object());
+        }
     }
 }

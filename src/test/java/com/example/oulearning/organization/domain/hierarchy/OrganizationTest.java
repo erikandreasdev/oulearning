@@ -41,4 +41,30 @@ class OrganizationTest {
         // then
         assertThat(organization.ouIds()).containsExactly(ou1);
     }
+
+    @Test
+    @DisplayName("given null set of OuIds, when creating Organization, then initialized with empty set")
+    void givenNullSetOfOuIds_whenCreatingOrganization_thenInitializedWithEmptySet() {
+        // given
+
+        // when
+        final var organization = new Organization(null);
+
+        // then
+        assertThat(organization.ouIds()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("given organization, when calling toString, then return formatted string")
+    void givenOrganization_whenCallingToString_thenReturnFormattedString() {
+        // given
+        final var ou1 = HierarchyTestFactory.randomOuId();
+        final var organization = new Organization(Set.of(ou1));
+
+        // when
+        final var str = organization.toString();
+
+        // then
+        assertThat(str).contains("Organization").contains(ou1.toString());
+    }
 }

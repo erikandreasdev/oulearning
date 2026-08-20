@@ -94,5 +94,29 @@ class TypeTest {
             // then
             assertThat(t1).isNotEqualTo(t2);
         }
+
+        @Test
+        @DisplayName("given same type instance, when comparing, then they are equal")
+        void givenSameTypeInstance_whenComparing_thenTheyAreEqual() {
+            // given
+            final var type = Type.of(id, name, parentId);
+
+            // when
+
+            // then
+            assertThat(type).isEqualTo(type);
+        }
+
+        @Test
+        @DisplayName("given null or different object type, when comparing, then they are not equal")
+        void givenNullOrDifferentType_whenComparing_thenTheyAreNotEqual() {
+            // given
+            final var type = Type.of(id, name, parentId);
+
+            // when
+
+            // then
+            assertThat(type).isNotEqualTo(null).isNotEqualTo(new Object());
+        }
     }
 }
