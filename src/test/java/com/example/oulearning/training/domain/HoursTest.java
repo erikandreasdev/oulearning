@@ -26,7 +26,7 @@ class HoursTest {
 
             // then
             assertThat(hours.value()).isEqualTo(val);
-            assertThat(hours.toString()).isEqualTo(String.valueOf(val));
+            assertThat(hours).hasToString(String.valueOf(val));
         }
 
         @Test
@@ -62,8 +62,7 @@ class HoursTest {
             // when
 
             // then
-            assertThat(h1).isEqualTo(h2);
-            assertThat(h1.hashCode()).isEqualTo(h2.hashCode());
+            assertThat(h1).isEqualTo(h2).hasSameHashCodeAs(h2);
         }
 
         @Test

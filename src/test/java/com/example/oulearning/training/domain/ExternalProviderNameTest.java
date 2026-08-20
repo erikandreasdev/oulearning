@@ -26,7 +26,7 @@ class ExternalProviderNameTest {
 
             // then
             assertThat(name.value()).isEqualTo(nameString);
-            assertThat(name.toString()).isEqualTo(nameString);
+            assertThat(name).hasToString(nameString);
         }
 
         @Test
@@ -86,8 +86,7 @@ class ExternalProviderNameTest {
             // when
 
             // then
-            assertThat(n1).isEqualTo(n2);
-            assertThat(n1.hashCode()).isEqualTo(n2.hashCode());
+            assertThat(n1).isEqualTo(n2).hasSameHashCodeAs(n2);
         }
     }
 }

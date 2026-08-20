@@ -29,7 +29,7 @@ class EmailTest {
 
             // then
             assertThat(email.value()).isEqualTo(expectedNormalized);
-            assertThat(email.toString()).isEqualTo(expectedNormalized);
+            assertThat(email).hasToString(expectedNormalized);
         }
 
         @Test
@@ -101,8 +101,7 @@ class EmailTest {
             // when
 
             // then
-            assertThat(e1).isEqualTo(e2);
-            assertThat(e1.hashCode()).isEqualTo(e2.hashCode());
+            assertThat(e1).isEqualTo(e2).hasSameHashCodeAs(e2);
         }
 
         @Test

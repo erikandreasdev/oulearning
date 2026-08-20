@@ -7,7 +7,8 @@ import java.util.UUID;
 
 final class TrainingGuard {
 
-    private TrainingGuard() {}
+    private TrainingGuard() {
+    }
 
     static <T> T requireNonNull(final T value, final String fieldName) {
         if (value == null) {
@@ -40,7 +41,7 @@ final class TrainingGuard {
         try {
             return UUID.fromString(value.strip());
         } catch (final IllegalArgumentException e) {
-            throw InvalidTrainingOperationException.invalidUuid(value);
+            throw InvalidTrainingOperationException.invalidUuid(value, e);
         }
     }
 
@@ -57,7 +58,7 @@ final class TrainingGuard {
         try {
             Currency.getInstance(stripped);
         } catch (final IllegalArgumentException e) {
-            throw InvalidTrainingOperationException.invalidCurrency(stripped);
+            throw InvalidTrainingOperationException.invalidCurrency(stripped, e);
         }
         return stripped;
     }

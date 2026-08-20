@@ -26,7 +26,7 @@ class NameTest {
 
             // then
             assertThat(name.value()).isEqualTo(raw);
-            assertThat(name.toString()).isEqualTo(raw);
+            assertThat(name).hasToString(raw);
         }
 
         @Test
@@ -99,8 +99,7 @@ class NameTest {
             // when
 
             // then
-            assertThat(n1).isEqualTo(n2);
-            assertThat(n1.hashCode()).isEqualTo(n2.hashCode());
+            assertThat(n1).isEqualTo(n2).hasSameHashCodeAs(n2);
         }
 
         @Test

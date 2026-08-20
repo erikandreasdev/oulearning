@@ -99,9 +99,7 @@ public record Training(
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Training training)) return false;
-        return Objects.equals(id, training.id);
+        return this == o || (o instanceof final Training training && Objects.equals(id, training.id));
     }
 
     @Override

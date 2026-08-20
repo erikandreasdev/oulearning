@@ -5,7 +5,8 @@ import java.util.UUID;
 
 final class BudgetingGuard {
 
-    private BudgetingGuard() {}
+    private BudgetingGuard() {
+    }
 
     static <T> T requireNonNull(final T value, final String fieldName) {
         if (value == null) {
@@ -29,7 +30,7 @@ final class BudgetingGuard {
         try {
             return UUID.fromString(value.strip());
         } catch (final IllegalArgumentException e) {
-            throw InvalidBudgetOperationException.invalidUuid(value);
+            throw InvalidBudgetOperationException.invalidUuid(value, e);
         }
     }
 

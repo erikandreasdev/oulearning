@@ -26,7 +26,7 @@ class FiscalYearTest {
 
             // then
             assertThat(fiscalYear.value()).isEqualTo(year);
-            assertThat(fiscalYear.toString()).isEqualTo(String.valueOf(year));
+            assertThat(fiscalYear).hasToString(String.valueOf(year));
         }
 
         @Test
@@ -79,8 +79,7 @@ class FiscalYearTest {
             // when
 
             // then
-            assertThat(y1).isEqualTo(y2);
-            assertThat(y1.hashCode()).isEqualTo(y2.hashCode());
+            assertThat(y1).isEqualTo(y2).hasSameHashCodeAs(y2);
         }
 
         @Test

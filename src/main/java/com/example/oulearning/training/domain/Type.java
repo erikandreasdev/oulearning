@@ -24,9 +24,7 @@ public record Type(TypeId id, TypeName name, TypeId rawParentTypeId) {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Type type)) return false;
-        return Objects.equals(id, type.id);
+        return this == o || (o instanceof final Type type && Objects.equals(id, type.id));
     }
 
     @Override

@@ -30,8 +30,8 @@ class EmployeeTest {
             assertThat(employee.id()).isEqualTo(id);
             assertThat(employee.fullName()).isEqualTo(fullName);
             assertThat(employee.email()).isEqualTo(email);
-            assertThat(employee.toString())
-                    .isEqualTo("Employee[id=%s, fullName=%s, email=%s]".formatted(id, fullName, email));
+            assertThat(employee)
+                    .hasToString("Employee[id=%s, fullName=%s, email=%s]".formatted(id, fullName, email));
         }
 
         @Test
@@ -69,8 +69,7 @@ class EmployeeTest {
             // when
 
             // then
-            assertThat(employee1).isEqualTo(employee2);
-            assertThat(employee1.hashCode()).isEqualTo(employee2.hashCode());
+            assertThat(employee1).isEqualTo(employee2).hasSameHashCodeAs(employee2);
         }
 
         @Test

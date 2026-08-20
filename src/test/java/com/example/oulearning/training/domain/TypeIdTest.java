@@ -25,7 +25,7 @@ class TypeIdTest {
 
             // then
             assertThat(id.value()).isEqualTo(uuid);
-            assertThat(id.toString()).isEqualTo(uuid.toString());
+            assertThat(id).hasToString(uuid.toString());
         }
 
         @Test
@@ -88,8 +88,7 @@ class TypeIdTest {
             // when
 
             // then
-            assertThat(id1).isEqualTo(id2);
-            assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
+            assertThat(id1).isEqualTo(id2).hasSameHashCodeAs(id2);
         }
 
         @Test

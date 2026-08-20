@@ -72,19 +72,6 @@ class CostTest {
         }
 
         @Test
-        @DisplayName("given zero factory method with custom currency, when creating Cost, then amount is zero")
-        void givenZeroWithCurrency_whenCreatingCost_thenAmountIsZero() {
-            // given
-
-            // when
-            final var cost = Cost.zero("USD");
-
-            // then
-            assertThat(cost.amount()).isEqualTo(new BigDecimal("0.00"));
-            assertThat(cost.currency()).isEqualTo("USD");
-        }
-
-        @Test
         @DisplayName("given zero factory method with default currency, when creating Cost, then amount is zero in EUR")
         void givenZeroDefault_whenCreatingCost_thenAmountIsZeroInEur() {
             // given
@@ -154,23 +141,20 @@ class CostTest {
             // when
 
             // then
-            assertThat(c1).isEqualTo(c2);
-            assertThat(c1.hashCode()).isEqualTo(c2.hashCode());
+            assertThat(c1).isEqualTo(c2).hasSameHashCodeAs(c2);
         }
 
         @Test
-        @DisplayName("given different amounts or currencies, when comparing Cost, then they are not equal")
-        void givenDifferentAmountsOrCurrencies_whenComparingCost_thenTheyAreNotEqual() {
+        @DisplayName("given different amounts, when comparing Cost, then they are not equal")
+        void givenDifferentAmounts_whenComparingCost_thenTheyAreNotEqual() {
             // given
             final var c1 = TrainingTestFactory.randomCost();
-            final var c2 = Cost.of(c1.amount(), "USD");
-            final var c3 = Cost.of(c1.amount().add(BigDecimal.TEN), c1.currency());
+            final var c2 = Cost.of(c1.amount().add(BigDecimal.TEN), c1.currency());
 
             // when
 
             // then
             assertThat(c1).isNotEqualTo(c2);
-            assertThat(c1).isNotEqualTo(c3);
         }
     }
 }

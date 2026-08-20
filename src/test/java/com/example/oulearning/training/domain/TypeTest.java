@@ -30,8 +30,8 @@ class TypeTest {
             assertThat(type.id()).isEqualTo(id);
             assertThat(type.name()).isEqualTo(name);
             assertThat(type.parentTypeId()).contains(parentId);
-            assertThat(type.toString())
-                    .isEqualTo("Type[id=%s, name=%s, parentTypeId=%s]".formatted(id, name, parentId));
+            assertThat(type)
+                    .hasToString("Type[id=%s, name=%s, parentTypeId=%s]".formatted(id, name, parentId));
         }
 
         @Test
@@ -79,8 +79,7 @@ class TypeTest {
             // when
 
             // then
-            assertThat(t1).isEqualTo(t2);
-            assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
+            assertThat(t1).isEqualTo(t2).hasSameHashCodeAs(t2);
         }
 
         @Test

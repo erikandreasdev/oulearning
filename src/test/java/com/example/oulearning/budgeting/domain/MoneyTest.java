@@ -29,7 +29,7 @@ class MoneyTest {
             final var expectedAmount = rawAmount.setScale(2, RoundingMode.HALF_EVEN);
             assertThat(money.amount()).isEqualTo(expectedAmount);
             assertThat(money.currency()).isEqualTo(BudgetingConstants.DEFAULT_CURRENCY);
-            assertThat(money.toString()).isEqualTo("%s %s".formatted(expectedAmount, BudgetingConstants.DEFAULT_CURRENCY));
+            assertThat(money).hasToString("%s %s".formatted(expectedAmount, BudgetingConstants.DEFAULT_CURRENCY));
         }
 
         @Test
@@ -167,8 +167,7 @@ class MoneyTest {
             // when
 
             // then
-            assertThat(m1).isEqualTo(m2);
-            assertThat(m1.hashCode()).isEqualTo(m2.hashCode());
+            assertThat(m1).isEqualTo(m2).hasSameHashCodeAs(m2);
         }
 
         @Test

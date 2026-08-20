@@ -88,8 +88,7 @@ class PhoneTest {
             // when
 
             // then
-            assertThat(p1).isEqualTo(p2);
-            assertThat(p1.hashCode()).isEqualTo(p2.hashCode());
+            assertThat(p1).isEqualTo(p2).hasSameHashCodeAs(p2);
         }
 
         @Test

@@ -7,7 +7,8 @@ import org.instancio.Instancio;
 
 public final class HierarchyTestFactory {
 
-    private HierarchyTestFactory() {}
+    private HierarchyTestFactory() {
+    }
 
     public static UUID randomUuid() {
         return Instancio.create(UUID.class);

@@ -41,9 +41,7 @@ public record Ou(
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Ou ou)) return false;
-        return Objects.equals(id, ou.id);
+        return this == o || (o instanceof final Ou ou && Objects.equals(id, ou.id));
     }
 
     @Override

@@ -38,9 +38,8 @@ class BudgetTest {
             assertThat(budget.total()).isEqualTo(total);
             assertThat(budget.reserved()).isEqualTo(reserved);
             assertThat(budget.available()).isEqualTo(available);
-            assertThat(budget.toString())
-                    .isEqualTo("Budget[id=%s, ouId=%s, fiscalYear=%s, total=%s, reserved=%s, available=%s]"
-                            .formatted(id, ouId, fiscalYear, total, reserved, available));
+            assertThat(budget).hasToString("Budget[id=%s, ouId=%s, fiscalYear=%s, total=%s, reserved=%s, available=%s]"
+                    .formatted(id, ouId, fiscalYear, total, reserved, available));
         }
 
         @Test
@@ -92,8 +91,7 @@ class BudgetTest {
             // when
 
             // then
-            assertThat(b1).isEqualTo(b2);
-            assertThat(b1.hashCode()).isEqualTo(b2.hashCode());
+            assertThat(b1).isEqualTo(b2).hasSameHashCodeAs(b2);
         }
 
         @Test

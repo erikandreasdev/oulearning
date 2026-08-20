@@ -75,8 +75,7 @@ class ExternalProviderContactTest {
             // when
 
             // then
-            assertThat(c1).isEqualTo(c2);
-            assertThat(c1.hashCode()).isEqualTo(c2.hashCode());
+            assertThat(c1).isEqualTo(c2).hasSameHashCodeAs(c2);
         }
     }
 }

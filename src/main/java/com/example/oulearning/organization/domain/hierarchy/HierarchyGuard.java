@@ -5,7 +5,8 @@ import java.util.UUID;
 
 final class HierarchyGuard {
 
-    private HierarchyGuard() {}
+    private HierarchyGuard() {
+    }
 
     static <T> T requireNonNull(final T value, final String fieldName) {
         if (value == null) {
@@ -38,7 +39,7 @@ final class HierarchyGuard {
         try {
             return UUID.fromString(value.strip());
         } catch (final IllegalArgumentException e) {
-            throw InvalidOuException.invalidUuid(value);
+            throw InvalidOuException.invalidUuid(value, e);
         }
     }
 }

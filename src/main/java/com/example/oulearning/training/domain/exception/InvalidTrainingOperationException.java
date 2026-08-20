@@ -33,12 +33,20 @@ public final class InvalidTrainingOperationException extends TrainingException {
         return new InvalidTrainingOperationException("Invalid UUID format: %s".formatted(value));
     }
 
+    public static InvalidTrainingOperationException invalidUuid(final String value, final Throwable cause) {
+        return new InvalidTrainingOperationException("Invalid UUID format: %s".formatted(value), cause);
+    }
+
     public static InvalidTrainingOperationException negativeCost(final Object amount) {
         return new InvalidTrainingOperationException("Cost amount cannot be negative: %s".formatted(amount));
     }
 
     public static InvalidTrainingOperationException invalidCurrency(final String currency) {
         return new InvalidTrainingOperationException("Invalid currency code: %s".formatted(currency));
+    }
+
+    public static InvalidTrainingOperationException invalidCurrency(final String currency, final Throwable cause) {
+        return new InvalidTrainingOperationException("Invalid currency code: %s".formatted(currency), cause);
     }
 
     public static InvalidTrainingOperationException invalidHours(final int min, final int actual) {

@@ -52,8 +52,8 @@ class TrainingTest {
             assertThat(training.createdAt()).isEqualTo(now);
             assertThat(training.updatedAt()).isEqualTo(now);
             assertThat(training.attendees()).isEmpty();
-            assertThat(training.toString())
-                    .isEqualTo("Training[id=%s, requestedBy=%s, ouId=%s, name=%s, cost=%s, hours=%s, purpose=%s, typeId=%s, status=%s]"
+            assertThat(training)
+                    .hasToString("Training[id=%s, requestedBy=%s, ouId=%s, name=%s, cost=%s, hours=%s, purpose=%s, typeId=%s, status=%s]"
                             .formatted(id, employeeId, ouId, name, cost, hours, purpose, typeId, TrainingStatus.REQUESTED));
         }
 
@@ -122,8 +122,7 @@ class TrainingTest {
             // when
 
             // then
-            assertThat(t1).isEqualTo(t2);
-            assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
+            assertThat(t1).isEqualTo(t2).hasSameHashCodeAs(t2);
         }
 
         @Test

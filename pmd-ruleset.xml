@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="OULearning Ruleset"
+         xmlns="http://pmd.sourceforge.net/pmd-ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/pmd-ruleset/2.0.0 https://pmd.github.io/schema/ruleset_2_0_0.xsd">
+
+    <description>OULearning PMD Ruleset</description>
+
+    <exclude-pattern>.*/OulearningApplication\.java</exclude-pattern>
+
+    <rule ref="rulesets/java/quickstart.xml">
+        <exclude name="UncommentedEmptyConstructor"/>
+    </rule>
+</ruleset>

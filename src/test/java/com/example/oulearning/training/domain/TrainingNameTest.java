@@ -26,7 +26,7 @@ class TrainingNameTest {
 
             // then
             assertThat(name.value()).isEqualTo(raw);
-            assertThat(name.toString()).isEqualTo(raw);
+            assertThat(name).hasToString(raw);
         }
 
         @Test
@@ -86,8 +86,7 @@ class TrainingNameTest {
             // when
 
             // then
-            assertThat(n1).isEqualTo(n2);
-            assertThat(n1.hashCode()).isEqualTo(n2.hashCode());
+            assertThat(n1).isEqualTo(n2).hasSameHashCodeAs(n2);
         }
 
         @Test

@@ -150,8 +150,7 @@ class ManagerReviewTest {
             // when
 
             // then
-            assertThat(r1).isEqualTo(r2);
-            assertThat(r1.hashCode()).isEqualTo(r2.hashCode());
+            assertThat(r1).isEqualTo(r2).hasSameHashCodeAs(r2);
         }
     }
 }

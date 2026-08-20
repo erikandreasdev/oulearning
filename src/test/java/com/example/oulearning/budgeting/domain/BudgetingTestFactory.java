@@ -11,7 +11,8 @@ public final class BudgetingTestFactory {
     private static final double MIN_AMOUNT = 1.0;
     private static final double MAX_AMOUNT = 1_000_000.0;
 
-    private BudgetingTestFactory() {}
+    private BudgetingTestFactory() {
+    }
 
     public static UUID randomUuid() {
         return Instancio.create(UUID.class);

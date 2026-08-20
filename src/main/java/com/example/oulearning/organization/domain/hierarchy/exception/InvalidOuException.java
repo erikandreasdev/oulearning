@@ -7,6 +7,10 @@ public final class InvalidOuException extends HierarchyException {
         super(message);
     }
 
+    public InvalidOuException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
     public static InvalidOuException nullField(final String fieldName) {
         return new InvalidOuException("%s cannot be null".formatted(fieldName));
     }
@@ -27,5 +31,9 @@ public final class InvalidOuException extends HierarchyException {
 
     public static InvalidOuException invalidUuid(final String value) {
         return new InvalidOuException("Invalid UUID format: %s".formatted(value));
+    }
+
+    public static InvalidOuException invalidUuid(final String value, final Throwable cause) {
+        return new InvalidOuException("Invalid UUID format: %s".formatted(value), cause);
     }
 }

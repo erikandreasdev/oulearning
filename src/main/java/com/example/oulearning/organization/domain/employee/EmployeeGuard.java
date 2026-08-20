@@ -5,7 +5,8 @@ import java.util.UUID;
 
 final class EmployeeGuard {
 
-    private EmployeeGuard() {}
+    private EmployeeGuard() {
+    }
 
     static <T> T requireNonNull(final T value, final String fieldName) {
         if (value == null) {
@@ -38,7 +39,7 @@ final class EmployeeGuard {
         try {
             return UUID.fromString(value.strip());
         } catch (final IllegalArgumentException e) {
-            throw InvalidEmployeeException.invalidUuid(value);
+            throw InvalidEmployeeException.invalidUuid(value, e);
         }
     }
 }

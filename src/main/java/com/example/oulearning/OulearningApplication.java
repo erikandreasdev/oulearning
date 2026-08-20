@@ -6,7 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class OulearningApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(OulearningApplication.class, args);
-  }
+    protected OulearningApplication() {}
+
+    public static void main(final String[] args) {
+        SpringApplication.run(OulearningApplication.class, args);
+    }
 }

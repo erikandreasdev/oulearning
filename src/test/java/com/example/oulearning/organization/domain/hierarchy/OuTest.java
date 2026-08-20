@@ -39,8 +39,8 @@ class OuTest {
             assertThat(ou.childIds()).containsExactly(childId);
             assertThat(ou.owners()).containsExactly(emp1);
             assertThat(ou.members()).containsExactly(emp2);
-            assertThat(ou.toString())
-                    .isEqualTo("Ou[id=%s, name=%s, parentId=%s]".formatted(id, name, parentId));
+            assertThat(ou)
+                    .hasToString("Ou[id=%s, name=%s, parentId=%s]".formatted(id, name, parentId));
         }
 
         @Test
@@ -64,14 +64,16 @@ class OuTest {
         @DisplayName("given null required parameters, when creating Ou, then throw InvalidOuException")
         void givenNullRequiredParams_whenCreatingOu_thenThrowInvalidOuException() {
             // given
+            final var emptyOuSet = Set.<OuId>of();
+            final var emptyEmployeeSet = Set.<com.example.oulearning.organization.domain.employee.EmployeeId>of();
 
             // when
 
             // then
-            assertThatThrownBy(() -> new Ou(null, name, parentId, Set.of(), Set.of(), Set.of()))
+            assertThatThrownBy(() -> new Ou(null, name, parentId, emptyOuSet, emptyEmployeeSet, emptyEmployeeSet))
                     .isInstanceOf(InvalidOuException.class)
                     .hasMessageContaining("cannot be null");
-            assertThatThrownBy(() -> new Ou(id, null, parentId, Set.of(), Set.of(), Set.of()))
+            assertThatThrownBy(() -> new Ou(id, null, parentId, emptyOuSet, emptyEmployeeSet, emptyEmployeeSet))
                     .isInstanceOf(InvalidOuException.class)
                     .hasMessageContaining("cannot be null");
         }
@@ -91,8 +93,7 @@ class OuTest {
             // when
 
             // then
-            assertThat(ou1).isEqualTo(ou2);
-            assertThat(ou1.hashCode()).isEqualTo(ou2.hashCode());
+            assertThat(ou1).isEqualTo(ou2).hasSameHashCodeAs(ou2);
         }
 
         @Test

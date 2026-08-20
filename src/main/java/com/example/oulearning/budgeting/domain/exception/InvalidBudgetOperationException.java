@@ -31,4 +31,8 @@ public final class InvalidBudgetOperationException extends BudgetingException {
     public static InvalidBudgetOperationException invalidUuid(final String value) {
         return new InvalidBudgetOperationException("Invalid UUID format: %s".formatted(value));
     }
+
+    public static InvalidBudgetOperationException invalidUuid(final String value, final Throwable cause) {
+        return new InvalidBudgetOperationException("Invalid UUID format: %s".formatted(value), cause);
+    }
 }

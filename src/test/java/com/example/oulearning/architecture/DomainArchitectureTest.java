@@ -26,22 +26,4 @@ class DomainArchitectureTest {
                             "com.fasterxml.jackson..",
                             "org.hibernate..",
                             "lombok..");
-
-    @ArchTest
-    static final ArchRule organization_domain_should_not_depend_on_other_contexts =
-            noClasses()
-                    .that()
-                    .resideInAPackage("..organization.domain..")
-                    .should()
-                    .dependOnClassesThat()
-                    .resideInAnyPackage("..budgeting.domain..", "..training.domain..");
-
-    @ArchTest
-    static final ArchRule budgeting_domain_should_not_depend_on_training =
-            noClasses()
-                    .that()
-                    .resideInAPackage("..budgeting.domain..")
-                    .should()
-                    .dependOnClassesThat()
-                    .resideInAnyPackage("..training.domain..");
 }

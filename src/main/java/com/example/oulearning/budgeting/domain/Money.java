@@ -51,23 +51,25 @@ public record Money(MonetaryAmount monetaryAmount) {
         return new Money(monetaryAmount.subtract(other.monetaryAmount));
     }
 
+    private static final String MONEY_TO_COMPARE = "Money to compare";
+
     public boolean isGreaterThan(final Money other) {
-        BudgetingGuard.requireNonNull(other, "Money to compare");
+        BudgetingGuard.requireNonNull(other, MONEY_TO_COMPARE);
         return monetaryAmount.isGreaterThan(other.monetaryAmount);
     }
 
     public boolean isGreaterThanOrEqualTo(final Money other) {
-        BudgetingGuard.requireNonNull(other, "Money to compare");
+        BudgetingGuard.requireNonNull(other, MONEY_TO_COMPARE);
         return monetaryAmount.isGreaterThanOrEqualTo(other.monetaryAmount);
     }
 
     public boolean isLessThan(final Money other) {
-        BudgetingGuard.requireNonNull(other, "Money to compare");
+        BudgetingGuard.requireNonNull(other, MONEY_TO_COMPARE);
         return monetaryAmount.isLessThan(other.monetaryAmount);
     }
 
     public boolean isLessThanOrEqualTo(final Money other) {
-        BudgetingGuard.requireNonNull(other, "Money to compare");
+        BudgetingGuard.requireNonNull(other, MONEY_TO_COMPARE);
         return monetaryAmount.isLessThanOrEqualTo(other.monetaryAmount);
     }
 
@@ -85,9 +87,7 @@ public record Money(MonetaryAmount monetaryAmount) {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Money money)) return false;
-        return amount().compareTo(money.amount()) == 0;
+        return this == o || (o instanceof final Money money && amount().compareTo(money.amount()) == 0);
     }
 
     @Override

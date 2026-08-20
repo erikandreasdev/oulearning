@@ -29,7 +29,7 @@ class FullNameTest {
             assertThat(fullName.name()).isEqualTo(name);
             assertThat(fullName.surname()).isEqualTo(surname);
             assertThat(fullName.formatted()).isEqualTo("%s %s".formatted(name.value(), surname.value()));
-            assertThat(fullName.toString()).isEqualTo("%s %s".formatted(name.value(), surname.value()));
+            assertThat(fullName).hasToString("%s %s".formatted(name.value(), surname.value()));
         }
 
         @Test
@@ -120,8 +120,7 @@ class FullNameTest {
             // when
 
             // then
-            assertThat(fn1).isEqualTo(fn2);
-            assertThat(fn1.hashCode()).isEqualTo(fn2.hashCode());
+            assertThat(fn1).isEqualTo(fn2).hasSameHashCodeAs(fn2);
         }
 
         @Test

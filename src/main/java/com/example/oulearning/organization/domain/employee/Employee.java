@@ -16,9 +16,7 @@ public record Employee(EmployeeId id, FullName fullName, Email email) {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Employee employee)) return false;
-        return Objects.equals(id, employee.id);
+        return this == o || (o instanceof final Employee employee && Objects.equals(id, employee.id));
     }
 
     @Override

@@ -7,6 +7,10 @@ public final class InvalidEmployeeException extends EmployeeException {
         super(message);
     }
 
+    public InvalidEmployeeException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
     public static InvalidEmployeeException nullField(final String fieldName) {
         return new InvalidEmployeeException("%s cannot be null".formatted(fieldName));
     }
@@ -33,5 +37,9 @@ public final class InvalidEmployeeException extends EmployeeException {
 
     public static InvalidEmployeeException invalidUuid(final String value) {
         return new InvalidEmployeeException("Invalid UUID format: %s".formatted(value));
+    }
+
+    public static InvalidEmployeeException invalidUuid(final String value, final Throwable cause) {
+        return new InvalidEmployeeException("Invalid UUID format: %s".formatted(value), cause);
     }
 }

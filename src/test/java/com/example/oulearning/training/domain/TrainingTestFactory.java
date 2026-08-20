@@ -1,5 +1,6 @@
 package com.example.oulearning.training.domain;
 
+import com.example.oulearning.budgeting.domain.BudgetingConstants;
 import com.example.oulearning.organization.domain.employee.EmployeeTestFactory;
 import com.example.oulearning.organization.domain.hierarchy.HierarchyTestFactory;
 import java.math.BigDecimal;
@@ -22,7 +23,8 @@ public final class TrainingTestFactory {
     private static final int DEFAULT_START_DAY_OFFSET = 1;
     private static final int DEFAULT_END_DAY_OFFSET = 3;
 
-    private TrainingTestFactory() {}
+    private TrainingTestFactory() {
+    }
 
     public static UUID randomUuid() {
         return Instancio.create(UUID.class);
@@ -81,7 +83,7 @@ public final class TrainingTestFactory {
     }
 
     public static Cost randomCost() {
-        return Cost.of(randomBigDecimalCostAmount(), com.example.oulearning.budgeting.domain.BudgetingConstants.DEFAULT_CURRENCY);
+        return Cost.of(randomBigDecimalCostAmount(), BudgetingConstants.DEFAULT_CURRENCY);
     }
 
     public static String randomPhoneDigits() {

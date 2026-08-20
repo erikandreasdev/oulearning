@@ -32,9 +32,7 @@ public record Budget(
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Budget budget)) return false;
-        return Objects.equals(id, budget.id);
+        return this == o || (o instanceof final Budget budget && Objects.equals(id, budget.id));
     }
 
     @Override

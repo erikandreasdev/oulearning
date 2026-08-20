@@ -16,7 +16,8 @@ public final class EmployeeTestFactory {
     private static final String USERNAME_REPLACEMENT_CHAR = "a";
     private static final String DOMAIN_REPLACEMENT_CHAR = "b";
 
-    private EmployeeTestFactory() {}
+    private EmployeeTestFactory() {
+    }
 
     public static UUID randomUuid() {
         return Instancio.create(UUID.class);
