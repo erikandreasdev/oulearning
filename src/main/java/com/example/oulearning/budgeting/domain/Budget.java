@@ -12,12 +12,12 @@ public record Budget(
         Money available) {
 
     public Budget {
-        id = BudgetingGuard.requireBudgetId(id);
-        organizationalUnitId = BudgetingGuard.requireOrganizationalUnitId(organizationalUnitId);
-        fiscalYear = BudgetingGuard.requireFiscalYear(fiscalYear);
-        total = BudgetingGuard.requireTotal(total);
-        reserved = BudgetingGuard.requireReserved(reserved);
-        available = BudgetingGuard.requireAvailable(available);
+        BudgetingGuard.requireBudgetId(id);
+        BudgetingGuard.requireOrganizationalUnitId(organizationalUnitId);
+        BudgetingGuard.requireFiscalYear(fiscalYear);
+        BudgetingGuard.requireTotal(total);
+        BudgetingGuard.requireReserved(reserved);
+        BudgetingGuard.requireAvailable(available);
     }
 
     public static Budget of(

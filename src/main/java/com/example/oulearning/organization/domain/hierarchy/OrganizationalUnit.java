@@ -14,8 +14,8 @@ public record OrganizationalUnit(
         Set<EmployeeId> members) {
 
     public OrganizationalUnit {
-        id = HierarchyGuard.requireOrganizationalUnitId(id);
-        name = HierarchyGuard.requireName(name);
+        HierarchyGuard.requireOrganizationalUnitId(id);
+        HierarchyGuard.requireName(name);
         childIds = (childIds != null) ? Set.copyOf(childIds) : Set.of();
         owners = (owners != null) ? Set.copyOf(owners) : Set.of();
         members = (members != null) ? Set.copyOf(members) : Set.of();

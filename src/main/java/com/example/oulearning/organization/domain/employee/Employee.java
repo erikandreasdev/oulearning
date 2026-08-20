@@ -5,9 +5,9 @@ import java.util.Objects;
 public record Employee(EmployeeId id, FullName fullName, Email email) {
 
     public Employee {
-        id = EmployeeGuard.requireEmployeeId(id);
-        fullName = EmployeeGuard.requireFullName(fullName);
-        email = EmployeeGuard.requireEmail(email);
+        EmployeeGuard.requireEmployeeId(id);
+        EmployeeGuard.requireFullName(fullName);
+        EmployeeGuard.requireEmail(email);
     }
 
     public static Employee of(final EmployeeId id, final FullName fullName, final Email email) {

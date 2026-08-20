@@ -13,7 +13,7 @@ public record Money(MonetaryAmount monetaryAmount) {
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
     public Money {
-        monetaryAmount = BudgetingGuard.requireMonetaryAmount(monetaryAmount);
+        BudgetingGuard.requireMonetaryAmount(monetaryAmount);
     }
 
     public static Money of(final BigDecimal amount) {

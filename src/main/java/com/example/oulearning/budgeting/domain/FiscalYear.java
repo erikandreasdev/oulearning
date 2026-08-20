@@ -4,7 +4,7 @@ package com.example.oulearning.budgeting.domain;
 public record FiscalYear(int value) {
 
     public FiscalYear {
-        value = BudgetingGuard.requireFiscalYearBetween(
+        BudgetingGuard.requireFiscalYearBetween(
                 value, BudgetingConstants.MIN_FISCAL_YEAR, BudgetingConstants.MAX_FISCAL_YEAR);
     }
 

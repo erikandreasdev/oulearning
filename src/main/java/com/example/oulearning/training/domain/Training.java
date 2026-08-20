@@ -24,17 +24,17 @@ public record Training(
         Set<EmployeeId> attendees) {
 
     public Training {
-        id = TrainingGuard.requireTrainingId(id);
-        requestedBy = TrainingGuard.requireRequestedBy(requestedBy);
-        organizationalUnitId = TrainingGuard.requireOrganizationalUnitId(organizationalUnitId);
-        name = TrainingGuard.requireTrainingName(name);
-        cost = TrainingGuard.requireCost(cost);
-        hours = TrainingGuard.requireHours(hours);
-        purpose = TrainingGuard.requirePurpose(purpose);
-        typeId = TrainingGuard.requireTypeId(typeId);
-        status = TrainingGuard.requireStatus(status);
-        createdAt = TrainingGuard.requireCreatedAt(createdAt);
-        updatedAt = TrainingGuard.requireUpdatedAt(updatedAt);
+        TrainingGuard.requireTrainingId(id);
+        TrainingGuard.requireRequestedBy(requestedBy);
+        TrainingGuard.requireOrganizationalUnitId(organizationalUnitId);
+        TrainingGuard.requireTrainingName(name);
+        TrainingGuard.requireCost(cost);
+        TrainingGuard.requireHours(hours);
+        TrainingGuard.requirePurpose(purpose);
+        TrainingGuard.requireTypeId(typeId);
+        TrainingGuard.requireStatus(status);
+        TrainingGuard.requireCreatedAt(createdAt);
+        TrainingGuard.requireUpdatedAt(updatedAt);
         attendees = (attendees != null) ? Set.copyOf(attendees) : Set.of();
     }
 
