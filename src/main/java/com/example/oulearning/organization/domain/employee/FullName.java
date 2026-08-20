@@ -1,25 +1,13 @@
 package com.example.oulearning.organization.domain.employee;
 
-import com.example.oulearning.organization.domain.employee.exception.InvalidEmployeeException;
-
 
 public record FullName(Name name, Surname surname) {
 
     public FullName {
-        if (name == null) {
-            throw InvalidEmployeeException.nullField("First name");
-        }
-        if (surname == null) {
-            throw InvalidEmployeeException.nullField("Surname");
-        }
+        EmployeeGuard.requireFirstName(name);
+        EmployeeGuard.requireSurname(surname);
         final var formattedName = "%s %s".formatted(name.value(), surname.value());
-        if (formattedName.isBlank()) {
-            throw InvalidEmployeeException.blankField("Full name");
-        }
-        if (formattedName.length() > EmployeeConstants.MAX_FULL_NAME_LENGTH) {
-            throw InvalidEmployeeException.lengthExceedsMax(
-                    "Full name", EmployeeConstants.MAX_FULL_NAME_LENGTH, formattedName);
-        }
+        EmployeeGuard.requireValidFullName(formattedName);
     }
 
     public static FullName of(final Name name, final Surname surname) {

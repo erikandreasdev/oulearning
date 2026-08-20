@@ -6,7 +6,7 @@ import java.util.UUID;
 public record EmployeeId(UUID value) {
 
     public EmployeeId {
-        EmployeeGuard.requireNonNull(value, "Employee id");
+        EmployeeGuard.requireEmployeeId(value);
     }
 
     public static EmployeeId of(final UUID value) {
@@ -14,7 +14,7 @@ public record EmployeeId(UUID value) {
     }
 
     public static EmployeeId fromString(final String value) {
-        return new EmployeeId(EmployeeGuard.requireValidUuid(value, "Employee id"));
+        return new EmployeeId(EmployeeGuard.requireValidEmployeeId(value));
     }
 
     @Override

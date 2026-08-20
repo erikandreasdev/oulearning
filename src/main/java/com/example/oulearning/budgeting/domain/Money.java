@@ -13,11 +13,11 @@ public record Money(MonetaryAmount monetaryAmount) {
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
     public Money {
-        monetaryAmount = BudgetingGuard.requireNonNull(monetaryAmount, "MonetaryAmount");
+        monetaryAmount = BudgetingGuard.requireMonetaryAmount(monetaryAmount);
     }
 
     public static Money of(final BigDecimal amount) {
-        BudgetingGuard.requireNonNull(amount, "Money amount");
+        BudgetingGuard.requireMoneyAmount(amount);
         final var scaledAmount = amount.setScale(BudgetingConstants.MONEY_SCALE, ROUNDING_MODE);
         return new Money(org.javamoney.moneta.Money.of(scaledAmount, EUR));
     }
@@ -42,34 +42,32 @@ public record Money(MonetaryAmount monetaryAmount) {
     }
 
     public Money add(final Money other) {
-        BudgetingGuard.requireNonNull(other, "Money to add");
+        BudgetingGuard.requireMoneyToAdd(other);
         return new Money(monetaryAmount.add(other.monetaryAmount));
     }
 
     public Money subtract(final Money other) {
-        BudgetingGuard.requireNonNull(other, "Money to subtract");
+        BudgetingGuard.requireMoneyToSubtract(other);
         return new Money(monetaryAmount.subtract(other.monetaryAmount));
     }
 
-    private static final String MONEY_TO_COMPARE = "Money to compare";
-
     public boolean isGreaterThan(final Money other) {
-        BudgetingGuard.requireNonNull(other, MONEY_TO_COMPARE);
+        BudgetingGuard.requireMoneyToCompare(other);
         return monetaryAmount.isGreaterThan(other.monetaryAmount);
     }
 
     public boolean isGreaterThanOrEqualTo(final Money other) {
-        BudgetingGuard.requireNonNull(other, MONEY_TO_COMPARE);
+        BudgetingGuard.requireMoneyToCompare(other);
         return monetaryAmount.isGreaterThanOrEqualTo(other.monetaryAmount);
     }
 
     public boolean isLessThan(final Money other) {
-        BudgetingGuard.requireNonNull(other, MONEY_TO_COMPARE);
+        BudgetingGuard.requireMoneyToCompare(other);
         return monetaryAmount.isLessThan(other.monetaryAmount);
     }
 
     public boolean isLessThanOrEqualTo(final Money other) {
-        BudgetingGuard.requireNonNull(other, MONEY_TO_COMPARE);
+        BudgetingGuard.requireMoneyToCompare(other);
         return monetaryAmount.isLessThanOrEqualTo(other.monetaryAmount);
     }
 

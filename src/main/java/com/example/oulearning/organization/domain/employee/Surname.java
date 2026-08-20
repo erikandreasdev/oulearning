@@ -4,8 +4,7 @@ package com.example.oulearning.organization.domain.employee;
 public record Surname(String value) {
 
     public Surname {
-        value = EmployeeGuard.requireLengthBetween(
-                value, "Surname", EmployeeConstants.MIN_SURNAME_LENGTH, EmployeeConstants.MAX_SURNAME_LENGTH);
+        value = EmployeeGuard.requireSurname(value);
     }
 
     public static Surname of(final String value) {

@@ -1,7 +1,7 @@
 package com.example.oulearning.budgeting.domain;
 
 import com.example.oulearning.organization.domain.hierarchy.HierarchyTestFactory;
-import com.example.oulearning.organization.domain.hierarchy.OuId;
+import com.example.oulearning.organization.domain.hierarchy.OrganizationalUnitId;
 import java.math.BigDecimal;
 import java.util.UUID;
 import org.instancio.Instancio;
@@ -52,13 +52,13 @@ public final class BudgetingTestFactory {
     }
 
     public static Budget randomBudget() {
-        return randomBudget(randomBudgetId(), HierarchyTestFactory.randomOuId());
+        return randomBudget(randomBudgetId(), HierarchyTestFactory.randomOrganizationalUnitId());
     }
 
-    public static Budget randomBudget(final BudgetId id, final OuId ouId) {
+    public static Budget randomBudget(final BudgetId id, final OrganizationalUnitId organizationalUnitId) {
         final var total = randomMoney();
         final var reserved = randomMoney();
         final var available = randomMoney();
-        return Budget.of(id, ouId, randomFiscalYear(), total, reserved, available);
+        return Budget.of(id, organizationalUnitId, randomFiscalYear(), total, reserved, available);
     }
 }

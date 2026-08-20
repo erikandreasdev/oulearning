@@ -9,62 +9,66 @@ import org.junit.jupiter.api.Test;
 class OrganizationTest {
 
     @Test
-    @DisplayName("given empty Organization, when adding and removing OuIds, then set is updated accordingly")
-    void givenEmptyOrganization_whenAddingAndRemovingOuIds_thenSetIsUpdatedAccordingly() {
+    @DisplayName(
+            "given empty Organization, when adding and removing OrganizationalUnitIds, then set is updated accordingly")
+    void givenEmptyOrganization_whenAddingAndRemovingOrganizationalUnitIds_thenSetIsUpdatedAccordingly() {
         // given
         final var organization = new Organization();
-        final var ou1 = HierarchyTestFactory.randomOuId();
-        final var ou2 = HierarchyTestFactory.randomOuId();
+        final var unit1 = HierarchyTestFactory.randomOrganizationalUnitId();
+        final var unit2 = HierarchyTestFactory.randomOrganizationalUnitId();
 
         // when
-        final var orgWithTwo = organization.addOu(ou1).addOu(ou2);
+        final var orgWithTwo =
+                organization.addOrganizationalUnit(unit1).addOrganizationalUnit(unit2);
 
         // then
-        assertThat(orgWithTwo.ouIds()).containsExactlyInAnyOrder(ou1, ou2);
+        assertThat(orgWithTwo.organizationalUnitIds()).containsExactlyInAnyOrder(unit1, unit2);
 
         // when
-        final var orgWithOne = orgWithTwo.removeOu(ou1);
+        final var orgWithOne = orgWithTwo.removeOrganizationalUnit(unit1);
 
         // then
-        assertThat(orgWithOne.ouIds()).containsExactly(ou2);
+        assertThat(orgWithOne.organizationalUnitIds()).containsExactly(unit2);
     }
 
     @Test
-    @DisplayName("given initial set of OuIds, when creating Organization, then contains all initial OuIds")
-    void givenInitialSetOfOuIds_whenCreatingOrganization_thenContainsAllInitialOuIds() {
+    @DisplayName(
+            "given initial set of OrganizationalUnitIds, when creating Organization, then contains all initial OrganizationalUnitIds")
+    void givenInitialSetOfOrganizationalUnitIds_whenCreatingOrganization_thenContainsAllInitialOrganizationalUnitIds() {
         // given
-        final var ou1 = HierarchyTestFactory.randomOuId();
+        final var unit1 = HierarchyTestFactory.randomOrganizationalUnitId();
 
         // when
-        final var organization = new Organization(Set.of(ou1));
+        final var organization = new Organization(Set.of(unit1));
 
         // then
-        assertThat(organization.ouIds()).containsExactly(ou1);
+        assertThat(organization.organizationalUnitIds()).containsExactly(unit1);
     }
 
     @Test
-    @DisplayName("given null set of OuIds, when creating Organization, then initialized with empty set")
-    void givenNullSetOfOuIds_whenCreatingOrganization_thenInitializedWithEmptySet() {
+    @DisplayName(
+            "given null set of OrganizationalUnitIds, when creating Organization, then initialized with empty set")
+    void givenNullSetOfOrganizationalUnitIds_whenCreatingOrganization_thenInitializedWithEmptySet() {
         // given
 
         // when
         final var organization = new Organization(null);
 
         // then
-        assertThat(organization.ouIds()).isEmpty();
+        assertThat(organization.organizationalUnitIds()).isEmpty();
     }
 
     @Test
     @DisplayName("given organization, when calling toString, then return formatted string")
     void givenOrganization_whenCallingToString_thenReturnFormattedString() {
         // given
-        final var ou1 = HierarchyTestFactory.randomOuId();
-        final var organization = new Organization(Set.of(ou1));
+        final var unit1 = HierarchyTestFactory.randomOrganizationalUnitId();
+        final var organization = new Organization(Set.of(unit1));
 
         // when
         final var str = organization.toString();
 
         // then
-        assertThat(str).contains("Organization").contains(ou1.toString());
+        assertThat(str).contains("Organization").contains(unit1.toString());
     }
 }

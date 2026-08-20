@@ -3,7 +3,7 @@ package com.example.oulearning.organization.domain.hierarchy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.example.oulearning.organization.domain.hierarchy.exception.InvalidOuException;
+import com.example.oulearning.organization.domain.hierarchy.exception.InvalidOrganizationalUnitException;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,7 +19,7 @@ class NameTest {
         @DisplayName("given valid string, when creating Name, then create successfully")
         void givenValidString_whenCreatingName_thenCreateSuccessfully() {
             // given
-            final var raw = HierarchyTestFactory.randomOuNameString();
+            final var raw = HierarchyTestFactory.randomOrganizationalUnitNameString();
 
             // when
             final var name = Name.of(raw);
@@ -33,7 +33,7 @@ class NameTest {
         @DisplayName("given padded string, when creating Name, then trim and create successfully")
         void givenPaddedString_whenCreatingName_thenTrimAndCreateSuccessfully() {
             // given
-            final var raw = HierarchyTestFactory.randomOuNameString();
+            final var raw = HierarchyTestFactory.randomOrganizationalUnitNameString();
 
             // when
             final var name = Name.of("  %s  ".formatted(raw));
@@ -43,21 +43,21 @@ class NameTest {
         }
 
         @Test
-        @DisplayName("given null name string, when creating Name, then throw InvalidOuException")
-        void givenNullNameString_whenCreatingName_thenThrowInvalidOuException() {
+        @DisplayName("given null name string, when creating Name, then throw InvalidOrganizationalUnitException")
+        void givenNullNameString_whenCreatingName_thenThrowInvalidOrganizationalUnitException() {
             // given
 
             // when
 
             // then
             assertThatThrownBy(() -> new Name(null))
-                    .isInstanceOf(InvalidOuException.class)
+                    .isInstanceOf(InvalidOrganizationalUnitException.class)
                     .hasMessageContaining("cannot be null");
         }
 
         @Test
-        @DisplayName("given blank name string, when creating Name, then throw InvalidOuException")
-        void givenBlankNameString_whenCreatingName_thenThrowInvalidOuException() {
+        @DisplayName("given blank name string, when creating Name, then throw InvalidOrganizationalUnitException")
+        void givenBlankNameString_whenCreatingName_thenThrowInvalidOrganizationalUnitException() {
             // given
             final var blank = " ".repeat(Instancio.gen().ints().range(1, 5).get());
 
@@ -65,13 +65,14 @@ class NameTest {
 
             // then
             assertThatThrownBy(() -> new Name(blank))
-                    .isInstanceOf(InvalidOuException.class)
+                    .isInstanceOf(InvalidOrganizationalUnitException.class)
                     .hasMessageContaining("cannot be blank");
         }
 
         @Test
-        @DisplayName("given name exceeding max length, when creating Name, then throw InvalidOuException")
-        void givenNameExceedingMaxLength_whenCreatingName_thenThrowInvalidOuException() {
+        @DisplayName(
+                "given name exceeding max length, when creating Name, then throw InvalidOrganizationalUnitException")
+        void givenNameExceedingMaxLength_whenCreatingName_thenThrowInvalidOrganizationalUnitException() {
             // given
             final var longName = "A".repeat(HierarchyConstants.MAX_NAME_LENGTH + 1);
 
@@ -79,8 +80,8 @@ class NameTest {
 
             // then
             assertThatThrownBy(() -> new Name(longName))
-                    .isInstanceOf(InvalidOuException.class)
-                    .hasMessageContaining("Ou name length must be between");
+                    .isInstanceOf(InvalidOrganizationalUnitException.class)
+                    .hasMessageContaining("Organizational unit name length must be between");
         }
     }
 
@@ -92,7 +93,7 @@ class NameTest {
         @DisplayName("given identical names, when comparing Name, then they are equal")
         void givenIdenticalNames_whenComparingName_thenTheyAreEqual() {
             // given
-            final var raw = HierarchyTestFactory.randomOuNameString();
+            final var raw = HierarchyTestFactory.randomOrganizationalUnitNameString();
             final var n1 = Name.of(raw);
             final var n2 = Name.of(raw);
 

@@ -4,8 +4,8 @@ package com.example.oulearning.training.domain;
 public record ExternalProvider(ExternalProviderName name, ExternalProviderContact contact) {
 
     public ExternalProvider {
-        TrainingGuard.requireNonNull(name, "ExternalProviderName");
-        TrainingGuard.requireNonNull(contact, "ExternalProviderContact");
+        TrainingGuard.requireExternalProviderName(name);
+        TrainingGuard.requireExternalProviderContact(contact);
     }
 
     public static ExternalProvider of(final ExternalProviderName name, final ExternalProviderContact contact) {

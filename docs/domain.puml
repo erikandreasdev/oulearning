@@ -7,7 +7,7 @@ package "organization" {
 
     package "Hierarchy" {
 
-        class OuId <<Value Object>> {
+        class OrganizationalUnitId <<Value Object>> {
             - value : UUID
         }
 
@@ -15,27 +15,27 @@ package "organization" {
             - value : String
         }
 
-        class Ou {
-            - id : OuId
+        class OrganizationalUnit {
+            - id : OrganizationalUnitId
             - name : Name
-            - parentId : OuId
-            - childIds : Set<OuId>
+            - parentId : OrganizationalUnitId
+            - childIds : Set<OrganizationalUnitId>
             - owners : Set<EmployeeId>
             - members : Set<EmployeeId>
         }
 
         class Organization {
-            - ouIds : Set<OuId>
+            - organizationalUnitIds : Set<OrganizationalUnitId>
         }
 
-        Ou *-- OuId
-        Ou *-- Name
-        Ou --> OuId : parentId
-        Ou o-- OuId : childIds
-        Ou o-- Employee.EmployeeId : owners
-        Ou o-- Employee.EmployeeId : members
+        OrganizationalUnit *-- OrganizationalUnitId
+        OrganizationalUnit *-- Name
+        OrganizationalUnit --> OrganizationalUnitId : parentId
+        OrganizationalUnit o-- OrganizationalUnitId : childIds
+        OrganizationalUnit o-- Employee.EmployeeId : owners
+        OrganizationalUnit o-- Employee.EmployeeId : members
 
-        Organization o-- OuId
+        Organization o-- OrganizationalUnitId
     }
 
     package "Employee" {
@@ -93,7 +93,7 @@ package "budgeting" {
 
     class Budget {
         - id : BudgetId
-        - ouId : OuId
+        - organizationalUnitId : OrganizationalUnitId
         - fiscalYear : FiscalYear
         - total : Money
         - reserved : Money
@@ -101,7 +101,7 @@ package "budgeting" {
     }
 
     Budget *-- BudgetId
-    Budget --> organization.Hierarchy.OuId : ouId
+    Budget --> organization.Hierarchy.OrganizationalUnitId : organizationalUnitId
     Budget *-- FiscalYear
     Budget *-- Money : total
     Budget *-- Money : reserved
@@ -161,7 +161,7 @@ package "training" {
     }
 
     enum TrainingPurposeType {
-        IDP
+        INDIVIDUAL_DEVELOPMENT_PLAN
         DEPARTMENT_GOALS
         OTHER
     }
@@ -195,7 +195,7 @@ package "training" {
     class Training {
         - id : TrainingId
         - requestedBy : EmployeeId
-        - ouId : OuId
+        - organizationalUnitId : OrganizationalUnitId
         - name : TrainingName
         - cost : Cost
         - hours : Hours
@@ -210,7 +210,7 @@ package "training" {
 
     Training *-- TrainingId
     Training --> organization.Employee.EmployeeId : requestedBy
-    Training --> organization.Hierarchy.OuId : ouId
+    Training --> organization.Hierarchy.OrganizationalUnitId : organizationalUnitId
     Training *-- TrainingName
     Training *-- Cost
     Training *-- Hours

@@ -3,16 +3,14 @@ package com.example.oulearning.organization.domain.hierarchy;
 import java.util.HashSet;
 import java.util.Set;
 
-public record Organization(Set<OuId> ouIds) {
-
-    private static final String OU_ID_FIELD = "Ou id";
+public record Organization(Set<OrganizationalUnitId> organizationalUnitIds) {
 
     public Organization {
-        if (ouIds == null) {
-            ouIds = Set.of();
+        if (organizationalUnitIds == null) {
+            organizationalUnitIds = Set.of();
         } else {
-            ouIds.forEach(id -> HierarchyGuard.requireNonNull(id, OU_ID_FIELD));
-            ouIds = Set.copyOf(ouIds);
+            organizationalUnitIds.forEach(HierarchyGuard::requireOrganizationalUnitId);
+            organizationalUnitIds = Set.copyOf(organizationalUnitIds);
         }
     }
 
@@ -20,22 +18,25 @@ public record Organization(Set<OuId> ouIds) {
         this(Set.of());
     }
 
-    public Organization addOu(final OuId ouId) {
-        HierarchyGuard.requireNonNull(ouId, OU_ID_FIELD);
-        final var updated = new HashSet<>(ouIds);
-        updated.add(ouId);
+    public Organization addOrganizationalUnit(final OrganizationalUnitId organizationalUnitId) {
+        HierarchyGuard.requireOrganizationalUnitId(organizationalUnitId);
+        final var updated = new HashSet<>(organizationalUnitIds);
+        updated.add(organizationalUnitId);
         return new Organization(updated);
     }
 
-    public Organization removeOu(final OuId ouId) {
-        HierarchyGuard.requireNonNull(ouId, OU_ID_FIELD);
-        final var updated = new HashSet<>(ouIds);
-        updated.remove(ouId);
+    public Organization removeOrganizationalUnit(final OrganizationalUnitId organizationalUnitId) {
+        HierarchyGuard.requireOrganizationalUnitId(organizationalUnitId);
+        final var updated = new HashSet<>(organizationalUnitIds);
+        updated.remove(organizationalUnitId);
         return new Organization(updated);
     }
 
-    @Override
-    public String toString() {
-        return "Organization[ouIds=%s]".formatted(ouIds);
+    public boolean contains(final OrganizationalUnitId organizationalUnitId) {
+        return organizationalUnitIds.contains(organizationalUnitId);
+    }
+
+    public int size() {
+        return organizationalUnitIds.size();
     }
 }

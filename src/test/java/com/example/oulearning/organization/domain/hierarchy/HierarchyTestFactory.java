@@ -14,11 +14,11 @@ public final class HierarchyTestFactory {
         return Instancio.create(UUID.class);
     }
 
-    public static OuId randomOuId() {
-        return OuId.of(randomUuid());
+    public static OrganizationalUnitId randomOrganizationalUnitId() {
+        return OrganizationalUnitId.of(randomUuid());
     }
 
-    public static String randomOuNameString() {
+    public static String randomOrganizationalUnitNameString() {
         return Instancio.gen()
                 .string()
                 .length(HierarchyConstants.MIN_NAME_LENGTH, HierarchyConstants.MAX_NAME_LENGTH)
@@ -26,24 +26,24 @@ public final class HierarchyTestFactory {
     }
 
     public static Name randomName() {
-        return Name.of(randomOuNameString());
+        return Name.of(randomOrganizationalUnitNameString());
     }
 
-    public static Ou randomOu() {
-        return randomOu(randomOuId());
+    public static OrganizationalUnit randomOrganizationalUnit() {
+        return randomOrganizationalUnit(randomOrganizationalUnitId());
     }
 
-    public static Ou randomOu(final OuId id) {
-        return Ou.of(
+    public static OrganizationalUnit randomOrganizationalUnit(final OrganizationalUnitId id) {
+        return OrganizationalUnit.of(
                 id,
                 randomName(),
-                randomOuId(),
-                Set.of(randomOuId()),
+                randomOrganizationalUnitId(),
+                Set.of(randomOrganizationalUnitId()),
                 Set.of(EmployeeTestFactory.randomEmployeeId()),
                 Set.of(EmployeeTestFactory.randomEmployeeId()));
     }
 
     public static Organization randomOrganization() {
-        return new Organization(Set.of(randomOuId(), randomOuId()));
+        return new Organization(Set.of(randomOrganizationalUnitId(), randomOrganizationalUnitId()));
     }
 }

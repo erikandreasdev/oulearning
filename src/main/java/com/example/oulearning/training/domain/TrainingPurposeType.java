@@ -2,7 +2,7 @@ package com.example.oulearning.training.domain;
 
 
 public enum TrainingPurposeType {
-  IDP,
-  DEPARTMENT_GOALS,
-  OTHER
+    INDIVIDUAL_DEVELOPMENT_PLAN,
+    DEPARTMENT_GOALS,
+    OTHER
 }

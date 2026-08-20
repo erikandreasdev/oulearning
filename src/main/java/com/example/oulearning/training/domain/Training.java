@@ -1,8 +1,9 @@
 package com.example.oulearning.training.domain;
 
 import com.example.oulearning.organization.domain.employee.EmployeeId;
-import com.example.oulearning.organization.domain.hierarchy.OuId;
+import com.example.oulearning.organization.domain.hierarchy.OrganizationalUnitId;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -10,7 +11,7 @@ import java.util.Set;
 public record Training(
         TrainingId id,
         EmployeeId requestedBy,
-        OuId ouId,
+        OrganizationalUnitId organizationalUnitId,
         TrainingName name,
         Cost cost,
         Hours hours,
@@ -23,24 +24,50 @@ public record Training(
         Set<EmployeeId> attendees) {
 
     public Training {
-        id = TrainingGuard.requireNonNull(id, "Training id");
-        requestedBy = TrainingGuard.requireNonNull(requestedBy, "RequestedBy employee id");
-        ouId = TrainingGuard.requireNonNull(ouId, "Ou id");
-        name = TrainingGuard.requireNonNull(name, "Name");
-        cost = TrainingGuard.requireNonNull(cost, "Cost");
-        hours = TrainingGuard.requireNonNull(hours, "Hours");
-        purpose = TrainingGuard.requireNonNull(purpose, "Purpose");
-        typeId = TrainingGuard.requireNonNull(typeId, "TypeId");
-        status = TrainingGuard.requireNonNull(status, "Status");
-        createdAt = TrainingGuard.requireNonNull(createdAt, "CreatedAt");
-        updatedAt = TrainingGuard.requireNonNull(updatedAt, "UpdatedAt");
+        id = TrainingGuard.requireTrainingId(id);
+        requestedBy = TrainingGuard.requireRequestedBy(requestedBy);
+        organizationalUnitId = TrainingGuard.requireOrganizationalUnitId(organizationalUnitId);
+        name = TrainingGuard.requireTrainingName(name);
+        cost = TrainingGuard.requireCost(cost);
+        hours = TrainingGuard.requireHours(hours);
+        purpose = TrainingGuard.requirePurpose(purpose);
+        typeId = TrainingGuard.requireTypeId(typeId);
+        status = TrainingGuard.requireStatus(status);
+        createdAt = TrainingGuard.requireCreatedAt(createdAt);
+        updatedAt = TrainingGuard.requireUpdatedAt(updatedAt);
         attendees = (attendees != null) ? Set.copyOf(attendees) : Set.of();
     }
 
-    public static Training of(
+    public static Training create(
             final TrainingId id,
             final EmployeeId requestedBy,
-            final OuId ouId,
+            final OrganizationalUnitId organizationalUnitId,
+            final TrainingName name,
+            final Cost cost,
+            final Hours hours,
+            final TrainingPurpose purpose,
+            final TypeId typeId,
+            final Instant now) {
+        return new Training(
+                id,
+                requestedBy,
+                organizationalUnitId,
+                name,
+                cost,
+                hours,
+                purpose,
+                typeId,
+                TrainingStatus.REQUESTED,
+                null,
+                now,
+                now,
+                Set.of());
+    }
+
+    public static Training reconstitute(
+            final TrainingId id,
+            final EmployeeId requestedBy,
+            final OrganizationalUnitId organizationalUnitId,
             final TrainingName name,
             final Cost cost,
             final Hours hours,
@@ -54,7 +81,7 @@ public record Training(
         return new Training(
                 id,
                 requestedBy,
-                ouId,
+                organizationalUnitId,
                 name,
                 cost,
                 hours,
@@ -67,30 +94,61 @@ public record Training(
                 attendees);
     }
 
-    public static Training create(
-            final TrainingId id,
-            final EmployeeId requestedBy,
-            final OuId ouId,
-            final TrainingName name,
-            final Cost cost,
-            final Hours hours,
-            final TrainingPurpose purpose,
-            final TypeId typeId,
-            final Instant createdAt) {
+    public Training approve(final ManagerReview review, final Instant now) {
+        TrainingGuard.requireReviewedAt(now);
         return new Training(
                 id,
                 requestedBy,
-                ouId,
+                organizationalUnitId,
                 name,
                 cost,
                 hours,
                 purpose,
                 typeId,
-                TrainingStatus.REQUESTED,
-                null,
+                TrainingStatus.APPROVED,
+                review,
                 createdAt,
+                now,
+                attendees);
+    }
+
+    public Training reject(final ManagerReview review, final Instant now) {
+        TrainingGuard.requireReviewedAt(now);
+        return new Training(
+                id,
+                requestedBy,
+                organizationalUnitId,
+                name,
+                cost,
+                hours,
+                purpose,
+                typeId,
+                TrainingStatus.REJECTED,
+                review,
                 createdAt,
-                Set.of());
+                now,
+                attendees);
+    }
+
+    public Training addAttendee(final EmployeeId attendee, final Instant now) {
+        TrainingGuard.requireAttendee(attendee);
+        TrainingGuard.requireUpdatedAt(now);
+        final var updated = new HashSet<>(attendees);
+        updated.add(attendee);
+        return new Training(
+                id,
+                requestedBy,
+                organizationalUnitId,
+                name,
+                cost,
+                hours,
+                purpose,
+                typeId,
+                status,
+                rawManagerReview,
+                createdAt,
+                now,
+                updated);
     }
 
     public Optional<ManagerReview> managerReview() {
@@ -109,7 +167,7 @@ public record Training(
 
     @Override
     public String toString() {
-        return "Training[id=%s, requestedBy=%s, ouId=%s, name=%s, cost=%s, hours=%s, purpose=%s, typeId=%s, status=%s]"
-                .formatted(id, requestedBy, ouId, name, cost, hours, purpose, typeId, status);
+        return "Training[id=%s, requestedBy=%s, organizationalUnitId=%s, name=%s, cost=%s, hours=%s, purpose=%s, typeId=%s, status=%s]"
+                .formatted(id, requestedBy, organizationalUnitId, name, cost, hours, purpose, typeId, status);
     }
 }

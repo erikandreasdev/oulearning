@@ -6,7 +6,7 @@ import java.util.UUID;
 public record TrainingId(UUID value) {
 
     public TrainingId {
-        TrainingGuard.requireNonNull(value, "Training id");
+        TrainingGuard.requireTrainingId(value);
     }
 
     public static TrainingId of(final UUID value) {
@@ -14,7 +14,7 @@ public record TrainingId(UUID value) {
     }
 
     public static TrainingId fromString(final String value) {
-        return new TrainingId(TrainingGuard.requireValidUuid(value, "Training id"));
+        return new TrainingId(TrainingGuard.requireValidTrainingId(value));
     }
 
     @Override

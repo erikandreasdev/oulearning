@@ -6,7 +6,7 @@ import java.util.UUID;
 public record BudgetId(UUID value) {
 
     public BudgetId {
-        BudgetingGuard.requireNonNull(value, "Budget id");
+        BudgetingGuard.requireBudgetId(value);
     }
 
     public static BudgetId of(final UUID value) {
@@ -14,7 +14,7 @@ public record BudgetId(UUID value) {
     }
 
     public static BudgetId fromString(final String value) {
-        return new BudgetId(BudgetingGuard.requireValidUuid(value, "Budget id"));
+        return new BudgetId(BudgetingGuard.requireValidBudgetId(value));
     }
 
     @Override

@@ -6,8 +6,8 @@ import java.util.Optional;
 public record Type(TypeId id, TypeName name, TypeId rawParentTypeId) {
 
     public Type {
-        id = TrainingGuard.requireNonNull(id, "TypeId");
-        name = TrainingGuard.requireNonNull(name, "Name");
+        id = TrainingGuard.requireTypeId(id);
+        name = TrainingGuard.requireTypeName(name);
     }
 
     public static Type of(final TypeId id, final TypeName name, final TypeId parentTypeId) {

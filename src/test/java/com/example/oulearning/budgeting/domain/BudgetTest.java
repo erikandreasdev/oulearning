@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.oulearning.budgeting.domain.exception.InvalidBudgetOperationException;
 import com.example.oulearning.organization.domain.hierarchy.HierarchyTestFactory;
-import com.example.oulearning.organization.domain.hierarchy.OuId;
+import com.example.oulearning.organization.domain.hierarchy.OrganizationalUnitId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class BudgetTest {
 
     private final BudgetId id = BudgetingTestFactory.randomBudgetId();
-    private final OuId ouId = HierarchyTestFactory.randomOuId();
+    private final OrganizationalUnitId organizationalUnitId = HierarchyTestFactory.randomOrganizationalUnitId();
     private final FiscalYear fiscalYear = BudgetingTestFactory.randomFiscalYear();
     private final Money total = BudgetingTestFactory.randomMoney();
     private final Money reserved = BudgetingTestFactory.randomMoney();
@@ -29,17 +29,18 @@ class BudgetTest {
             // given
 
             // when
-            final var budget = Budget.of(id, ouId, fiscalYear, total, reserved, available);
+            final var budget = Budget.of(id, organizationalUnitId, fiscalYear, total, reserved, available);
 
             // then
             assertThat(budget.id()).isEqualTo(id);
-            assertThat(budget.ouId()).isEqualTo(ouId);
+            assertThat(budget.organizationalUnitId()).isEqualTo(organizationalUnitId);
             assertThat(budget.fiscalYear()).isEqualTo(fiscalYear);
             assertThat(budget.total()).isEqualTo(total);
             assertThat(budget.reserved()).isEqualTo(reserved);
             assertThat(budget.available()).isEqualTo(available);
-            assertThat(budget).hasToString("Budget[id=%s, ouId=%s, fiscalYear=%s, total=%s, reserved=%s, available=%s]"
-                    .formatted(id, ouId, fiscalYear, total, reserved, available));
+            assertThat(budget).hasToString(
+                    "Budget[id=%s, organizationalUnitId=%s, fiscalYear=%s, total=%s, reserved=%s, available=%s]"
+                            .formatted(id, organizationalUnitId, fiscalYear, total, reserved, available));
         }
 
         @Test
@@ -50,22 +51,22 @@ class BudgetTest {
             // when
 
             // then
-            assertThatThrownBy(() -> Budget.of(null, ouId, fiscalYear, total, reserved, available))
+            assertThatThrownBy(() -> Budget.of(null, organizationalUnitId, fiscalYear, total, reserved, available))
                     .isInstanceOf(InvalidBudgetOperationException.class)
                     .hasMessageContaining("cannot be null");
             assertThatThrownBy(() -> Budget.of(id, null, fiscalYear, total, reserved, available))
                     .isInstanceOf(InvalidBudgetOperationException.class)
                     .hasMessageContaining("cannot be null");
-            assertThatThrownBy(() -> Budget.of(id, ouId, null, total, reserved, available))
+            assertThatThrownBy(() -> Budget.of(id, organizationalUnitId, null, total, reserved, available))
                     .isInstanceOf(InvalidBudgetOperationException.class)
                     .hasMessageContaining("cannot be null");
-            assertThatThrownBy(() -> Budget.of(id, ouId, fiscalYear, null, reserved, available))
+            assertThatThrownBy(() -> Budget.of(id, organizationalUnitId, fiscalYear, null, reserved, available))
                     .isInstanceOf(InvalidBudgetOperationException.class)
                     .hasMessageContaining("cannot be null");
-            assertThatThrownBy(() -> Budget.of(id, ouId, fiscalYear, total, null, available))
+            assertThatThrownBy(() -> Budget.of(id, organizationalUnitId, fiscalYear, total, null, available))
                     .isInstanceOf(InvalidBudgetOperationException.class)
                     .hasMessageContaining("cannot be null");
-            assertThatThrownBy(() -> Budget.of(id, ouId, fiscalYear, total, reserved, null))
+            assertThatThrownBy(() -> Budget.of(id, organizationalUnitId, fiscalYear, total, reserved, null))
                     .isInstanceOf(InvalidBudgetOperationException.class)
                     .hasMessageContaining("cannot be null");
         }
@@ -79,10 +80,10 @@ class BudgetTest {
         @DisplayName("given budgets with same id, when comparing, then they are equal")
         void givenBudgetsWithSameId_whenComparing_thenTheyAreEqual() {
             // given
-            final var b1 = Budget.of(id, ouId, fiscalYear, total, reserved, available);
+            final var b1 = Budget.of(id, organizationalUnitId, fiscalYear, total, reserved, available);
             final var b2 = Budget.of(
                     id,
-                    HierarchyTestFactory.randomOuId(),
+                    HierarchyTestFactory.randomOrganizationalUnitId(),
                     BudgetingTestFactory.randomFiscalYear(),
                     BudgetingTestFactory.randomMoney(),
                     Money.zero(),
@@ -98,9 +99,14 @@ class BudgetTest {
         @DisplayName("given budgets with different ids, when comparing, then they are not equal")
         void givenBudgetsWithDifferentIds_whenComparing_thenTheyAreNotEqual() {
             // given
-            final var b1 = Budget.of(id, ouId, fiscalYear, total, reserved, available);
+            final var b1 = Budget.of(id, organizationalUnitId, fiscalYear, total, reserved, available);
             final var b2 = Budget.of(
-                    BudgetingTestFactory.randomBudgetId(), ouId, fiscalYear, total, reserved, available);
+                    BudgetingTestFactory.randomBudgetId(),
+                    organizationalUnitId,
+                    fiscalYear,
+                    total,
+                    reserved,
+                    available);
 
             // when
 
@@ -112,7 +118,7 @@ class BudgetTest {
         @DisplayName("given same budget instance, when comparing, then they are equal")
         void givenSameBudgetInstance_whenComparing_thenTheyAreEqual() {
             // given
-            final var b = Budget.of(id, ouId, fiscalYear, total, reserved, available);
+            final var b = Budget.of(id, organizationalUnitId, fiscalYear, total, reserved, available);
 
             // when
 
@@ -124,7 +130,7 @@ class BudgetTest {
         @DisplayName("given null or different object type, when comparing, then they are not equal")
         void givenNullOrDifferentType_whenComparing_thenTheyAreNotEqual() {
             // given
-            final var b = Budget.of(id, ouId, fiscalYear, total, reserved, available);
+            final var b = Budget.of(id, organizationalUnitId, fiscalYear, total, reserved, available);
 
             // when
 

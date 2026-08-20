@@ -1,33 +1,33 @@
 package com.example.oulearning.budgeting.domain;
 
-import com.example.oulearning.organization.domain.hierarchy.OuId;
+import com.example.oulearning.organization.domain.hierarchy.OrganizationalUnitId;
 import java.util.Objects;
 
 public record Budget(
         BudgetId id,
-        OuId ouId,
+        OrganizationalUnitId organizationalUnitId,
         FiscalYear fiscalYear,
         Money total,
         Money reserved,
         Money available) {
 
     public Budget {
-        id = BudgetingGuard.requireNonNull(id, "Budget id");
-        ouId = BudgetingGuard.requireNonNull(ouId, "Ou id");
-        fiscalYear = BudgetingGuard.requireNonNull(fiscalYear, "FiscalYear");
-        total = BudgetingGuard.requireNonNull(total, "Total");
-        reserved = BudgetingGuard.requireNonNull(reserved, "Reserved");
-        available = BudgetingGuard.requireNonNull(available, "Available");
+        id = BudgetingGuard.requireBudgetId(id);
+        organizationalUnitId = BudgetingGuard.requireOrganizationalUnitId(organizationalUnitId);
+        fiscalYear = BudgetingGuard.requireFiscalYear(fiscalYear);
+        total = BudgetingGuard.requireTotal(total);
+        reserved = BudgetingGuard.requireReserved(reserved);
+        available = BudgetingGuard.requireAvailable(available);
     }
 
     public static Budget of(
             final BudgetId id,
-            final OuId ouId,
+            final OrganizationalUnitId organizationalUnitId,
             final FiscalYear fiscalYear,
             final Money total,
             final Money reserved,
             final Money available) {
-        return new Budget(id, ouId, fiscalYear, total, reserved, available);
+        return new Budget(id, organizationalUnitId, fiscalYear, total, reserved, available);
     }
 
     @Override
@@ -42,7 +42,7 @@ public record Budget(
 
     @Override
     public String toString() {
-        return "Budget[id=%s, ouId=%s, fiscalYear=%s, total=%s, reserved=%s, available=%s]"
-                .formatted(id, ouId, fiscalYear, total, reserved, available);
+        return "Budget[id=%s, organizationalUnitId=%s, fiscalYear=%s, total=%s, reserved=%s, available=%s]"
+                .formatted(id, organizationalUnitId, fiscalYear, total, reserved, available);
     }
 }

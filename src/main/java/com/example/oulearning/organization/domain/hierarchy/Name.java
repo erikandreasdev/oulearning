@@ -4,8 +4,7 @@ package com.example.oulearning.organization.domain.hierarchy;
 public record Name(String value) {
 
     public Name {
-        value = HierarchyGuard.requireLengthBetween(
-                value, "Ou name", HierarchyConstants.MIN_NAME_LENGTH, HierarchyConstants.MAX_NAME_LENGTH);
+        value = HierarchyGuard.requireOrganizationalUnitName(value);
     }
 
     public static Name of(final String value) {

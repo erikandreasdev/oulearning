@@ -118,7 +118,7 @@ public final class TrainingTestFactory {
     }
 
     public static TrainingPurpose randomTrainingPurpose() {
-        return TrainingPurpose.idp();
+        return TrainingPurpose.individualDevelopmentPlan();
     }
 
     public static String randomComments() {
@@ -161,7 +161,7 @@ public final class TrainingTestFactory {
         return Training.create(
                 id,
                 EmployeeTestFactory.randomEmployeeId(),
-                HierarchyTestFactory.randomOuId(),
+                HierarchyTestFactory.randomOrganizationalUnitId(),
                 randomTrainingName(),
                 randomCost(),
                 randomHours(),

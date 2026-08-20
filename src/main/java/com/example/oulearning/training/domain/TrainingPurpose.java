@@ -6,20 +6,16 @@ import java.util.Optional;
 public record TrainingPurpose(TrainingPurposeType type, String otherPurpose) {
 
     public TrainingPurpose {
-        TrainingGuard.requireNonNull(type, "TrainingPurposeType");
+        TrainingGuard.requirePurposeType(type);
         if (type == TrainingPurposeType.OTHER) {
-            otherPurpose = TrainingGuard.requireLengthBetween(
-                    otherPurpose,
-                    "Purpose description",
-                    TrainingConstants.MIN_PURPOSE_LENGTH,
-                    TrainingConstants.MAX_PURPOSE_LENGTH);
+            otherPurpose = TrainingGuard.requireOtherPurposeDescription(otherPurpose);
         } else {
             otherPurpose = null;
         }
     }
 
-    public static TrainingPurpose idp() {
-        return new TrainingPurpose(TrainingPurposeType.IDP, null);
+    public static TrainingPurpose individualDevelopmentPlan() {
+        return new TrainingPurpose(TrainingPurposeType.INDIVIDUAL_DEVELOPMENT_PLAN, null);
     }
 
     public static TrainingPurpose departmentGoals() {

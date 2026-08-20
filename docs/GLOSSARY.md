@@ -10,9 +10,9 @@ The Organization context models company hierarchy, structure, organizational uni
 
 ### A. Hierarchy Sub-domain
 - **Organization**: Aggregate root representing the company organization, containing the set of organizational unit identifiers that form the company tree.
-- **Ou (Organizational Unit)**: Core structural unit of the company (e.g. department, squad, division). Defines identity, name, hierarchical parent/child relations, designated unit owners, and assigned members.
-- **OuId**: Value object representing the unique identifier of an Organizational Unit.
-- **Name (OU)**: Value object representing the official name of an organizational unit.
+- **OrganizationalUnit**: Core structural unit of the company (e.g. department, squad, division). Defines identity, name, hierarchical parent/child relations, designated unit owners, and assigned members.
+- **OrganizationalUnitId**: Value object representing the unique identifier of an Organizational Unit.
+- **Name (OrganizationalUnit)**: Value object representing the official name of an organizational unit.
 - **Owners**: Employees designated as managers or leaders with administrative authority over the organizational unit.
 - **Members**: Employees belonging to and participating in the organizational unit.
 
@@ -51,7 +51,7 @@ The Training context handles training catalog types, training requests, lifecycl
   - `APPROVED`: Evaluated, accepted, and authorized by the manager.
   - `REJECTED`: Evaluated and declined by the manager.
 - **TrainingPurposeType**: Classification of the strategic rationale for the training:
-  - `IDP`: Aligned with the employee's Individual Development Plan.
+  - `INDIVIDUAL_DEVELOPMENT_PLAN`: Aligned with the employee's Individual Development Plan.
   - `DEPARTMENT_GOALS`: Aligned with strategic departmental objectives.
   - `OTHER`: Custom purpose requiring additional contextual explanation.
 - **TrainingPurpose**: Value object capturing the purpose classification and optional custom description when categorized as `OTHER`.
