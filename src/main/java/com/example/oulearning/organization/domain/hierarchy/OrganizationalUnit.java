@@ -49,9 +49,4 @@ public record OrganizationalUnit(
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String toString() {
-        return "OrganizationalUnit[id=%s, name=%s, parentId=%s]".formatted(id, name, rawParentId);
-    }
 }

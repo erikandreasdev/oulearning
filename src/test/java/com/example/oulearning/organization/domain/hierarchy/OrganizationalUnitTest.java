@@ -41,8 +41,6 @@ class OrganizationalUnitTest {
             assertThat(organizationalUnit.childIds()).containsExactly(childId);
             assertThat(organizationalUnit.owners()).containsExactly(emp1);
             assertThat(organizationalUnit.members()).containsExactly(emp2);
-            assertThat(organizationalUnit)
-                    .hasToString("OrganizationalUnit[id=%s, name=%s, parentId=%s]".formatted(id, name, parentId));
         }
 
         @Test

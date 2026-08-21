@@ -30,8 +30,6 @@ class TypeTest {
             assertThat(type.id()).isEqualTo(id);
             assertThat(type.name()).isEqualTo(name);
             assertThat(type.parentTypeId()).contains(parentId);
-            assertThat(type)
-                    .hasToString("Type[id=%s, name=%s, parentTypeId=%s]".formatted(id, name, parentId));
         }
 
         @Test

@@ -31,9 +31,4 @@ public record Type(TypeId id, TypeName name, TypeId rawParentTypeId) {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String toString() {
-        return "Type[id=%s, name=%s, parentTypeId=%s]".formatted(id, name, rawParentTypeId);
-    }
 }

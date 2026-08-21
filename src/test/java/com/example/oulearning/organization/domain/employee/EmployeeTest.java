@@ -30,8 +30,6 @@ class EmployeeTest {
             assertThat(employee.id()).isEqualTo(id);
             assertThat(employee.fullName()).isEqualTo(fullName);
             assertThat(employee.email()).isEqualTo(email);
-            assertThat(employee)
-                    .hasToString("Employee[id=%s, fullName=%s, email=%s]".formatted(id, fullName, email));
         }
 
         @Test

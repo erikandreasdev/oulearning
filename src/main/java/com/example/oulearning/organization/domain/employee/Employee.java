@@ -23,9 +23,4 @@ public record Employee(EmployeeId id, FullName fullName, Email email) {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String toString() {
-        return "Employee[id=%s, fullName=%s, email=%s]".formatted(id, fullName, email);
-    }
 }

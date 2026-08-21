@@ -39,10 +39,4 @@ public record Budget(
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String toString() {
-        return "Budget[id=%s, organizationalUnitId=%s, fiscalYear=%s, total=%s, reserved=%s, available=%s]"
-                .formatted(id, organizationalUnitId, fiscalYear, total, reserved, available);
-    }
 }

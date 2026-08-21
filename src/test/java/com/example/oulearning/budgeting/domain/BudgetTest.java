@@ -38,9 +38,6 @@ class BudgetTest {
             assertThat(budget.total()).isEqualTo(total);
             assertThat(budget.reserved()).isEqualTo(reserved);
             assertThat(budget.available()).isEqualTo(available);
-            assertThat(budget).hasToString(
-                    "Budget[id=%s, organizationalUnitId=%s, fiscalYear=%s, total=%s, reserved=%s, available=%s]"
-                            .formatted(id, organizationalUnitId, fiscalYear, total, reserved, available));
         }
 
         @Test

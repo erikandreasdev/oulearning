@@ -54,19 +54,6 @@ class TrainingTest {
             assertThat(training.createdAt()).isEqualTo(now);
             assertThat(training.updatedAt()).isEqualTo(now);
             assertThat(training.attendees()).isEmpty();
-            assertThat(training)
-                    .hasToString(
-                            "Training[id=%s, requestedBy=%s, organizationalUnitId=%s, name=%s, cost=%s, hours=%s, purpose=%s, typeId=%s, status=%s]"
-                                    .formatted(
-                                            id,
-                                            employeeId,
-                                            organizationalUnitId,
-                                            name,
-                                            cost,
-                                            hours,
-                                            purpose,
-                                            typeId,
-                                            TrainingStatus.REQUESTED));
         }
 
         @Test

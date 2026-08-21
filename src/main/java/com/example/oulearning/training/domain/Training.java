@@ -164,10 +164,4 @@ public record Training(
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @Override
-    public String toString() {
-        return "Training[id=%s, requestedBy=%s, organizationalUnitId=%s, name=%s, cost=%s, hours=%s, purpose=%s, typeId=%s, status=%s]"
-                .formatted(id, requestedBy, organizationalUnitId, name, cost, hours, purpose, typeId, status);
-    }
 }
