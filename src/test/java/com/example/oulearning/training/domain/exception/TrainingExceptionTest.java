@@ -1,0 +1,46 @@
+package com.example.oulearning.training.domain.exception;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+@DisplayName("TrainingException Unit Tests")
+final class TrainingExceptionTest {
+
+    @Nested
+    @DisplayName("Constructors")
+    final class Constructors {
+
+        @Test
+        @DisplayName("given message, when creating subclass, then retain message and be instance of TrainingException")
+        void givenMessage_whenCreatingSubclass_thenRetainMessageAndBeInstanceOfTrainingException() {
+            // given
+            final var message = "Training error occurred";
+
+            // when
+            final TrainingException exception = new InvalidTrainingOperationException(message);
+
+            // then
+            assertThat(exception.getMessage()).isEqualTo(message);
+            assertThat(exception).isInstanceOf(TrainingException.class);
+        }
+
+        @Test
+        @DisplayName("given message and cause, when creating subclass, then retain both and be instance of TrainingException")
+        void givenMessageAndCause_whenCreatingSubclass_thenRetainBothAndBeInstanceOfTrainingException() {
+            // given
+            final var message = "Training error occurred";
+            final var cause = new IllegalArgumentException("Invalid input");
+
+            // when
+            final TrainingException exception = new InvalidTrainingOperationException(message, cause);
+
+            // then
+            assertThat(exception.getMessage()).isEqualTo(message);
+            assertThat(exception.getCause()).isSameAs(cause);
+            assertThat(exception).isInstanceOf(TrainingException.class);
+        }
+    }
+}
