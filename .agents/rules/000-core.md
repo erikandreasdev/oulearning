@@ -34,7 +34,7 @@ domain <- application <- infrastructure (adapters) <- bootstrap (Spring config)
 - No `null` in public domain/application APIs: `Optional` for returns, guard clauses for parameters. No `Optional` fields or parameters.
 - No Lombok in `domain`. Elsewhere only `@Slf4j` / `@RequiredArgsConstructor`; prefer records.
 - Exceptions are specific and domain-named (`InvalidTrainingOperationException extends DomainException`). Never catch-and-swallow generic `Exception`.
-- Naming follows the ubiquitous language in `docs/GLOSSARY.md`. If a term is missing, ask or add it. Do not invent domain concepts silently.
+- Naming follows the ubiquitous language in `doc/GLOSSARY.md`. If a term is missing, ask or add it. Do not invent domain concepts silently.
 - Google Java Style, 4-space indent, 120 cols. Run `./mvnw spotless:apply`.
 - Pure code in production: No line, block, or Javadoc comments anywhere in production code. In tests, strictly only the mandatory `// given`, `// when`, `// then` line comments are permitted.
 - Inject `java.time.Clock` and id generators; never inline `Instant.now()` / `UUID.randomUUID()` in production domain/application logic.

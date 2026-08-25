@@ -17,7 +17,7 @@ class ManagerReviewTest {
     private Modality modality;
     private Instant startDate;
     private Instant endDate;
-    private ExternalProvider provider;
+    private ExternalProviderId providerId;
     private Instant now;
 
     @BeforeEach
@@ -26,7 +26,7 @@ class ManagerReviewTest {
         now = TrainingTestFactory.randomInstant();
         startDate = now.plus(10, ChronoUnit.DAYS);
         endDate = startDate.plus(2, ChronoUnit.DAYS);
-        provider = TrainingTestFactory.randomExternalProvider();
+        providerId = TrainingTestFactory.randomExternalProviderId();
     }
 
     @Nested
@@ -40,20 +40,20 @@ class ManagerReviewTest {
             final var comments = TrainingTestFactory.randomComments();
 
             // when
-            final var review = new ManagerReview(comments, modality, startDate, endDate, provider, now);
+            final var review = new ManagerReview(comments, modality, startDate, endDate, providerId, now);
 
             // then
             assertThat(review.comments()).isEqualTo(comments);
             assertThat(review.modality()).isEqualTo(modality);
             assertThat(review.startDate()).isEqualTo(startDate);
             assertThat(review.endDate()).isEqualTo(endDate);
-            assertThat(review.optionalExternalProvider()).contains(provider);
+            assertThat(review.optionalExternalProviderId()).contains(providerId);
             assertThat(review.reviewedAt()).isEqualTo(now);
         }
 
         @Test
-        @DisplayName("given review without external provider, when creating ManagerReview, then optionalProvider is empty")
-        void givenReviewWithoutExternalProvider_whenCreatingManagerReview_thenOptionalProviderIsEmpty() {
+        @DisplayName("given review without external provider, when creating ManagerReview, then optionalProviderId is empty")
+        void givenReviewWithoutExternalProvider_whenCreatingManagerReview_thenOptionalProviderIdIsEmpty() {
             // given
             final var comments = TrainingTestFactory.randomComments();
 
@@ -61,7 +61,7 @@ class ManagerReviewTest {
             final var review = new ManagerReview(comments, modality, startDate, endDate, null, now);
 
             // then
-            assertThat(review.optionalExternalProvider()).isEmpty();
+            assertThat(review.optionalExternalProviderId()).isEmpty();
         }
 
         @Test
@@ -72,7 +72,7 @@ class ManagerReviewTest {
             // when
 
             // then
-            assertThatThrownBy(() -> new ManagerReview(null, modality, startDate, endDate, provider, now))
+            assertThatThrownBy(() -> new ManagerReview(null, modality, startDate, endDate, providerId, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Comments cannot be null");
         }
@@ -86,7 +86,7 @@ class ManagerReviewTest {
             // when
 
             // then
-            assertThatThrownBy(() -> new ManagerReview(blank, modality, startDate, endDate, provider, now))
+            assertThatThrownBy(() -> new ManagerReview(blank, modality, startDate, endDate, providerId, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Comments cannot be blank");
         }
@@ -100,7 +100,7 @@ class ManagerReviewTest {
             // when
 
             // then
-            assertThatThrownBy(() -> new ManagerReview(longComments, modality, startDate, endDate, provider, now))
+            assertThatThrownBy(() -> new ManagerReview(longComments, modality, startDate, endDate, providerId, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Comments length must be between");
         }
@@ -115,7 +115,7 @@ class ManagerReviewTest {
             // when
 
             // then
-            assertThatThrownBy(() -> new ManagerReview(comments, modality, startDate, invalidEnd, provider, now))
+            assertThatThrownBy(() -> new ManagerReview(comments, modality, startDate, invalidEnd, providerId, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("cannot be before start date");
         }
@@ -129,7 +129,7 @@ class ManagerReviewTest {
             // when
 
             // then
-            assertThatThrownBy(() -> new ManagerReview(comments, null, startDate, endDate, provider, now))
+            assertThatThrownBy(() -> new ManagerReview(comments, null, startDate, endDate, providerId, now))
                     .isInstanceOf(InvalidTrainingOperationException.class)
                     .hasMessageContaining("Modality cannot be null");
         }
@@ -144,8 +144,8 @@ class ManagerReviewTest {
         void givenIdenticalReviews_whenComparing_thenTheyAreEqual() {
             // given
             final var comments = TrainingTestFactory.randomComments();
-            final var r1 = new ManagerReview(comments, modality, startDate, endDate, provider, now);
-            final var r2 = new ManagerReview(comments, modality, startDate, endDate, provider, now);
+            final var r1 = new ManagerReview(comments, modality, startDate, endDate, providerId, now);
+            final var r2 = new ManagerReview(comments, modality, startDate, endDate, providerId, now);
 
             // when
 

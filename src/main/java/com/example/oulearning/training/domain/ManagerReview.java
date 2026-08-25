@@ -3,13 +3,12 @@ package com.example.oulearning.training.domain;
 import java.time.Instant;
 import java.util.Optional;
 
-
 public record ManagerReview(
         String comments,
         Modality modality,
         Instant startDate,
         Instant endDate,
-        ExternalProvider externalProvider,
+        ExternalProviderId externalProviderId,
         Instant reviewedAt) {
 
     public ManagerReview {
@@ -21,7 +20,7 @@ public record ManagerReview(
         TrainingGuard.requireDateRange(startDate, endDate);
     }
 
-    public Optional<ExternalProvider> optionalExternalProvider() {
-        return Optional.ofNullable(externalProvider);
+    public Optional<ExternalProviderId> optionalExternalProviderId() {
+        return Optional.ofNullable(externalProviderId);
     }
 }

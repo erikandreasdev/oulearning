@@ -60,8 +60,9 @@ The Training context handles training catalog types, training requests, lifecycl
   - `ON_SITE`: In-person classroom or location-based training.
   - `E_LEARNING`: Self-paced digital learning modules.
   - `BLENDED`: Combination of delivery methods.
-- **ManagerReview**: Value object capturing the manager's evaluation decision: feedback comments, delivery modality, scheduled date window (start and end dates), review timestamp, and optional external provider.
-- **ExternalProvider**: Value object representing a third-party organization delivering training services, composed of provider name and contact information.
+- **ManagerReview**: Value object capturing the manager's evaluation decision: feedback comments, delivery modality, scheduled date window (start and end dates), review timestamp, and optional referenced external provider identifier (`ExternalProviderId`).
+- **ExternalProvider**: Entity representing a third-party organization delivering training services, composed of provider identity, provider name, contact information, and active status.
+- **ExternalProviderId**: Value object representing the unique identifier of an External Provider.
 - **ExternalProviderName**: Value object representing the name of a third-party training vendor.
 - **ExternalProviderContact**: Value object holding contact details (email and phone number) for a training provider.
 - **Phone**: Value object representing a validated contact telephone number.

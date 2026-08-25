@@ -2,57 +2,7 @@
 skinparam classAttributeIconSize 0
 hide empty members
 
-package budgeting {
-  class FiscalYear << (R, #FF7700) record >> {
-    int value
-    + {static} FiscalYear of(int value)
-  }
-}
-
-package budgeting {
-  class Budget << (R, #FF7700) record >> {
-    BudgetId id
-    OrganizationalUnitId organizationalUnitId
-    FiscalYear fiscalYear
-    Money total
-    Money reserved
-    Money available
-    boolean active
-    + {static} Budget create(BudgetId, OrganizationalUnitId, FiscalYear, Money, Money, Money)
-    + {static} Budget reconstitute(BudgetId, OrganizationalUnitId, FiscalYear, Money, Money, Money, boolean)
-    + Budget updateAmounts(Money total, Money reserved, Money available)
-    + Budget deactivate()
-  }
-}
-
-package budgeting {
-  class BudgetId << (R, #FF7700) record >> {
-    long value
-    + {static} BudgetId of(long value)
-  }
-}
-
-package budgeting {
-  class Money << (R, #FF7700) record >> {
-    MonetaryAmount monetaryAmount
-    + {static} Money of(BigDecimal amount)
-    + {static} Money of(double amount)
-    + {static} Money zero()
-    + BigDecimal amount()
-    + String currency()
-    + Money add(Money other)
-    + Money subtract(Money other)
-    + boolean isGreaterThan(Money other)
-    + boolean isLessThan(Money other)
-  }
-}
-
-package budgeting {
-  interface BudgetRepository << (I, #00FF77) >> {
-    + Optional<Budget> findById(BudgetId id)
-    + void save(Budget budget)
-  }
-}
+title Domain Layer Model
 
 package organization.hierarchy {
   class OrganizationalUnit << (R, #FF7700) record >> {
@@ -77,34 +27,30 @@ package organization.hierarchy {
     + OrganizationalUnit deactivate()
     + Optional<OrganizationalUnitId> parentId()
   }
-}
 
-package organization.hierarchy {
   class Organization << (R, #FF7700) record >> {
     Set<OrganizationalUnitId> organizationalUnitIds
     + Organization addOrganizationalUnit(OrganizationalUnitId ouId)
     + Organization removeOrganizationalUnit(OrganizationalUnitId ouId)
   }
-}
 
-package organization.hierarchy {
   class OrganizationalUnitId << (R, #FF7700) record >> {
     long value
     + {static} OrganizationalUnitId of(long value)
   }
-}
 
-package organization.hierarchy {
   class Name << (R, #FF7700) record >> {
     String value
     + {static} Name of(String value)
   }
-}
 
-package organization.hierarchy {
   interface OrganizationalUnitRepository << (I, #00FF77) >> {
     + Optional<OrganizationalUnit> findById(OrganizationalUnitId id)
     + void save(OrganizationalUnit organizationalUnit)
+  }
+
+  interface IdGenerator << (I, #00FF77) >> {
+    + long generate()
   }
 }
 
@@ -116,37 +62,27 @@ package organization.employee {
     + {static} FullName of(String name, String surname)
     + String formatted()
   }
-}
 
-package organization.employee {
   class Surname << (R, #FF7700) record >> {
     String value
     + {static} Surname of(String value)
   }
-}
 
-package organization.employee {
   class Email << (R, #FF7700) record >> {
     String value
     + {static} Email of(String value)
   }
-}
 
-package organization.employee {
   class EmployeeId << (R, #FF7700) record >> {
     long value
     + {static} EmployeeId of(long value)
   }
-}
 
-package organization.employee {
   class Name << (R, #FF7700) record >> {
     String value
     + {static} Name of(String value)
   }
-}
 
-package organization.employee {
   class Employee << (R, #FF7700) record >> {
     EmployeeId id
     FullName fullName
@@ -158,12 +94,62 @@ package organization.employee {
     + Employee updateEmail(Email newEmail)
     + Employee deactivate()
   }
-}
 
-package organization.employee {
   interface EmployeeRepository << (I, #00FF77) >> {
     + Optional<Employee> findById(EmployeeId id)
     + void save(Employee employee)
+  }
+
+  interface IdGenerator << (I, #00FF77) >> {
+    + long generate()
+  }
+}
+
+package budgeting {
+  class FiscalYear << (R, #FF7700) record >> {
+    int value
+    + {static} FiscalYear of(int value)
+  }
+
+  class Budget << (R, #FF7700) record >> {
+    BudgetId id
+    OrganizationalUnitId organizationalUnitId
+    FiscalYear fiscalYear
+    Money total
+    Money reserved
+    Money available
+    boolean active
+    + {static} Budget create(BudgetId, OrganizationalUnitId, FiscalYear, Money, Money, Money)
+    + {static} Budget reconstitute(BudgetId, OrganizationalUnitId, FiscalYear, Money, Money, Money, boolean)
+    + Budget updateAmounts(Money total, Money reserved, Money available)
+    + Budget deactivate()
+  }
+
+  class BudgetId << (R, #FF7700) record >> {
+    long value
+    + {static} BudgetId of(long value)
+  }
+
+  class Money << (R, #FF7700) record >> {
+    MonetaryAmount monetaryAmount
+    + {static} Money of(BigDecimal amount)
+    + {static} Money of(double amount)
+    + {static} Money zero()
+    + BigDecimal amount()
+    + String currency()
+    + Money add(Money other)
+    + Money subtract(Money other)
+    + boolean isGreaterThan(Money other)
+    + boolean isLessThan(Money other)
+  }
+
+  interface BudgetRepository << (I, #00FF77) >> {
+    + Optional<Budget> findById(BudgetId id)
+    + void save(Budget budget)
+  }
+
+  interface IdGenerator << (I, #00FF77) >> {
+    + long generate()
   }
 }
 
@@ -173,20 +159,17 @@ package training {
     Modality modality
     Instant startDate
     Instant endDate
-    ExternalProvider externalProvider
+    ExternalProviderId externalProviderId
     Instant reviewedAt
+    + Optional<ExternalProviderId> optionalExternalProviderId()
   }
-}
 
-package training {
   enum TrainingPurposeType {
     INDIVIDUAL_DEVELOPMENT_PLAN
     DEPARTMENT_GOALS
     OTHER
   }
-}
 
-package training {
   class TrainingPurpose << (R, #FF7700) record >> {
     TrainingPurposeType type
     String otherPurpose
@@ -195,16 +178,12 @@ package training {
     + {static} TrainingPurpose other(String purpose)
     + Optional<String> optionalOtherPurpose()
   }
-}
 
-package training {
   class Phone << (R, #FF7700) record >> {
     String value
     + {static} Phone of(String value)
   }
-}
 
-package training {
   class Type << (R, #FF7700) record >> {
     TypeId id
     TypeName name
@@ -212,62 +191,67 @@ package training {
     + {static} Type of(TypeId, TypeName, TypeId)
     + Optional<TypeId> parentTypeId()
   }
-}
 
-package training {
   class TypeName << (R, #FF7700) record >> {
     String value
     + {static} TypeName of(String value)
   }
-}
 
-package training {
   enum TrainingStatus {
     REQUESTED
     APPROVED
     REJECTED
   }
-}
 
-package training {
   class TrainingId << (R, #FF7700) record >> {
     long value
     + {static} TrainingId of(long value)
   }
-}
 
-package training {
   class Hours << (R, #FF7700) record >> {
     int value
     + {static} Hours of(int value)
   }
-}
 
-package training {
   enum Modality {
     VIRTUAL
     ON_SITE
     E_LEARNING
     BLENDED
   }
-}
 
-package training {
   class ExternalProviderContact << (R, #FF7700) record >> {
     Email email
     Phone phone
     + {static} ExternalProviderContact of(Email, Phone)
   }
-}
 
-package training {
+  class ExternalProviderId << (R, #FF7700) record >> {
+    long value
+    + {static} ExternalProviderId of(long value)
+  }
+
+  class ExternalProviderName << (R, #FF7700) record >> {
+    String value
+    + {static} ExternalProviderName of(String value)
+  }
+
+  class ExternalProvider << (R, #FF7700) record >> {
+    ExternalProviderId id
+    ExternalProviderName name
+    ExternalProviderContact contact
+    boolean active
+    + {static} ExternalProvider create(ExternalProviderId, ExternalProviderName, ExternalProviderContact)
+    + {static} ExternalProvider reconstitute(ExternalProviderId, ExternalProviderName, ExternalProviderContact, boolean)
+    + ExternalProvider update(ExternalProviderName, ExternalProviderContact)
+    + ExternalProvider deactivate()
+  }
+
   class TypeId << (R, #FF7700) record >> {
     long value
     + {static} TypeId of(long value)
   }
-}
 
-package training {
   class Cost << (R, #FF7700) record >> {
     BigDecimal amount
     String currency
@@ -275,24 +259,7 @@ package training {
     + {static} Cost of(BigDecimal amount)
     + {static} Cost zero()
   }
-}
 
-package training {
-  class ExternalProviderName << (R, #FF7700) record >> {
-    String value
-    + {static} ExternalProviderName of(String value)
-  }
-}
-
-package training {
-  class ExternalProvider << (R, #FF7700) record >> {
-    ExternalProviderName name
-    ExternalProviderContact contact
-    + {static} ExternalProvider of(ExternalProviderName, ExternalProviderContact)
-  }
-}
-
-package training {
   class Training << (R, #FF7700) record >> {
     TrainingId id
     EmployeeId requestedBy
@@ -317,19 +284,24 @@ package training {
     + Training deactivate()
     + Optional<ManagerReview> managerReview()
   }
-}
 
-package training {
   class TrainingName << (R, #FF7700) record >> {
     String value
     + {static} TrainingName of(String value)
   }
-}
 
-package training {
   interface TrainingRepository << (I, #00FF77) >> {
     + Optional<Training> findById(TrainingId id)
     + void save(Training training)
+  }
+
+  interface ExternalProviderRepository << (I, #00FF77) >> {
+    + Optional<ExternalProvider> findById(ExternalProviderId id)
+    + void save(ExternalProvider externalProvider)
+  }
+
+  interface IdGenerator << (I, #00FF77) >> {
+    + long generate()
   }
 }
 
@@ -339,6 +311,7 @@ Budget --> FiscalYear : fiscalYear
 Budget --> Money : total
 Budget --> Money : reserved
 Budget --> Money : available
+
 OrganizationalUnit --> OrganizationalUnitId : id
 OrganizationalUnit --> Name : name
 OrganizationalUnit --> OrganizationalUnitId : rawParentId
@@ -346,21 +319,25 @@ OrganizationalUnit "1" --> "*" OrganizationalUnitId : childIds
 OrganizationalUnit "1" --> "*" EmployeeId : owners
 OrganizationalUnit "1" --> "*" EmployeeId : members
 Organization "1" --> "*" OrganizationalUnitId : organizationalUnitIds
+
 FullName --> Name : name
 FullName --> Surname : surname
 Employee --> EmployeeId : id
 Employee --> FullName : fullName
 Employee --> Email : email
+
 ManagerReview --> Modality : modality
-ManagerReview --> ExternalProvider : externalProvider
+ManagerReview --> ExternalProviderId : externalProviderId
 TrainingPurpose --> TrainingPurposeType : type
 Type --> TypeId : id
 Type --> TypeName : name
 Type --> TypeId : rawParentTypeId
 ExternalProviderContact --> Email : email
 ExternalProviderContact --> Phone : phone
+ExternalProvider --> ExternalProviderId : id
 ExternalProvider --> ExternalProviderName : name
 ExternalProvider --> ExternalProviderContact : contact
+
 Training --> TrainingId : id
 Training --> EmployeeId : requestedBy
 Training --> OrganizationalUnitId : organizationalUnitId
@@ -372,4 +349,5 @@ Training --> TypeId : typeId
 Training --> TrainingStatus : status
 Training --> ManagerReview : rawManagerReview
 Training "1" --> "*" EmployeeId : attendees
+
 @enduml

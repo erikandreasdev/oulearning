@@ -37,6 +37,10 @@ public final class TrainingTestFactory {
         return TypeId.of(randomId());
     }
 
+    public static ExternalProviderId randomExternalProviderId() {
+        return ExternalProviderId.of(randomId());
+    }
+
     public static String randomTypeNameString() {
         return Instancio.gen()
                 .string()
@@ -109,7 +113,11 @@ public final class TrainingTestFactory {
     }
 
     public static ExternalProvider randomExternalProvider() {
-        return ExternalProvider.of(randomExternalProviderName(), randomExternalProviderContact());
+        return randomExternalProvider(randomExternalProviderId());
+    }
+
+    public static ExternalProvider randomExternalProvider(final ExternalProviderId id) {
+        return ExternalProvider.create(id, randomExternalProviderName(), randomExternalProviderContact());
     }
 
     public static String randomPurposeDescription() {
@@ -139,7 +147,7 @@ public final class TrainingTestFactory {
                 Modality.BLENDED,
                 now.plus(DEFAULT_START_DAY_OFFSET, ChronoUnit.DAYS),
                 now.plus(DEFAULT_END_DAY_OFFSET, ChronoUnit.DAYS),
-                randomExternalProvider(),
+                randomExternalProviderId(),
                 now);
     }
 

@@ -1,0 +1,186 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide empty members
+
+title Infrastructure Layer Architecture & Adapters
+
+package "Inbound Web Adapters (REST)" {
+  class EmployeeController << (@RestController) >> {
+    - CreateEmployeeUseCase createEmployeeUseCase
+    - GetEmployeeUseCase getEmployeeUseCase
+    - UpdateEmployeeUseCase updateEmployeeUseCase
+    - DeleteEmployeeUseCase deleteEmployeeUseCase
+    + ResponseEntity<EmployeeResponseDto> create(CreateEmployeeRequestDto request)
+    + ResponseEntity<EmployeeResponseDto> getById(Long id)
+    + ResponseEntity<Void> update(Long id, UpdateEmployeeRequestDto request)
+    + ResponseEntity<Void> delete(Long id)
+  }
+
+  class OrganizationalUnitController << (@RestController) >> {
+    - CreateOrganizationalUnitUseCase createOuUseCase
+    - GetOrganizationalUnitUseCase getOuUseCase
+    - UpdateOrganizationalUnitUseCase updateOuUseCase
+    - DeleteOrganizationalUnitUseCase deleteOuUseCase
+    - AssignOwnerUseCase assignOwnerUseCase
+    - RemoveOwnerUseCase removeOwnerUseCase
+    - AssignMemberUseCase assignMemberUseCase
+    - RemoveMemberUseCase removeMemberUseCase
+  }
+
+  class BudgetController << (@RestController) >> {
+    - CreateBudgetUseCase createBudgetUseCase
+    - GetBudgetUseCase getBudgetUseCase
+    - UpdateBudgetUseCase updateBudgetUseCase
+    - DeleteBudgetUseCase deleteBudgetUseCase
+  }
+
+  class TrainingController << (@RestController) >> {
+    - CreateTrainingUseCase createTrainingUseCase
+    - GetTrainingUseCase getTrainingUseCase
+    - UpdateTrainingUseCase updateTrainingUseCase
+    - DeleteTrainingUseCase deleteTrainingUseCase
+  }
+
+  class GlobalExceptionHandler << (@RestControllerAdvice) >> {
+    + ProblemDetail handleDomainException(DomainException ex)
+    + ProblemDetail handleNotFoundException(ApplicationNotFoundException ex)
+    + ProblemDetail handleValidationException(MethodArgumentNotValidException ex)
+  }
+}
+
+package "Outbound Persistence Adapters (JPA)" {
+  package "Employee Persistence" {
+    class EmployeePersistenceAdapter << (@Component) >> {
+      - EmployeeJpaRepository jpaRepository
+      - EmployeeMapper mapper
+      + Optional<Employee> findById(EmployeeId id)
+      + void save(Employee employee)
+    }
+    interface EmployeeJpaRepository << (@Repository / JpaRepository) >>
+    class EmployeeJpaEntity << (@Entity) >> {
+      - Long id
+      - String name
+      - String surname
+      - String email
+      - boolean active
+    }
+    class EmployeeMapper
+  }
+
+  package "Organizational Unit Persistence" {
+    class OrganizationalUnitPersistenceAdapter << (@Component) >> {
+      - OrganizationalUnitJpaRepository jpaRepository
+      - OrganizationalUnitMapper mapper
+      + Optional<OrganizationalUnit> findById(OrganizationalUnitId id)
+      + void save(OrganizationalUnit unit)
+    }
+    interface OrganizationalUnitJpaRepository << (@Repository / JpaRepository) >>
+    class OrganizationalUnitJpaEntity << (@Entity) >> {
+      - Long id
+      - String name
+      - Long parentId
+      - Set<Long> ownerIds
+      - Set<Long> memberIds
+      - boolean active
+    }
+    class OrganizationalUnitMapper
+  }
+
+  package "Budget Persistence" {
+    class BudgetPersistenceAdapter << (@Component) >> {
+      - BudgetJpaRepository jpaRepository
+      - BudgetMapper mapper
+      + Optional<Budget> findById(BudgetId id)
+      + void save(Budget budget)
+    }
+    interface BudgetJpaRepository << (@Repository / JpaRepository) >>
+    class BudgetJpaEntity << (@Entity) >> {
+      - Long id
+      - Long organizationalUnitId
+      - Integer fiscalYear
+      - BigDecimal totalAmount
+      - BigDecimal reservedAmount
+      - BigDecimal availableAmount
+      - boolean active
+    }
+    class BudgetMapper
+  }
+
+  package "Training Persistence" {
+    class TrainingPersistenceAdapter << (@Component) >> {
+      - TrainingJpaRepository jpaRepository
+      - TrainingMapper mapper
+      + Optional<Training> findById(TrainingId id)
+      + void save(Training training)
+    }
+    interface TrainingJpaRepository << (@Repository / JpaRepository) >>
+    class TrainingJpaEntity << (@Entity) >> {
+      - Long id
+      - Long requestedByEmployeeId
+      - Long organizationalUnitId
+      - String name
+      - BigDecimal costAmount
+      - String costCurrency
+      - Integer hours
+      - String purposeType
+      - String purposeOther
+      - Long typeId
+      - String status
+      - Long externalProviderId
+      - boolean active
+    }
+    class TrainingMapper
+
+    class ExternalProviderPersistenceAdapter << (@Component) >> {
+      - ExternalProviderJpaRepository jpaRepository
+      - ExternalProviderMapper mapper
+      + Optional<ExternalProvider> findById(ExternalProviderId id)
+      + void save(ExternalProvider provider)
+    }
+    interface ExternalProviderJpaRepository << (@Repository / JpaRepository) >>
+    class ExternalProviderJpaEntity << (@Entity) >> {
+      - Long id
+      - String name
+      - String email
+      - String phone
+      - boolean active
+    }
+    class ExternalProviderMapper
+  }
+}
+
+package "Bootstrap & Configuration" {
+  class OulearningApplication << (@SpringBootApplication) >> {
+    + {static} void main(String[] args)
+  }
+
+  class CommonConfiguration << (@Configuration) >> {
+    + Clock clock()
+    + IdGenerator employeeIdGenerator()
+    + IdGenerator hierarchyIdGenerator()
+    + IdGenerator budgetingIdGenerator()
+    + IdGenerator trainingIdGenerator()
+  }
+}
+
+EmployeePersistenceAdapter ..|> organization.domain.employee.EmployeeRepository
+EmployeePersistenceAdapter --> EmployeeJpaRepository : delegates
+EmployeePersistenceAdapter --> EmployeeMapper : maps
+
+OrganizationalUnitPersistenceAdapter ..|> organization.domain.hierarchy.OrganizationalUnitRepository
+OrganizationalUnitPersistenceAdapter --> OrganizationalUnitJpaRepository : delegates
+OrganizationalUnitPersistenceAdapter --> OrganizationalUnitMapper : maps
+
+BudgetPersistenceAdapter ..|> budgeting.domain.BudgetRepository
+BudgetPersistenceAdapter --> BudgetJpaRepository : delegates
+BudgetPersistenceAdapter --> BudgetMapper : maps
+
+TrainingPersistenceAdapter ..|> training.domain.TrainingRepository
+TrainingPersistenceAdapter --> TrainingJpaRepository : delegates
+TrainingPersistenceAdapter --> TrainingMapper : maps
+
+ExternalProviderPersistenceAdapter ..|> training.domain.ExternalProviderRepository
+ExternalProviderPersistenceAdapter --> ExternalProviderJpaRepository : delegates
+ExternalProviderPersistenceAdapter --> ExternalProviderMapper : maps
+
+@enduml

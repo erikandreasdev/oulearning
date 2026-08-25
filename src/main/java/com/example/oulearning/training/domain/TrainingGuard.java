@@ -35,6 +35,7 @@ final class TrainingGuard {
     private static final String FIELD_COMMENTS = "Comments";
     private static final String FIELD_START_DATE = "Start date";
     private static final String FIELD_END_DATE = "End date";
+    private static final String FIELD_EXT_PROVIDER_ID = "ExternalProviderId";
     private static final String FIELD_EXT_PROVIDER_NAME_VO = "ExternalProviderName";
     private static final String FIELD_EXT_PROVIDER_NAME = "External provider name";
     private static final String FIELD_EXT_PROVIDER_CONTACT = "ExternalProviderContact";
@@ -195,6 +196,18 @@ final class TrainingGuard {
         if (endDate.isBefore(startDate)) {
             throw InvalidTrainingOperationException.invalidDateRange(startDate, endDate);
         }
+    }
+
+    static void requireExternalProviderId(final ExternalProviderId id) {
+        requireNonNull(id, FIELD_EXT_PROVIDER_ID);
+    }
+
+    static void requirePositiveExternalProviderId(final long value) {
+        requirePositiveId(value, FIELD_EXT_PROVIDER_ID);
+    }
+
+    static long requireValidExternalProviderId(final String value) {
+        return requireValidId(value, FIELD_EXT_PROVIDER_ID);
     }
 
     static void requireExternalProviderName(final ExternalProviderName name) {

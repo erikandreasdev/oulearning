@@ -1,0 +1,332 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide empty members
+
+title Application Layer Model
+
+package organization.application.employee {
+  interface CreateEmployeeUseCase << (I, #00FF77) >> {
+    + EmployeeId execute(CreateEmployeeCommand command)
+  }
+
+  interface GetEmployeeUseCase << (I, #00FF77) >> {
+    + Employee execute(EmployeeId id)
+  }
+
+  interface UpdateEmployeeUseCase << (I, #00FF77) >> {
+    + void execute(UpdateEmployeeCommand command)
+  }
+
+  interface DeleteEmployeeUseCase << (I, #00FF77) >> {
+    + void execute(EmployeeId id)
+  }
+
+  class CreateEmployeeCommand << (R, #FF7700) record >> {
+    String name
+    String surname
+    String email
+  }
+
+  class UpdateEmployeeCommand << (R, #FF7700) record >> {
+    long employeeId
+    String name
+    String surname
+    String email
+  }
+
+  class CreateEmployeeService {
+    - EmployeeRepository employeeRepository
+    - IdGenerator idGenerator
+    + EmployeeId execute(CreateEmployeeCommand command)
+  }
+
+  class GetEmployeeService {
+    - EmployeeRepository employeeRepository
+    + Employee execute(EmployeeId id)
+  }
+
+  class UpdateEmployeeService {
+    - EmployeeRepository employeeRepository
+    + void execute(UpdateEmployeeCommand command)
+  }
+
+  class DeleteEmployeeService {
+    - EmployeeRepository employeeRepository
+    + void execute(EmployeeId id)
+  }
+
+  class EmployeeNotFoundException << (E, #FF5555) >> {
+  }
+
+  CreateEmployeeService ..|> CreateEmployeeUseCase
+  GetEmployeeService ..|> GetEmployeeUseCase
+  UpdateEmployeeService ..|> UpdateEmployeeUseCase
+  DeleteEmployeeService ..|> DeleteEmployeeUseCase
+
+  CreateEmployeeService --> CreateEmployeeCommand : uses
+  UpdateEmployeeService --> UpdateEmployeeCommand : uses
+}
+
+package organization.application.hierarchy {
+  interface CreateOrganizationalUnitUseCase << (I, #00FF77) >> {
+    + OrganizationalUnitId execute(CreateOrganizationalUnitCommand command)
+  }
+
+  interface GetOrganizationalUnitUseCase << (I, #00FF77) >> {
+    + OrganizationalUnit execute(OrganizationalUnitId id)
+  }
+
+  interface UpdateOrganizationalUnitUseCase << (I, #00FF77) >> {
+    + void execute(UpdateOrganizationalUnitCommand command)
+  }
+
+  interface DeleteOrganizationalUnitUseCase << (I, #00FF77) >> {
+    + void execute(OrganizationalUnitId id)
+  }
+
+  interface AssignOwnerUseCase << (I, #00FF77) >> {
+    + void execute(AssignOwnerCommand command)
+  }
+
+  interface RemoveOwnerUseCase << (I, #00FF77) >> {
+    + void execute(RemoveOwnerCommand command)
+  }
+
+  interface AssignMemberUseCase << (I, #00FF77) >> {
+    + void execute(AssignMemberCommand command)
+  }
+
+  interface RemoveMemberUseCase << (I, #00FF77) >> {
+    + void execute(RemoveMemberCommand command)
+  }
+
+  class CreateOrganizationalUnitCommand << (R, #FF7700) record >> {
+    String name
+    Long parentId
+  }
+
+  class UpdateOrganizationalUnitCommand << (R, #FF7700) record >> {
+    long ouId
+    String name
+  }
+
+  class AssignOwnerCommand << (R, #FF7700) record >> {
+    long ouId
+    long ownerId
+  }
+
+  class RemoveOwnerCommand << (R, #FF7700) record >> {
+    long ouId
+    long ownerId
+  }
+
+  class AssignMemberCommand << (R, #FF7700) record >> {
+    long ouId
+    long memberId
+  }
+
+  class RemoveMemberCommand << (R, #FF7700) record >> {
+    long ouId
+    long memberId
+  }
+
+  class CreateOrganizationalUnitService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    - IdGenerator idGenerator
+    + OrganizationalUnitId execute(CreateOrganizationalUnitCommand command)
+  }
+
+  class GetOrganizationalUnitService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    + OrganizationalUnit execute(OrganizationalUnitId id)
+  }
+
+  class UpdateOrganizationalUnitService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    + void execute(UpdateOrganizationalUnitCommand command)
+  }
+
+  class DeleteOrganizationalUnitService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    + void execute(OrganizationalUnitId id)
+  }
+
+  class AssignOwnerService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    - EmployeeRepository employeeRepository
+    + void execute(AssignOwnerCommand command)
+  }
+
+  class RemoveOwnerService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    + void execute(RemoveOwnerCommand command)
+  }
+
+  class AssignMemberService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    - EmployeeRepository employeeRepository
+    + void execute(AssignMemberCommand command)
+  }
+
+  class RemoveMemberService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    + void execute(RemoveMemberCommand command)
+  }
+
+  class OrganizationalUnitNotFoundException << (E, #FF5555) >> {
+  }
+
+  CreateOrganizationalUnitService ..|> CreateOrganizationalUnitUseCase
+  GetOrganizationalUnitService ..|> GetOrganizationalUnitUseCase
+  UpdateOrganizationalUnitService ..|> UpdateOrganizationalUnitUseCase
+  DeleteOrganizationalUnitService ..|> DeleteOrganizationalUnitUseCase
+  AssignOwnerService ..|> AssignOwnerUseCase
+  RemoveOwnerService ..|> RemoveOwnerUseCase
+  AssignMemberService ..|> AssignMemberUseCase
+  RemoveMemberService ..|> RemoveMemberUseCase
+
+  CreateOrganizationalUnitService --> CreateOrganizationalUnitCommand : uses
+  UpdateOrganizationalUnitService --> UpdateOrganizationalUnitCommand : uses
+  AssignOwnerService --> AssignOwnerCommand : uses
+  RemoveOwnerService --> RemoveOwnerCommand : uses
+  AssignMemberService --> AssignMemberCommand : uses
+  RemoveMemberService --> RemoveMemberCommand : uses
+}
+
+package budgeting.application {
+  interface CreateBudgetUseCase << (I, #00FF77) >> {
+    + BudgetId execute(CreateBudgetCommand command)
+  }
+
+  interface GetBudgetUseCase << (I, #00FF77) >> {
+    + Budget execute(BudgetId id)
+  }
+
+  interface UpdateBudgetUseCase << (I, #00FF77) >> {
+    + void execute(UpdateBudgetCommand command)
+  }
+
+  interface DeleteBudgetUseCase << (I, #00FF77) >> {
+    + void execute(BudgetId id)
+  }
+
+  class CreateBudgetCommand << (R, #FF7700) record >> {
+    long ouId
+    int fiscalYear
+    BigDecimal totalAmount
+  }
+
+  class UpdateBudgetCommand << (R, #FF7700) record >> {
+    long budgetId
+    BigDecimal totalAmount
+    BigDecimal reservedAmount
+    BigDecimal availableAmount
+  }
+
+  class CreateBudgetService {
+    - BudgetRepository budgetRepository
+    - IdGenerator idGenerator
+    + BudgetId execute(CreateBudgetCommand command)
+  }
+
+  class GetBudgetService {
+    - BudgetRepository budgetRepository
+    + Budget execute(BudgetId id)
+  }
+
+  class UpdateBudgetService {
+    - BudgetRepository budgetRepository
+    + void execute(UpdateBudgetCommand command)
+  }
+
+  class DeleteBudgetService {
+    - BudgetRepository budgetRepository
+    + void execute(BudgetId id)
+  }
+
+  class BudgetNotFoundException << (E, #FF5555) >> {
+  }
+
+  CreateBudgetService ..|> CreateBudgetUseCase
+  GetBudgetService ..|> GetBudgetUseCase
+  UpdateBudgetService ..|> UpdateBudgetUseCase
+  DeleteBudgetService ..|> DeleteBudgetUseCase
+
+  CreateBudgetService --> CreateBudgetCommand : uses
+  UpdateBudgetService --> UpdateBudgetCommand : uses
+}
+
+package training.application {
+  interface CreateTrainingUseCase << (I, #00FF77) >> {
+    + TrainingId execute(CreateTrainingCommand command)
+  }
+
+  interface GetTrainingUseCase << (I, #00FF77) >> {
+    + Training execute(TrainingId id)
+  }
+
+  interface UpdateTrainingUseCase << (I, #00FF77) >> {
+    + void execute(UpdateTrainingCommand command)
+  }
+
+  interface DeleteTrainingUseCase << (I, #00FF77) >> {
+    + void execute(TrainingId id)
+  }
+
+  class CreateTrainingCommand << (R, #FF7700) record >> {
+    long employeeId
+    long ouId
+    String name
+    BigDecimal cost
+    int hours
+    String purposeType
+    String purposeOther
+    long typeId
+  }
+
+  class UpdateTrainingCommand << (R, #FF7700) record >> {
+    long trainingId
+    String name
+    BigDecimal cost
+    int hours
+    String purposeType
+    String purposeOther
+    long typeId
+  }
+
+  class CreateTrainingService {
+    - TrainingRepository trainingRepository
+    - IdGenerator idGenerator
+    - Clock clock
+    + TrainingId execute(CreateTrainingCommand command)
+  }
+
+  class GetTrainingService {
+    - TrainingRepository trainingRepository
+    + Training execute(TrainingId id)
+  }
+
+  class UpdateTrainingService {
+    - TrainingRepository trainingRepository
+    - Clock clock
+    + void execute(UpdateTrainingCommand command)
+  }
+
+  class DeleteTrainingService {
+    - TrainingRepository trainingRepository
+    + void execute(TrainingId id)
+  }
+
+  class TrainingNotFoundException << (E, #FF5555) >> {
+  }
+
+  CreateTrainingService ..|> CreateTrainingUseCase
+  GetTrainingService ..|> GetTrainingUseCase
+  UpdateTrainingService ..|> UpdateTrainingUseCase
+  DeleteTrainingService ..|> DeleteTrainingUseCase
+
+  CreateTrainingService --> CreateTrainingCommand : uses
+  UpdateTrainingService --> UpdateTrainingCommand : uses
+}
+
+@enduml

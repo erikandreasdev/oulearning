@@ -13,7 +13,7 @@ When reviewing or planning, check and report explicitly:
 5. Any controller calling a repository or containing branching business logic? (Route through a use case.)
 6. Any JPA entity or aggregate crossing an HTTP/message boundary? (Add DTOs/contracts.)
 7. Any cross-context import of another context's domain classes? (Introduce ACL/events.)
-8. Naming consistent with `docs/glossary.md`? Any new term needs a glossary entry.
+8. Naming consistent with `doc/GLOSSARY.md`? Any new term needs a glossary entry.
 9. Tests at the right level (domain unit vs. app fake vs. adapter integration)? ArchUnit updated?
 10. Migration present and additive? `@Version` on new aggregate tables?
 
