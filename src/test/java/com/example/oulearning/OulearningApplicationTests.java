@@ -1,11 +1,12 @@
 package com.example.oulearning;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.example.oulearning.budgeting.domain.BudgetRepository;
-import com.example.oulearning.organization.domain.employee.EmployeeRepository;
-import com.example.oulearning.organization.domain.hierarchy.OrganizationalUnitRepository;
-import com.example.oulearning.training.domain.TrainingRepository;
+import com.example.oulearning.budgeting.domain.repository.BudgetRepository;
+import com.example.oulearning.organization.domain.employee.repository.EmployeeRepository;
+import com.example.oulearning.organization.domain.hierarchy.repository.OrganizationalUnitRepository;
+import com.example.oulearning.training.domain.repository.TrainingRepository;
 import java.time.Clock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,25 +30,25 @@ class OulearningApplicationTests {
     private EmployeeRepository employeeRepository;
 
     @MockitoBean
-    private com.example.oulearning.organization.domain.employee.IdGenerator employeeIdGenerator;
+    private com.example.oulearning.organization.domain.employee.model.IdGenerator employeeIdGenerator;
 
     @MockitoBean
     private OrganizationalUnitRepository organizationalUnitRepository;
 
     @MockitoBean
-    private com.example.oulearning.organization.domain.hierarchy.IdGenerator ouIdGenerator;
+    private com.example.oulearning.organization.domain.hierarchy.model.IdGenerator ouIdGenerator;
 
     @MockitoBean
     private BudgetRepository budgetRepository;
 
     @MockitoBean
-    private com.example.oulearning.budgeting.domain.IdGenerator budgetIdGenerator;
+    private com.example.oulearning.budgeting.domain.model.IdGenerator budgetIdGenerator;
 
     @MockitoBean
     private TrainingRepository trainingRepository;
 
     @MockitoBean
-    private com.example.oulearning.training.domain.IdGenerator trainingIdGenerator;
+    private com.example.oulearning.training.domain.model.IdGenerator trainingIdGenerator;
 
     @MockitoBean
     private Clock clock;

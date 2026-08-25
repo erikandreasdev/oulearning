@@ -7,7 +7,7 @@ services:
     environment:
       ORACLE_PASSWORD: oulearning
       APP_USER: oulearning
-      APP_PASSWORD: oulearning
+      APP_USER_PASSWORD: oulearning
       ORACLE_DATABASE: oulearning
     volumes:
       - oracle-data:/opt/oracle/oradata

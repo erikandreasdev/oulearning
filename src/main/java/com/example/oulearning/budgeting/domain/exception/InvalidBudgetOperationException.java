@@ -1,6 +1,6 @@
 package com.example.oulearning.budgeting.domain.exception;
 
-import com.example.oulearning.budgeting.domain.BudgetingConstants;
+import com.example.oulearning.budgeting.domain.model.BudgetingConstants;
 
 public final class InvalidBudgetOperationException extends BudgetingException {
 

@@ -1,6 +1,6 @@
 package com.example.oulearning.organization.domain.employee.exception;
 
-import com.example.oulearning.organization.domain.employee.EmployeeConstants;
+import com.example.oulearning.organization.domain.employee.model.EmployeeConstants;
 
 public final class InvalidEmployeeException extends EmployeeException {
 

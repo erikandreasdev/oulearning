@@ -1,6 +1,6 @@
 package com.example.oulearning.organization.domain.hierarchy.exception;
 
-import com.example.oulearning.organization.domain.hierarchy.HierarchyConstants;
+import com.example.oulearning.organization.domain.hierarchy.model.HierarchyConstants;
 
 public final class InvalidOrganizationalUnitException extends HierarchyException {
 

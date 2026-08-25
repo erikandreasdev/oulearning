@@ -1,6 +1,6 @@
 package com.example.oulearning.training.domain.exception;
 
-import com.example.oulearning.training.domain.TrainingConstants;
+import com.example.oulearning.training.domain.model.TrainingConstants;
 
 public final class InvalidTrainingOperationException extends TrainingException {
 
