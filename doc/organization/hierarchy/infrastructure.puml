@@ -1,0 +1,54 @@
+@startuml infrastructure_hierarchy
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Hierarchy Infrastructure & Adapters
+
+package "Inbound Web Adapters (REST)" {
+  class OrganizationalUnitController << (@RestController) >> {
+    - CreateOrganizationalUnitUseCase createOuUseCase
+    - GetOrganizationalUnitUseCase getOuUseCase
+    - UpdateOrganizationalUnitUseCase updateOuUseCase
+    - DeleteOrganizationalUnitUseCase deleteOuUseCase
+    - AssignOwnerUseCase assignOwnerUseCase
+    - RemoveOwnerUseCase removeOwnerUseCase
+    - AssignMemberUseCase assignMemberUseCase
+    - RemoveMemberUseCase removeMemberUseCase
+  }
+}
+
+package "Outbound Persistence Adapters (JPA)" {
+  package "Organizational Unit Persistence" {
+    class OrganizationalUnitPersistenceAdapter << (@Component) >> {
+      - OrganizationalUnitJpaRepository jpaRepository
+      - OrganizationalUnitMapper mapper
+      + Optional<OrganizationalUnit> findById(OrganizationalUnitId id)
+      + void save(OrganizationalUnit unit)
+    }
+    interface OrganizationalUnitJpaRepository << (@Repository / JpaRepository) >>
+    class OrganizationalUnitJpaEntity << (@Entity) >> {
+      - Long id
+      - String name
+      - Long parentId
+      - Set<Long> ownerIds
+      - Set<Long> memberIds
+      - boolean active
+    }
+    class OrganizationalUnitMapper
+  }
+}
+
+package organization.domain.hierarchy <<Folder>> {
+  interface OrganizationalUnitRepository << (I, #00FF77) >>
+}
+
+OrganizationalUnitPersistenceAdapter ..|> OrganizationalUnitRepository
+OrganizationalUnitPersistenceAdapter --> OrganizationalUnitJpaRepository : delegates
+OrganizationalUnitPersistenceAdapter --> OrganizationalUnitMapper : maps
+
+@enduml

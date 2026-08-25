@@ -1,0 +1,95 @@
+@startuml application_training
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Training Application Model
+
+package training.application {
+  interface CreateTrainingUseCase << (I, #00FF77) >> {
+    + TrainingId execute(CreateTrainingCommand command)
+  }
+  interface GetTrainingUseCase << (I, #00FF77) >> {
+    + Training execute(TrainingId id)
+  }
+  interface UpdateTrainingUseCase << (I, #00FF77) >> {
+    + void execute(UpdateTrainingCommand command)
+  }
+  interface DeleteTrainingUseCase << (I, #00FF77) >> {
+    + void execute(TrainingId id)
+  }
+
+  class CreateTrainingCommand << (R, #FF7700) record >> {
+    long employeeId
+    long ouId
+    String name
+    BigDecimal cost
+    int hours
+    String purposeType
+    String purposeOther
+    long typeId
+  }
+  class UpdateTrainingCommand << (R, #FF7700) record >> {
+    long trainingId
+    String name
+    BigDecimal cost
+    int hours
+    String purposeType
+    String purposeOther
+    long typeId
+  }
+
+  class CreateTrainingService {
+    - TrainingRepository trainingRepository
+    - IdGenerator idGenerator
+    - Clock clock
+    + TrainingId execute(CreateTrainingCommand command)
+  }
+  class GetTrainingService {
+    - TrainingRepository trainingRepository
+    + Training execute(TrainingId id)
+  }
+  class UpdateTrainingService {
+    - TrainingRepository trainingRepository
+    - Clock clock
+    + void execute(UpdateTrainingCommand command)
+  }
+  class DeleteTrainingService {
+    - TrainingRepository trainingRepository
+    + void execute(TrainingId id)
+  }
+
+  class TrainingNotFoundException << (E, #FF5555) >>
+}
+
+package training.domain <<Folder>> {
+  interface TrainingRepository << (I, #00FF77) >>
+  class Training << (R, #FF7700) record >>
+  class TrainingId << (R, #FF7700) record >>
+}
+
+package common <<Folder>> {
+  class Clock << (C, #FF7700) >>
+}
+
+CreateTrainingService ..|> CreateTrainingUseCase
+GetTrainingService ..|> GetTrainingUseCase
+UpdateTrainingService ..|> UpdateTrainingUseCase
+DeleteTrainingService ..|> DeleteTrainingUseCase
+
+CreateTrainingService --> CreateTrainingCommand : uses
+UpdateTrainingService --> UpdateTrainingCommand : uses
+
+CreateTrainingService --> TrainingRepository : uses
+GetTrainingService --> TrainingRepository : uses
+UpdateTrainingService --> TrainingRepository : uses
+DeleteTrainingService --> TrainingRepository : uses
+
+CreateTrainingService --> Clock : uses
+UpdateTrainingService --> Clock : uses
+
+@enduml

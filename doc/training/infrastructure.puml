@@ -1,0 +1,78 @@
+@startuml infrastructure_training
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Training Infrastructure & Adapters
+
+package "Inbound Web Adapters (REST)" {
+  class TrainingController << (@RestController) >> {
+    - CreateTrainingUseCase createTrainingUseCase
+    - GetTrainingUseCase getTrainingUseCase
+    - UpdateTrainingUseCase updateTrainingUseCase
+    - DeleteTrainingUseCase deleteTrainingUseCase
+  }
+}
+
+package "Outbound Persistence Adapters (JPA)" {
+  package "Training Persistence" {
+    class TrainingPersistenceAdapter << (@Component) >> {
+      - TrainingJpaRepository jpaRepository
+      - TrainingMapper mapper
+      + Optional<Training> findById(TrainingId id)
+      + void save(Training training)
+    }
+    interface TrainingJpaRepository << (@Repository / JpaRepository) >>
+    class TrainingJpaEntity << (@Entity) >> {
+      - Long id
+      - Long requestedByEmployeeId
+      - Long organizationalUnitId
+      - String name
+      - BigDecimal costAmount
+      - String costCurrency
+      - Integer hours
+      - String purposeType
+      - String purposeOther
+      - Long typeId
+      - String status
+      - Long externalProviderId
+      - boolean active
+    }
+    class TrainingMapper
+
+    class ExternalProviderPersistenceAdapter << (@Component) >> {
+      - ExternalProviderJpaRepository jpaRepository
+      - ExternalProviderMapper mapper
+      + Optional<ExternalProvider> findById(ExternalProviderId id)
+      + void save(ExternalProvider provider)
+    }
+    interface ExternalProviderJpaRepository << (@Repository / JpaRepository) >>
+    class ExternalProviderJpaEntity << (@Entity) >> {
+      - Long id
+      - String name
+      - String email
+      - String phone
+      - boolean active
+    }
+    class ExternalProviderMapper
+  }
+}
+
+package training.domain <<Folder>> {
+  interface TrainingRepository << (I, #00FF77) >>
+  interface ExternalProviderRepository << (I, #00FF77) >>
+}
+
+TrainingPersistenceAdapter ..|> TrainingRepository
+TrainingPersistenceAdapter --> TrainingJpaRepository : delegates
+TrainingPersistenceAdapter --> TrainingMapper : maps
+
+ExternalProviderPersistenceAdapter ..|> ExternalProviderRepository
+ExternalProviderPersistenceAdapter --> ExternalProviderJpaRepository : delegates
+ExternalProviderPersistenceAdapter --> ExternalProviderMapper : maps
+
+@enduml

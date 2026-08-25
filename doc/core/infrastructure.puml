@@ -1,0 +1,44 @@
+@startuml infrastructure_core
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Core Infrastructure & Configuration
+
+package "Inbound Web Adapters (REST)" {
+  class GlobalExceptionHandler << (@ControllerAdvice) >> {
+    + ResponseEntity<ErrorResponse> handleDomainException(DomainException ex)
+    + ResponseEntity<ErrorResponse> handleNotFound(Exception ex)
+    + ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex)
+    + ResponseEntity<ErrorResponse> handleGeneric(Exception ex)
+  }
+}
+
+package "Bootstrap & Configuration" {
+  class OulearningApplication << (@SpringBootApplication) >> {
+    + {static} void main(String[] args)
+  }
+
+  class DomainConfig << (@Configuration) >> {
+    + IdGenerator idGenerator()
+    + Clock clock()
+  }
+
+  class WebConfig << (@Configuration) >> {
+    + void addCorsMappings(CorsRegistry registry)
+  }
+
+  class DatabaseConfig << (@Configuration) >> {
+    + DataSource dataSource()
+  }
+}
+
+OulearningApplication --> DomainConfig : imports
+OulearningApplication --> WebConfig : imports
+OulearningApplication --> DatabaseConfig : imports
+
+@enduml

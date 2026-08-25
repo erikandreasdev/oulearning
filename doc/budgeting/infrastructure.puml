@@ -1,0 +1,51 @@
+@startuml infrastructure_budgeting
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Budgeting Infrastructure & Adapters
+
+package "Inbound Web Adapters (REST)" {
+  class BudgetController << (@RestController) >> {
+    - CreateBudgetUseCase createBudgetUseCase
+    - GetBudgetUseCase getBudgetUseCase
+    - UpdateBudgetUseCase updateBudgetUseCase
+    - DeleteBudgetUseCase deleteBudgetUseCase
+  }
+}
+
+package "Outbound Persistence Adapters (JPA)" {
+  package "Budget Persistence" {
+    class BudgetPersistenceAdapter << (@Component) >> {
+      - BudgetJpaRepository jpaRepository
+      - BudgetMapper mapper
+      + Optional<Budget> findById(BudgetId id)
+      + void save(Budget budget)
+    }
+    interface BudgetJpaRepository << (@Repository / JpaRepository) >>
+    class BudgetJpaEntity << (@Entity) >> {
+      - Long id
+      - Long organizationalUnitId
+      - Integer fiscalYear
+      - BigDecimal totalAmount
+      - BigDecimal reservedAmount
+      - BigDecimal availableAmount
+      - boolean active
+    }
+    class BudgetMapper
+  }
+}
+
+package budgeting.domain <<Folder>> {
+  interface BudgetRepository << (I, #00FF77) >>
+}
+
+BudgetPersistenceAdapter ..|> BudgetRepository
+BudgetPersistenceAdapter --> BudgetJpaRepository : delegates
+BudgetPersistenceAdapter --> BudgetMapper : maps
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml database_schema_hierarchy
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Hierarchy Database Data Model
+
+entity "organizational_unit" as organizational_unit {
+  * id : bigint <<generated>>
+  --
+  * name : varchar(255)
+  parent_id : bigint <<FK>>
+  * active : number(1, 0)
+}
+
+entity "organizational_unit_owner" as organizational_unit_owner {
+  * organizational_unit_id : bigint <<FK>>
+  * employee_id : bigint <<FK>>
+}
+
+entity "organizational_unit_member" as organizational_unit_member {
+  * organizational_unit_id : bigint <<FK>>
+  * employee_id : bigint <<FK>>
+}
+
+entity "employee" as employee <<External>> {
+  * id : bigint <<generated>>
+}
+
+organizational_unit |o--o{ organizational_unit : "parent_id"
+organizational_unit ||--o{ organizational_unit_owner : "organizational_unit_id"
+employee ||--o{ organizational_unit_owner : "employee_id"
+
+organizational_unit ||--o{ organizational_unit_member : "organizational_unit_id"
+employee ||--o{ organizational_unit_member : "employee_id"
+
+@enduml

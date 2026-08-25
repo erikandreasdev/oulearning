@@ -1,0 +1,78 @@
+@startuml application_budgeting
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Budgeting Application Model
+
+package budgeting.application {
+  interface CreateBudgetUseCase << (I, #00FF77) >> {
+    + BudgetId execute(CreateBudgetCommand command)
+  }
+  interface GetBudgetUseCase << (I, #00FF77) >> {
+    + Budget execute(BudgetId id)
+  }
+  interface UpdateBudgetUseCase << (I, #00FF77) >> {
+    + void execute(UpdateBudgetCommand command)
+  }
+  interface DeleteBudgetUseCase << (I, #00FF77) >> {
+    + void execute(BudgetId id)
+  }
+
+  class CreateBudgetCommand << (R, #FF7700) record >> {
+    long ouId
+    int fiscalYear
+    BigDecimal totalAmount
+  }
+  class UpdateBudgetCommand << (R, #FF7700) record >> {
+    long budgetId
+    BigDecimal totalAmount
+    BigDecimal reservedAmount
+    BigDecimal availableAmount
+  }
+
+  class CreateBudgetService {
+    - BudgetRepository budgetRepository
+    - IdGenerator idGenerator
+    + BudgetId execute(CreateBudgetCommand command)
+  }
+  class GetBudgetService {
+    - BudgetRepository budgetRepository
+    + Budget execute(BudgetId id)
+  }
+  class UpdateBudgetService {
+    - BudgetRepository budgetRepository
+    + void execute(UpdateBudgetCommand command)
+  }
+  class DeleteBudgetService {
+    - BudgetRepository budgetRepository
+    + void execute(BudgetId id)
+  }
+
+  class BudgetNotFoundException << (E, #FF5555) >>
+}
+
+package budgeting.domain <<Folder>> {
+  interface BudgetRepository << (I, #00FF77) >>
+  class Budget << (R, #FF7700) record >>
+  class BudgetId << (R, #FF7700) record >>
+}
+
+CreateBudgetService ..|> CreateBudgetUseCase
+GetBudgetService ..|> GetBudgetUseCase
+UpdateBudgetService ..|> UpdateBudgetUseCase
+DeleteBudgetService ..|> DeleteBudgetUseCase
+
+CreateBudgetService --> CreateBudgetCommand : uses
+UpdateBudgetService --> UpdateBudgetCommand : uses
+
+CreateBudgetService --> BudgetRepository : uses
+GetBudgetService --> BudgetRepository : uses
+UpdateBudgetService --> BudgetRepository : uses
+DeleteBudgetService --> BudgetRepository : uses
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml database_schema_employee
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Employee Database Data Model
+
+entity "employee" as employee {
+  * id : bigint <<generated>>
+  --
+  * name : varchar(255)
+  * surname : varchar(255)
+  * email : varchar(255)
+  * active : number(1, 0)
+}
+
+@enduml

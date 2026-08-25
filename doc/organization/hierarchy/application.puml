@@ -1,0 +1,140 @@
+@startuml application_hierarchy
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Hierarchy Application Model
+
+package organization.application.hierarchy {
+  interface CreateOrganizationalUnitUseCase << (I, #00FF77) >> {
+    + OrganizationalUnitId execute(CreateOrganizationalUnitCommand command)
+  }
+  interface GetOrganizationalUnitUseCase << (I, #00FF77) >> {
+    + OrganizationalUnit execute(OrganizationalUnitId id)
+  }
+  interface UpdateOrganizationalUnitUseCase << (I, #00FF77) >> {
+    + void execute(UpdateOrganizationalUnitCommand command)
+  }
+  interface DeleteOrganizationalUnitUseCase << (I, #00FF77) >> {
+    + void execute(OrganizationalUnitId id)
+  }
+  interface AssignOwnerUseCase << (I, #00FF77) >> {
+    + void execute(AssignOwnerCommand command)
+  }
+  interface RemoveOwnerUseCase << (I, #00FF77) >> {
+    + void execute(RemoveOwnerCommand command)
+  }
+  interface AssignMemberUseCase << (I, #00FF77) >> {
+    + void execute(AssignMemberCommand command)
+  }
+  interface RemoveMemberUseCase << (I, #00FF77) >> {
+    + void execute(RemoveMemberCommand command)
+  }
+
+  class CreateOrganizationalUnitCommand << (R, #FF7700) record >> {
+    String name
+    Long parentId
+  }
+  class UpdateOrganizationalUnitCommand << (R, #FF7700) record >> {
+    long ouId
+    String name
+  }
+  class AssignOwnerCommand << (R, #FF7700) record >> {
+    long ouId
+    long ownerId
+  }
+  class RemoveOwnerCommand << (R, #FF7700) record >> {
+    long ouId
+    long ownerId
+  }
+  class AssignMemberCommand << (R, #FF7700) record >> {
+    long ouId
+    long memberId
+  }
+  class RemoveMemberCommand << (R, #FF7700) record >> {
+    long ouId
+    long memberId
+  }
+
+  class CreateOrganizationalUnitService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    - IdGenerator idGenerator
+    + OrganizationalUnitId execute(CreateOrganizationalUnitCommand command)
+  }
+  class GetOrganizationalUnitService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    + OrganizationalUnit execute(OrganizationalUnitId id)
+  }
+  class UpdateOrganizationalUnitService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    + void execute(UpdateOrganizationalUnitCommand command)
+  }
+  class DeleteOrganizationalUnitService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    + void execute(OrganizationalUnitId id)
+  }
+  class AssignOwnerService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    - EmployeeRepository employeeRepository
+    + void execute(AssignOwnerCommand command)
+  }
+  class RemoveOwnerService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    + void execute(RemoveOwnerCommand command)
+  }
+  class AssignMemberService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    - EmployeeRepository employeeRepository
+    + void execute(AssignMemberCommand command)
+  }
+  class RemoveMemberService {
+    - OrganizationalUnitRepository organizationalUnitRepository
+    + void execute(RemoveMemberCommand command)
+  }
+
+  class OrganizationalUnitNotFoundException << (E, #FF5555) >>
+}
+
+package organization.domain.hierarchy <<Folder>> {
+  interface OrganizationalUnitRepository << (I, #00FF77) >>
+  class OrganizationalUnit << (R, #FF7700) record >>
+  class OrganizationalUnitId << (R, #FF7700) record >>
+}
+
+package organization.domain.employee <<Folder>> {
+  interface EmployeeRepository << (I, #00FF77) >>
+}
+
+CreateOrganizationalUnitService ..|> CreateOrganizationalUnitUseCase
+GetOrganizationalUnitService ..|> GetOrganizationalUnitUseCase
+UpdateOrganizationalUnitService ..|> UpdateOrganizationalUnitUseCase
+DeleteOrganizationalUnitService ..|> DeleteOrganizationalUnitUseCase
+AssignOwnerService ..|> AssignOwnerUseCase
+RemoveOwnerService ..|> RemoveOwnerUseCase
+AssignMemberService ..|> AssignMemberUseCase
+RemoveMemberService ..|> RemoveMemberUseCase
+
+CreateOrganizationalUnitService --> CreateOrganizationalUnitCommand : uses
+UpdateOrganizationalUnitService --> UpdateOrganizationalUnitCommand : uses
+AssignOwnerService --> AssignOwnerCommand : uses
+RemoveOwnerService --> RemoveOwnerCommand : uses
+AssignMemberService --> AssignMemberCommand : uses
+RemoveMemberService --> RemoveMemberCommand : uses
+
+CreateOrganizationalUnitService --> OrganizationalUnitRepository : uses
+GetOrganizationalUnitService --> OrganizationalUnitRepository : uses
+UpdateOrganizationalUnitService --> OrganizationalUnitRepository : uses
+DeleteOrganizationalUnitService --> OrganizationalUnitRepository : uses
+AssignOwnerService --> OrganizationalUnitRepository : uses
+RemoveOwnerService --> OrganizationalUnitRepository : uses
+AssignMemberService --> OrganizationalUnitRepository : uses
+RemoveMemberService --> OrganizationalUnitRepository : uses
+
+AssignOwnerService --> EmployeeRepository : uses
+AssignMemberService --> EmployeeRepository : uses
+
+@enduml

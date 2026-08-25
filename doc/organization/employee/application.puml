@@ -1,0 +1,78 @@
+@startuml application_employee
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Employee Application Model
+
+package organization.application.employee {
+  interface CreateEmployeeUseCase << (I, #00FF77) >> {
+    + EmployeeId execute(CreateEmployeeCommand command)
+  }
+  interface GetEmployeeUseCase << (I, #00FF77) >> {
+    + Employee execute(EmployeeId id)
+  }
+  interface UpdateEmployeeUseCase << (I, #00FF77) >> {
+    + void execute(UpdateEmployeeCommand command)
+  }
+  interface DeleteEmployeeUseCase << (I, #00FF77) >> {
+    + void execute(EmployeeId id)
+  }
+
+  class CreateEmployeeCommand << (R, #FF7700) record >> {
+    String name
+    String surname
+    String email
+  }
+  class UpdateEmployeeCommand << (R, #FF7700) record >> {
+    long employeeId
+    String name
+    String surname
+    String email
+  }
+
+  class CreateEmployeeService {
+    - EmployeeRepository employeeRepository
+    - IdGenerator idGenerator
+    + EmployeeId execute(CreateEmployeeCommand command)
+  }
+  class GetEmployeeService {
+    - EmployeeRepository employeeRepository
+    + Employee execute(EmployeeId id)
+  }
+  class UpdateEmployeeService {
+    - EmployeeRepository employeeRepository
+    + void execute(UpdateEmployeeCommand command)
+  }
+  class DeleteEmployeeService {
+    - EmployeeRepository employeeRepository
+    + void execute(EmployeeId id)
+  }
+
+  class EmployeeNotFoundException << (E, #FF5555) >>
+}
+
+package organization.domain.employee <<Folder>> {
+  interface EmployeeRepository << (I, #00FF77) >>
+  class Employee << (R, #FF7700) record >>
+  class EmployeeId << (R, #FF7700) record >>
+}
+
+CreateEmployeeService ..|> CreateEmployeeUseCase
+GetEmployeeService ..|> GetEmployeeUseCase
+UpdateEmployeeService ..|> UpdateEmployeeUseCase
+DeleteEmployeeService ..|> DeleteEmployeeUseCase
+
+CreateEmployeeService --> CreateEmployeeCommand : uses
+UpdateEmployeeService --> UpdateEmployeeCommand : uses
+
+CreateEmployeeService --> EmployeeRepository : uses
+GetEmployeeService --> EmployeeRepository : uses
+UpdateEmployeeService --> EmployeeRepository : uses
+DeleteEmployeeService --> EmployeeRepository : uses
+
+@enduml

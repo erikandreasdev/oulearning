@@ -1,0 +1,53 @@
+@startuml infrastructure_employee
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Employee Infrastructure & Adapters
+
+package "Inbound Web Adapters (REST)" {
+  class EmployeeController << (@RestController) >> {
+    - CreateEmployeeUseCase createEmployeeUseCase
+    - GetEmployeeUseCase getEmployeeUseCase
+    - UpdateEmployeeUseCase updateEmployeeUseCase
+    - DeleteEmployeeUseCase deleteEmployeeUseCase
+    + ResponseEntity<EmployeeResponseDto> create(CreateEmployeeRequestDto request)
+    + ResponseEntity<EmployeeResponseDto> getById(Long id)
+    + ResponseEntity<Void> update(Long id, UpdateEmployeeRequestDto request)
+    + ResponseEntity<Void> delete(Long id)
+  }
+}
+
+package "Outbound Persistence Adapters (JPA)" {
+  package "Employee Persistence" {
+    class EmployeePersistenceAdapter << (@Component) >> {
+      - EmployeeJpaRepository jpaRepository
+      - EmployeeMapper mapper
+      + Optional<Employee> findById(EmployeeId id)
+      + void save(Employee employee)
+    }
+    interface EmployeeJpaRepository << (@Repository / JpaRepository) >>
+    class EmployeeJpaEntity << (@Entity) >> {
+      - Long id
+      - String name
+      - String surname
+      - String email
+      - boolean active
+    }
+    class EmployeeMapper
+  }
+}
+
+package organization.domain.employee <<Folder>> {
+  interface EmployeeRepository << (I, #00FF77) >>
+}
+
+EmployeePersistenceAdapter ..|> EmployeeRepository
+EmployeePersistenceAdapter --> EmployeeJpaRepository : delegates
+EmployeePersistenceAdapter --> EmployeeMapper : maps
+
+@enduml

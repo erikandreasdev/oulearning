@@ -1,0 +1,73 @@
+@startuml domain_budgeting
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Budgeting Domain Model
+
+package budgeting {
+  class FiscalYear << (R, #FF7700) record >> {
+    int value
+    + {static} FiscalYear of(int value)
+  }
+
+  class Budget << (R, #FF7700) record >> {
+    BudgetId id
+    OrganizationalUnitId organizationalUnitId
+    FiscalYear fiscalYear
+    Money total
+    Money reserved
+    Money available
+    boolean active
+    + {static} Budget create(BudgetId, OrganizationalUnitId, FiscalYear, Money, Money, Money)
+    + {static} Budget reconstitute(BudgetId, OrganizationalUnitId, FiscalYear, Money, Money, Money, boolean)
+    + Budget updateAmounts(Money total, Money reserved, Money available)
+    + Budget deactivate()
+  }
+
+  class BudgetId << (R, #FF7700) record >> {
+    long value
+    + {static} BudgetId of(long value)
+  }
+
+  class Money << (R, #FF7700) record >> {
+    MonetaryAmount monetaryAmount
+    + {static} Money of(BigDecimal amount)
+    + {static} Money of(double amount)
+    + {static} Money zero()
+    + BigDecimal amount()
+    + String currency()
+    + Money add(Money other)
+    + Money subtract(Money other)
+    + boolean isGreaterThan(Money other)
+    + boolean isLessThan(Money other)
+  }
+
+  interface BudgetRepository << (I, #00FF77) >> {
+    + Optional<Budget> findById(BudgetId id)
+    + void save(Budget budget)
+  }
+}
+
+package common <<Folder>> {
+  interface IdGenerator << (I, #00FF77) >> {
+    + long generate()
+  }
+}
+
+package organization.domain.hierarchy <<Folder>> {
+  class OrganizationalUnitId << (R, #FF7700) record >>
+}
+
+Budget --> BudgetId : id
+Budget --> OrganizationalUnitId : organizationalUnitId
+Budget --> FiscalYear : fiscalYear
+Budget --> Money : total
+Budget --> Money : reserved
+Budget --> Money : available
+
+@enduml

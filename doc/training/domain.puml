@@ -1,0 +1,199 @@
+@startuml domain_training
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Training Domain Model
+
+package training {
+  class ManagerReview << (R, #FF7700) record >> {
+    String comments
+    Modality modality
+    Instant startDate
+    Instant endDate
+    ExternalProviderId externalProviderId
+    Instant reviewedAt
+    + Optional<ExternalProviderId> optionalExternalProviderId()
+  }
+
+  enum TrainingPurposeType {
+    INDIVIDUAL_DEVELOPMENT_PLAN
+    DEPARTMENT_GOALS
+    OTHER
+  }
+
+  class TrainingPurpose << (R, #FF7700) record >> {
+    TrainingPurposeType type
+    String otherPurpose
+    + {static} TrainingPurpose individualDevelopmentPlan()
+    + {static} TrainingPurpose departmentGoals()
+    + {static} TrainingPurpose other(String purpose)
+    + Optional<String> optionalOtherPurpose()
+  }
+
+  class Phone << (R, #FF7700) record >> {
+    String value
+    + {static} Phone of(String value)
+  }
+
+  class Type << (R, #FF7700) record >> {
+    TypeId id
+    TypeName name
+    TypeId rawParentTypeId
+    + {static} Type of(TypeId, TypeName, TypeId)
+    + Optional<TypeId> parentTypeId()
+  }
+
+  class TypeName << (R, #FF7700) record >> {
+    String value
+    + {static} TypeName of(String value)
+  }
+
+  enum TrainingStatus {
+    REQUESTED
+    APPROVED
+    REJECTED
+  }
+
+  class TrainingId << (R, #FF7700) record >> {
+    long value
+    + {static} TrainingId of(long value)
+  }
+
+  class Hours << (R, #FF7700) record >> {
+    int value
+    + {static} Hours of(int value)
+  }
+
+  enum Modality {
+    VIRTUAL
+    ON_SITE
+    E_LEARNING
+    BLENDED
+  }
+
+  class ExternalProviderContact << (R, #FF7700) record >> {
+    Email email
+    Phone phone
+    + {static} ExternalProviderContact of(Email, Phone)
+  }
+
+  class ExternalProviderId << (R, #FF7700) record >> {
+    long value
+    + {static} ExternalProviderId of(long value)
+  }
+
+  class ExternalProviderName << (R, #FF7700) record >> {
+    String value
+    + {static} ExternalProviderName of(String value)
+  }
+
+  class ExternalProvider << (R, #FF7700) record >> {
+    ExternalProviderId id
+    ExternalProviderName name
+    ExternalProviderContact contact
+    boolean active
+    + {static} ExternalProvider create(ExternalProviderId, ExternalProviderName, ExternalProviderContact)
+    + {static} ExternalProvider reconstitute(ExternalProviderId, ExternalProviderName, ExternalProviderContact, boolean)
+    + ExternalProvider update(ExternalProviderName, ExternalProviderContact)
+    + ExternalProvider deactivate()
+  }
+
+  class TypeId << (R, #FF7700) record >> {
+    long value
+    + {static} TypeId of(long value)
+  }
+
+  class Cost << (R, #FF7700) record >> {
+    BigDecimal amount
+    String currency
+    + {static} Cost of(BigDecimal amount, String currency)
+    + {static} Cost of(BigDecimal amount)
+    + {static} Cost zero()
+  }
+
+  class Training << (R, #FF7700) record >> {
+    TrainingId id
+    EmployeeId requestedBy
+    OrganizationalUnitId organizationalUnitId
+    TrainingName name
+    Cost cost
+    Hours hours
+    TrainingPurpose purpose
+    TypeId typeId
+    TrainingStatus status
+    ManagerReview rawManagerReview
+    Instant createdAt
+    Instant updatedAt
+    Set<EmployeeId> attendees
+    boolean active
+    + {static} Training create(...)
+    + {static} Training reconstitute(...)
+    + Training updateDetails(...)
+    + Training approve(ManagerReview review, Instant now)
+    + Training reject(ManagerReview review, Instant now)
+    + Training addAttendee(EmployeeId attendee, Instant now)
+    + Training deactivate()
+    + Optional<ManagerReview> managerReview()
+  }
+
+  class TrainingName << (R, #FF7700) record >> {
+    String value
+    + {static} TrainingName of(String value)
+  }
+
+  interface TrainingRepository << (I, #00FF77) >> {
+    + Optional<Training> findById(TrainingId id)
+    + void save(Training training)
+  }
+
+  interface ExternalProviderRepository << (I, #00FF77) >> {
+    + Optional<ExternalProvider> findById(ExternalProviderId id)
+    + void save(ExternalProvider externalProvider)
+  }
+}
+
+package common <<Folder>> {
+  interface IdGenerator << (I, #00FF77) >> {
+    + long generate()
+  }
+}
+
+package organization.domain.employee <<Folder>> {
+  class EmployeeId << (R, #FF7700) record >>
+  class Email << (R, #FF7700) record >>
+}
+
+package organization.domain.hierarchy <<Folder>> {
+  class OrganizationalUnitId << (R, #FF7700) record >>
+}
+
+ManagerReview --> Modality : modality
+ManagerReview --> ExternalProviderId : externalProviderId
+TrainingPurpose --> TrainingPurposeType : type
+Type --> TypeId : id
+Type --> TypeName : name
+Type --> TypeId : rawParentTypeId
+ExternalProviderContact --> Email : email
+ExternalProviderContact --> Phone : phone
+ExternalProvider --> ExternalProviderId : id
+ExternalProvider --> ExternalProviderName : name
+ExternalProvider --> ExternalProviderContact : contact
+
+Training --> TrainingId : id
+Training --> EmployeeId : requestedBy
+Training --> OrganizationalUnitId : organizationalUnitId
+Training --> TrainingName : name
+Training --> Cost : cost
+Training --> Hours : hours
+Training --> TrainingPurpose : purpose
+Training --> TypeId : typeId
+Training --> TrainingStatus : status
+Training --> ManagerReview : rawManagerReview
+Training "1" --> "*" EmployeeId : attendees
+
+@enduml

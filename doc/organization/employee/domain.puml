@@ -1,0 +1,71 @@
+@startuml domain_employee
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Employee Domain Model
+
+package organization.employee {
+  class FullName << (R, #FF7700) record >> {
+    Name name
+    Surname surname
+    + {static} FullName of(Name name, Surname surname)
+    + {static} FullName of(String name, String surname)
+    + String formatted()
+  }
+
+  class Surname << (R, #FF7700) record >> {
+    String value
+    + {static} Surname of(String value)
+  }
+
+  class Email << (R, #FF7700) record >> {
+    String value
+    + {static} Email of(String value)
+  }
+
+  class EmployeeId << (R, #FF7700) record >> {
+    long value
+    + {static} EmployeeId of(long value)
+  }
+
+  class Name << (R, #FF7700) record >> {
+    String value
+    + {static} Name of(String value)
+  }
+
+  class Employee << (R, #FF7700) record >> {
+    EmployeeId id
+    FullName fullName
+    Email email
+    boolean active
+    + {static} Employee create(EmployeeId, FullName, Email)
+    + {static} Employee reconstitute(EmployeeId, FullName, Email, boolean)
+    + Employee updateFullName(FullName newFullName)
+    + Employee updateEmail(Email newEmail)
+    + Employee deactivate()
+  }
+
+  interface EmployeeRepository << (I, #00FF77) >> {
+    + Optional<Employee> findById(EmployeeId id)
+    + void save(Employee employee)
+  }
+}
+
+package common <<Folder>> {
+  interface IdGenerator << (I, #00FF77) >> {
+    + long generate()
+  }
+}
+
+FullName --> Name : name
+FullName --> Surname : surname
+Employee --> EmployeeId : id
+Employee --> FullName : fullName
+Employee --> Email : email
+
+@enduml

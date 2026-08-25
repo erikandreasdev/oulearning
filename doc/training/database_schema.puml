@@ -1,0 +1,75 @@
+@startuml database_schema_training
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Training Database Data Model
+
+entity "training" as training {
+  * id : bigint <<generated>>
+  --
+  * requested_by_employee_id : bigint <<FK>>
+  * organizational_unit_id : bigint <<FK>>
+  * name : varchar(255)
+  * cost_amount : decimal(19, 4)
+  * cost_currency : varchar(3)
+  * hours : int
+  * purpose_type : varchar(255)
+  purpose_other : varchar(255)
+  * type_id : bigint <<FK>>
+  * status : varchar(255)
+  manager_review_comments : clob
+  manager_review_modality : varchar(255)
+  manager_review_start_date : timestamp
+  manager_review_end_date : timestamp
+  manager_review_external_provider_id : bigint <<FK>>
+  manager_review_reviewed_at : timestamp
+  * created_at : timestamp
+  * updated_at : timestamp
+  * active : number(1, 0)
+}
+
+entity "training_type" as training_type {
+  * id : bigint <<generated>>
+  --
+  * name : varchar(255)
+  parent_type_id : bigint <<FK>>
+}
+
+entity "external_provider" as external_provider {
+  * id : bigint <<generated>>
+  --
+  * name : varchar(255)
+  * email : varchar(255)
+  * phone : varchar(255)
+  * active : number(1, 0)
+}
+
+entity "training_attendee" as training_attendee {
+  * training_id : bigint <<FK>>
+  * employee_id : bigint <<FK>>
+}
+
+entity "employee" as employee <<External>> {
+  * id : bigint <<generated>>
+}
+
+entity "organizational_unit" as organizational_unit <<External>> {
+  * id : bigint <<generated>>
+}
+
+training_type |o--o{ training_type : "parent_type_id"
+training_type ||--o{ training : "type_id"
+external_provider |o--o{ training : "manager_review_external_provider_id"
+
+training }o--|| employee : "requested_by_employee_id"
+training }o--|| organizational_unit : "organizational_unit_id"
+
+training ||--o{ training_attendee : "training_id"
+employee ||--o{ training_attendee : "employee_id"
+
+@enduml

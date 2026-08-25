@@ -1,0 +1,29 @@
+@startuml database_schema_budgeting
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Budgeting Database Data Model
+
+entity "budget" as budget {
+  * id : bigint <<generated>>
+  --
+  * organizational_unit_id : bigint <<FK>>
+  * fiscal_year : int
+  * total_amount : decimal(19, 4)
+  * reserved_amount : decimal(19, 4)
+  * available_amount : decimal(19, 4)
+  * active : number(1, 0)
+}
+
+entity "organizational_unit" as organizational_unit <<External>> {
+  * id : bigint <<generated>>
+}
+
+budget }o--|| organizational_unit : "organizational_unit_id"
+
+@enduml

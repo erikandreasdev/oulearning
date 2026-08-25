@@ -1,0 +1,76 @@
+@startuml domain_hierarchy
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam shadowing false
+skinparam roundcorner 6
+skinparam packageStyle rectangle
+skinparam nodesep 20
+skinparam ranksep 25
+
+title Hierarchy Domain Model
+
+package organization.hierarchy {
+  class OrganizationalUnit << (R, #FF7700) record >> {
+    OrganizationalUnitId id
+    Name name
+    OrganizationalUnitId rawParentId
+    Set<OrganizationalUnitId> childIds
+    Set<EmployeeId> owners
+    Set<EmployeeId> members
+    boolean active
+    + {static} OrganizationalUnit create(OrganizationalUnitId, Name, OrganizationalUnitId)
+    + {static} OrganizationalUnit reconstitute(OrganizationalUnitId, Name, OrganizationalUnitId, Set, Set, Set, boolean)
+    + OrganizationalUnit rename(Name newName)
+    + OrganizationalUnit addOwner(EmployeeId ownerId)
+    + OrganizationalUnit removeOwner(EmployeeId ownerId)
+    + OrganizationalUnit addOwners(Set<EmployeeId> ownerIds)
+    + OrganizationalUnit removeOwners(Set<EmployeeId> ownerIds)
+    + OrganizationalUnit addMember(EmployeeId memberId)
+    + OrganizationalUnit removeMember(EmployeeId memberId)
+    + OrganizationalUnit addMembers(Set<EmployeeId> memberIds)
+    + OrganizationalUnit removeMembers(Set<EmployeeId> memberIds)
+    + OrganizationalUnit deactivate()
+    + Optional<OrganizationalUnitId> parentId()
+  }
+
+  class Organization << (R, #FF7700) record >> {
+    Set<OrganizationalUnitId> organizationalUnitIds
+    + Organization addOrganizationalUnit(OrganizationalUnitId ouId)
+    + Organization removeOrganizationalUnit(OrganizationalUnitId ouId)
+  }
+
+  class OrganizationalUnitId << (R, #FF7700) record >> {
+    long value
+    + {static} OrganizationalUnitId of(long value)
+  }
+
+  class Name << (R, #FF7700) record >> {
+    String value
+    + {static} Name of(String value)
+  }
+
+  interface OrganizationalUnitRepository << (I, #00FF77) >> {
+    + Optional<OrganizationalUnit> findById(OrganizationalUnitId id)
+    + void save(OrganizationalUnit organizationalUnit)
+  }
+}
+
+package common <<Folder>> {
+  interface IdGenerator << (I, #00FF77) >> {
+    + long generate()
+  }
+}
+
+package organization.domain.employee <<Folder>> {
+  class EmployeeId << (R, #FF7700) record >>
+}
+
+OrganizationalUnit --> OrganizationalUnitId : id
+OrganizationalUnit --> Name : name
+OrganizationalUnit --> OrganizationalUnitId : rawParentId
+OrganizationalUnit "1" --> "*" OrganizationalUnitId : childIds
+OrganizationalUnit "1" --> "*" EmployeeId : owners
+OrganizationalUnit "1" --> "*" EmployeeId : members
+Organization "1" --> "*" OrganizationalUnitId : organizationalUnitIds
+
+@enduml
