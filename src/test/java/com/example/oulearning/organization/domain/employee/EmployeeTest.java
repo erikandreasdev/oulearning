@@ -30,6 +30,7 @@ class EmployeeTest {
             assertThat(employee.id()).isEqualTo(id);
             assertThat(employee.fullName()).isEqualTo(fullName);
             assertThat(employee.email()).isEqualTo(email);
+            assertThat(employee.active()).isTrue();
         }
 
         @Test
@@ -40,15 +41,78 @@ class EmployeeTest {
             // when
 
             // then
-            assertThatThrownBy(() -> Employee.of(null, fullName, email))
+            assertThatThrownBy(() -> Employee.create(null, fullName, email))
                     .isInstanceOf(InvalidEmployeeException.class)
                     .hasMessageContaining("cannot be null");
-            assertThatThrownBy(() -> Employee.of(id, null, email))
+            assertThatThrownBy(() -> Employee.create(id, null, email))
                     .isInstanceOf(InvalidEmployeeException.class)
                     .hasMessageContaining("cannot be null");
-            assertThatThrownBy(() -> Employee.of(id, fullName, null))
+            assertThatThrownBy(() -> Employee.create(id, fullName, null))
                     .isInstanceOf(InvalidEmployeeException.class)
                     .hasMessageContaining("cannot be null");
+        }
+
+        @Test
+        @DisplayName("given new full name, when updating full name, then return employee with new full name")
+        void givenNewFullName_whenUpdatingFullName_thenEmployeeHasNewFullName() {
+            // given
+            final var employee = Employee.create(id, fullName, email);
+            final var newFullName = EmployeeTestFactory.randomFullName();
+
+            // when
+            final var updated = employee.updateFullName(newFullName);
+
+            // then
+            assertThat(updated.fullName()).isEqualTo(newFullName);
+            assertThat(updated.email()).isEqualTo(email);
+            assertThat(updated.id()).isEqualTo(id);
+            assertThat(updated.active()).isTrue();
+        }
+
+        @Test
+        @DisplayName("given new email, when updating email, then return employee with new email")
+        void givenNewEmail_whenUpdatingEmail_thenEmployeeHasNewEmail() {
+            // given
+            final var employee = Employee.create(id, fullName, email);
+            final var newEmail = EmployeeTestFactory.randomEmail();
+
+            // when
+            final var updated = employee.updateEmail(newEmail);
+
+            // then
+            assertThat(updated.email()).isEqualTo(newEmail);
+            assertThat(updated.fullName()).isEqualTo(fullName);
+            assertThat(updated.id()).isEqualTo(id);
+            assertThat(updated.active()).isTrue();
+        }
+
+        @Test
+        @DisplayName("given active employee, when deactivating, then employee is inactive")
+        void givenActiveEmployee_whenDeactivating_thenEmployeeIsInactive() {
+            // given
+            final var employee = Employee.create(id, fullName, email);
+
+            // when
+            final var deactivated = employee.deactivate();
+
+            // then
+            assertThat(deactivated.active()).isFalse();
+            assertThat(deactivated.id()).isEqualTo(id);
+        }
+
+        @Test
+        @DisplayName("given parameters, when reconstituting Employee, then employee is reconstituted")
+        void givenParameters_whenReconstitutingEmployee_thenEmployeeIsReconstituted() {
+            // given
+
+            // when
+            final var employee = Employee.reconstitute(id, fullName, email, false);
+
+            // then
+            assertThat(employee.id()).isEqualTo(id);
+            assertThat(employee.fullName()).isEqualTo(fullName);
+            assertThat(employee.email()).isEqualTo(email);
+            assertThat(employee.active()).isFalse();
         }
     }
 

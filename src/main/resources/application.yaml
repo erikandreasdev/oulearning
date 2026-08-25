@@ -1,3 +1,19 @@
 spring:
   application:
     name: oulearning
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521/oulearning
+    username: oulearning
+    password: oulearning
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+  flyway:
+    enabled: true
+    url: jdbc:oracle:thin:@localhost:1521/oulearning
+    user: oulearning
+    password: oulearning

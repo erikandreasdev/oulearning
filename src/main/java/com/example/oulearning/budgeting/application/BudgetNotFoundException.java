@@ -1,0 +1,17 @@
+package com.example.oulearning.budgeting.application;
+
+import com.example.oulearning.budgeting.domain.BudgetId;
+
+public class BudgetNotFoundException extends RuntimeException {
+
+    private final BudgetId budgetId;
+
+    public BudgetNotFoundException(final BudgetId budgetId) {
+        super("Budget not found with id: %s".formatted(budgetId));
+        this.budgetId = budgetId;
+    }
+
+    public BudgetId budgetId() {
+        return budgetId;
+    }
+}

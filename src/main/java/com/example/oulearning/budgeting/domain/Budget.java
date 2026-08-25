@@ -9,7 +9,8 @@ public record Budget(
         FiscalYear fiscalYear,
         Money total,
         Money reserved,
-        Money available) {
+        Money available,
+        boolean active) {
 
     public Budget {
         BudgetingGuard.requireBudgetId(id);
@@ -20,6 +21,27 @@ public record Budget(
         BudgetingGuard.requireAvailable(available);
     }
 
+    public static Budget create(
+            final BudgetId id,
+            final OrganizationalUnitId organizationalUnitId,
+            final FiscalYear fiscalYear,
+            final Money total,
+            final Money reserved,
+            final Money available) {
+        return new Budget(id, organizationalUnitId, fiscalYear, total, reserved, available, true);
+    }
+
+    public static Budget reconstitute(
+            final BudgetId id,
+            final OrganizationalUnitId organizationalUnitId,
+            final FiscalYear fiscalYear,
+            final Money total,
+            final Money reserved,
+            final Money available,
+            final boolean active) {
+        return new Budget(id, organizationalUnitId, fiscalYear, total, reserved, available, active);
+    }
+
     public static Budget of(
             final BudgetId id,
             final OrganizationalUnitId organizationalUnitId,
@@ -27,7 +49,18 @@ public record Budget(
             final Money total,
             final Money reserved,
             final Money available) {
-        return new Budget(id, organizationalUnitId, fiscalYear, total, reserved, available);
+        return create(id, organizationalUnitId, fiscalYear, total, reserved, available);
+    }
+
+    public Budget updateAmounts(final Money total, final Money reserved, final Money available) {
+        BudgetingGuard.requireTotal(total);
+        BudgetingGuard.requireReserved(reserved);
+        BudgetingGuard.requireAvailable(available);
+        return new Budget(id, organizationalUnitId, fiscalYear, total, reserved, available, active);
+    }
+
+    public Budget deactivate() {
+        return new Budget(id, organizationalUnitId, fiscalYear, total, reserved, available, false);
     }
 
     @Override

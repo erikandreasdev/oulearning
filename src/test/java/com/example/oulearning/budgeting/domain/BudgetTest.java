@@ -67,6 +67,67 @@ class BudgetTest {
                     .isInstanceOf(InvalidBudgetOperationException.class)
                     .hasMessageContaining("cannot be null");
         }
+
+        @Test
+        @DisplayName("given parameters, when creating with create factory, then active is true")
+        void givenParams_whenCreatingWithFactory_thenActiveIsTrue() {
+            // given
+
+            // when
+            final var budget = Budget.create(id, organizationalUnitId, fiscalYear, total, reserved, available);
+
+            // then
+            assertThat(budget.id()).isEqualTo(id);
+            assertThat(budget.active()).isTrue();
+        }
+
+        @Test
+        @DisplayName("given parameters, when reconstituting Budget, then budget is reconstituted")
+        void givenParams_whenReconstitutingBudget_thenBudgetIsReconstituted() {
+            // given
+
+            // when
+            final var budget = Budget.reconstitute(
+                    id, organizationalUnitId, fiscalYear, total, reserved, available, false);
+
+            // then
+            assertThat(budget.id()).isEqualTo(id);
+            assertThat(budget.active()).isFalse();
+        }
+
+        @Test
+        @DisplayName("given new amounts, when updating amounts, then budget has new amounts")
+        void givenNewAmounts_whenUpdatingAmounts_thenBudgetHasNewAmounts() {
+            // given
+            final var budget = Budget.create(id, organizationalUnitId, fiscalYear, total, reserved, available);
+            final var newTotal = BudgetingTestFactory.randomMoney();
+            final var newReserved = BudgetingTestFactory.randomMoney();
+            final var newAvailable = BudgetingTestFactory.randomMoney();
+
+            // when
+            final var updated = budget.updateAmounts(newTotal, newReserved, newAvailable);
+
+            // then
+            assertThat(updated.total()).isEqualTo(newTotal);
+            assertThat(updated.reserved()).isEqualTo(newReserved);
+            assertThat(updated.available()).isEqualTo(newAvailable);
+            assertThat(updated.id()).isEqualTo(id);
+            assertThat(updated.active()).isTrue();
+        }
+
+        @Test
+        @DisplayName("given active budget, when deactivating, then budget is inactive")
+        void givenActiveBudget_whenDeactivating_thenBudgetIsInactive() {
+            // given
+            final var budget = Budget.create(id, organizationalUnitId, fiscalYear, total, reserved, available);
+
+            // when
+            final var deactivated = budget.deactivate();
+
+            // then
+            assertThat(deactivated.active()).isFalse();
+            assertThat(deactivated.id()).isEqualTo(id);
+        }
     }
 
     @Nested

@@ -26,4 +26,22 @@ class DomainArchitectureTest {
                             "com.fasterxml.jackson..",
                             "org.hibernate..",
                             "lombok..");
+
+    @ArchTest
+    static final ArchRule domain_should_not_depend_on_application =
+            noClasses()
+                    .that()
+                    .resideInAPackage("..domain..")
+                    .should()
+                    .dependOnClassesThat()
+                    .resideInAPackage("..application..");
+
+    @ArchTest
+    static final ArchRule application_should_not_depend_on_infrastructure =
+            noClasses()
+                    .that()
+                    .resideInAPackage("..application..")
+                    .should()
+                    .dependOnClassesThat()
+                    .resideInAnyPackage("..infrastructure..", "..adapters..");
 }

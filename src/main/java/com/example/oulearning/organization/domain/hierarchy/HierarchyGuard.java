@@ -1,12 +1,16 @@
 package com.example.oulearning.organization.domain.hierarchy;
 
+import com.example.oulearning.organization.domain.employee.EmployeeId;
 import com.example.oulearning.organization.domain.hierarchy.exception.InvalidOrganizationalUnitException;
+import java.util.Set;
 
 final class HierarchyGuard {
 
     private static final String FIELD_OU_ID = "Organizational unit id";
     private static final String FIELD_OU_NAME = "Organizational unit name";
     private static final String FIELD_NAME_VO = "Name";
+    private static final String FIELD_EMPLOYEE_ID = "Employee id";
+    private static final String FIELD_EMPLOYEE_IDS = "Employee ids";
 
     private HierarchyGuard() {
     }
@@ -33,6 +37,15 @@ final class HierarchyGuard {
                 FIELD_OU_NAME,
                 HierarchyConstants.MIN_NAME_LENGTH,
                 HierarchyConstants.MAX_NAME_LENGTH);
+    }
+
+    static void requireEmployeeId(final EmployeeId employeeId) {
+        requireNonNull(employeeId, FIELD_EMPLOYEE_ID);
+    }
+
+    static void requireEmployeeIds(final Set<EmployeeId> employeeIds) {
+        requireNonNull(employeeIds, FIELD_EMPLOYEE_IDS);
+        employeeIds.forEach(id -> requireNonNull(id, FIELD_EMPLOYEE_ID));
     }
 
     private static <T> void requireNonNull(final T value, final String fieldName) {

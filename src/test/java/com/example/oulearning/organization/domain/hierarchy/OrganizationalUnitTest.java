@@ -73,13 +73,183 @@ class OrganizationalUnitTest {
 
             // then
             assertThatThrownBy(() -> new OrganizationalUnit(
-                            null, name, parentId, emptyOuSet, emptyEmployeeSet, emptyEmployeeSet))
+                            null, name, parentId, emptyOuSet, emptyEmployeeSet, emptyEmployeeSet, true))
                     .isInstanceOf(InvalidOrganizationalUnitException.class)
                     .hasMessageContaining("cannot be null");
             assertThatThrownBy(() -> new OrganizationalUnit(
-                            id, null, parentId, emptyOuSet, emptyEmployeeSet, emptyEmployeeSet))
+                            id, null, parentId, emptyOuSet, emptyEmployeeSet, emptyEmployeeSet, true))
                     .isInstanceOf(InvalidOrganizationalUnitException.class)
                     .hasMessageContaining("cannot be null");
+        }
+
+        @Test
+        @DisplayName("given parameters, when creating with create factory, then active is true")
+        void givenParams_whenCreatingWithFactory_thenActiveIsTrue() {
+            // given
+
+            // when
+            final var ou = OrganizationalUnit.create(id, name, parentId);
+
+            // then
+            assertThat(ou.id()).isEqualTo(id);
+            assertThat(ou.name()).isEqualTo(name);
+            assertThat(ou.parentId()).contains(parentId);
+            assertThat(ou.active()).isTrue();
+        }
+
+        @Test
+        @DisplayName("given parameters, when reconstituting, then instance is reconstructed")
+        void givenParams_whenReconstituting_thenInstanceIsReconstructed() {
+            // given
+
+            // when
+            final var ou = OrganizationalUnit.reconstitute(
+                    id, name, parentId, Set.of(), Set.of(emp1), Set.of(emp2), false);
+
+            // then
+            assertThat(ou.id()).isEqualTo(id);
+            assertThat(ou.owners()).containsExactly(emp1);
+            assertThat(ou.members()).containsExactly(emp2);
+            assertThat(ou.active()).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("Mutations and Role Management")
+    class MutationsAndRoleManagement {
+
+        @Test
+        @DisplayName("given new name, when renaming, then organizational unit has new name")
+        void givenNewName_whenRenaming_thenOrganizationalUnitHasNewName() {
+            // given
+            final var ou = OrganizationalUnit.create(id, name, parentId);
+            final var newName = HierarchyTestFactory.randomName();
+
+            // when
+            final var updated = ou.rename(newName);
+
+            // then
+            assertThat(updated.name()).isEqualTo(newName);
+            assertThat(updated.id()).isEqualTo(id);
+        }
+
+        @Test
+        @DisplayName("given owner, when adding owner, then owner is added")
+        void givenOwner_whenAddingOwner_thenOwnerIsAdded() {
+            // given
+            final var ou = OrganizationalUnit.create(id, name, parentId);
+
+            // when
+            final var updated = ou.addOwner(emp1);
+
+            // then
+            assertThat(updated.owners()).containsExactly(emp1);
+        }
+
+        @Test
+        @DisplayName("given existing owner, when removing owner, then owner is removed")
+        void givenExistingOwner_whenRemovingOwner_thenOwnerIsRemoved() {
+            // given
+            final var ou = OrganizationalUnit.create(id, name, parentId).addOwner(emp1);
+
+            // when
+            final var updated = ou.removeOwner(emp1);
+
+            // then
+            assertThat(updated.owners()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("given multiple owners, when adding owners in batch, then all owners are added")
+        void givenMultipleOwners_whenAddingOwnersInBatch_thenAllOwnersAreAdded() {
+            // given
+            final var ou = OrganizationalUnit.create(id, name, parentId);
+            final var owners = Set.of(emp1, emp2);
+
+            // when
+            final var updated = ou.addOwners(owners);
+
+            // then
+            assertThat(updated.owners()).containsExactlyInAnyOrder(emp1, emp2);
+        }
+
+        @Test
+        @DisplayName("given multiple owners, when removing owners in batch, then owners are removed")
+        void givenMultipleOwners_whenRemovingOwnersInBatch_thenOwnersAreRemoved() {
+            // given
+            final var ou = OrganizationalUnit.create(id, name, parentId).addOwners(Set.of(emp1, emp2));
+
+            // when
+            final var updated = ou.removeOwners(Set.of(emp1));
+
+            // then
+            assertThat(updated.owners()).containsExactly(emp2);
+        }
+
+        @Test
+        @DisplayName("given member, when adding member, then member is added")
+        void givenMember_whenAddingMember_thenMemberIsAdded() {
+            // given
+            final var ou = OrganizationalUnit.create(id, name, parentId);
+
+            // when
+            final var updated = ou.addMember(emp1);
+
+            // then
+            assertThat(updated.members()).containsExactly(emp1);
+        }
+
+        @Test
+        @DisplayName("given existing member, when removing member, then member is removed")
+        void givenExistingMember_whenRemovingMember_thenMemberIsRemoved() {
+            // given
+            final var ou = OrganizationalUnit.create(id, name, parentId).addMember(emp1);
+
+            // when
+            final var updated = ou.removeMember(emp1);
+
+            // then
+            assertThat(updated.members()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("given multiple members, when adding members in batch, then all members are added")
+        void givenMultipleMembers_whenAddingMembersInBatch_thenAllMembersAreAdded() {
+            // given
+            final var ou = OrganizationalUnit.create(id, name, parentId);
+            final var members = Set.of(emp1, emp2);
+
+            // when
+            final var updated = ou.addMembers(members);
+
+            // then
+            assertThat(updated.members()).containsExactlyInAnyOrder(emp1, emp2);
+        }
+
+        @Test
+        @DisplayName("given multiple members, when removing members in batch, then members are removed")
+        void givenMultipleMembers_whenRemovingMembersInBatch_thenMembersAreRemoved() {
+            // given
+            final var ou = OrganizationalUnit.create(id, name, parentId).addMembers(Set.of(emp1, emp2));
+
+            // when
+            final var updated = ou.removeMembers(Set.of(emp1));
+
+            // then
+            assertThat(updated.members()).containsExactly(emp2);
+        }
+
+        @Test
+        @DisplayName("given active unit, when deactivating, then unit is inactive")
+        void givenActiveUnit_whenDeactivating_thenUnitIsInactive() {
+            // given
+            final var ou = OrganizationalUnit.create(id, name, parentId);
+
+            // when
+            final var deactivated = ou.deactivate();
+
+            // then
+            assertThat(deactivated.active()).isFalse();
         }
     }
 

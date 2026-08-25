@@ -1,0 +1,95 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide empty members
+
+entity "employee" as employee {
+  * id : bigint <<generated>>
+  --
+  * name : varchar
+  * surname : varchar
+  * email : varchar
+}
+
+entity "organizational_unit" as organizational_unit {
+  * id : bigint <<generated>>
+  --
+  * name : varchar
+  parent_id : bigint <<FK>>
+}
+
+entity "organizational_unit_owner" as organizational_unit_owner {
+  * organizational_unit_id : bigint <<FK>>
+  * employee_id : bigint <<FK>>
+}
+
+entity "organizational_unit_member" as organizational_unit_member {
+  * organizational_unit_id : bigint <<FK>>
+  * employee_id : bigint <<FK>>
+}
+
+entity "budget" as budget {
+  * id : bigint <<generated>>
+  --
+  * organizational_unit_id : bigint <<FK>>
+  * fiscal_year : int
+  * total_amount : decimal
+  * reserved_amount : decimal
+  * available_amount : decimal
+}
+
+entity "training_type" as training_type {
+  * id : bigint <<generated>>
+  --
+  * name : varchar
+  parent_type_id : bigint <<FK>>
+}
+
+entity "training" as training {
+  * id : bigint <<generated>>
+  --
+  * requested_by_employee_id : bigint <<FK>>
+  * organizational_unit_id : bigint <<FK>>
+  * name : varchar
+  * cost_amount : decimal
+  * cost_currency : varchar
+  * hours : int
+  * purpose_type : varchar
+  purpose_other : varchar
+  * type_id : bigint <<FK>>
+  * status : varchar
+  manager_review_comments : text
+  manager_review_modality : varchar
+  manager_review_start_date : timestamp
+  manager_review_end_date : timestamp
+  manager_review_external_provider_name : varchar
+  manager_review_external_provider_email : varchar
+  manager_review_external_provider_phone : varchar
+  manager_review_reviewed_at : timestamp
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "training_attendee" as training_attendee {
+  * training_id : bigint <<FK>>
+  * employee_id : bigint <<FK>>
+}
+
+organizational_unit |o--o{ organizational_unit : "parent_id"
+organizational_unit ||--o{ organizational_unit_owner : "organizational_unit_id"
+employee ||--o{ organizational_unit_owner : "employee_id"
+
+organizational_unit ||--o{ organizational_unit_member : "organizational_unit_id"
+employee ||--o{ organizational_unit_member : "employee_id"
+
+budget }o--|| organizational_unit : "organizational_unit_id"
+
+training_type |o--o{ training_type : "parent_type_id"
+
+training }o--|| employee : "requested_by_employee_id"
+training }o--|| organizational_unit : "organizational_unit_id"
+training }o--|| training_type : "type_id"
+
+training ||--o{ training_attendee : "training_id"
+employee ||--o{ training_attendee : "employee_id"
+
+@enduml

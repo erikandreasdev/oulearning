@@ -21,7 +21,8 @@ public record Training(
         ManagerReview rawManagerReview,
         Instant createdAt,
         Instant updatedAt,
-        Set<EmployeeId> attendees) {
+        Set<EmployeeId> attendees,
+        boolean active) {
 
     public Training {
         TrainingGuard.requireTrainingId(id);
@@ -61,7 +62,8 @@ public record Training(
                 null,
                 now,
                 now,
-                Set.of());
+                Set.of(),
+                true);
     }
 
     public static Training reconstitute(
@@ -77,7 +79,8 @@ public record Training(
             final ManagerReview managerReview,
             final Instant createdAt,
             final Instant updatedAt,
-            final Set<EmployeeId> attendees) {
+            final Set<EmployeeId> attendees,
+            final boolean active) {
         return new Training(
                 id,
                 requestedBy,
@@ -91,7 +94,8 @@ public record Training(
                 managerReview,
                 createdAt,
                 updatedAt,
-                attendees);
+                attendees,
+                active);
     }
 
     public Training approve(final ManagerReview review, final Instant now) {
@@ -109,7 +113,8 @@ public record Training(
                 review,
                 createdAt,
                 now,
-                attendees);
+                attendees,
+                active);
     }
 
     public Training reject(final ManagerReview review, final Instant now) {
@@ -127,7 +132,8 @@ public record Training(
                 review,
                 createdAt,
                 now,
-                attendees);
+                attendees,
+                active);
     }
 
     public Training addAttendee(final EmployeeId attendee, final Instant now) {
@@ -148,7 +154,56 @@ public record Training(
                 rawManagerReview,
                 createdAt,
                 now,
-                updated);
+                updated,
+                active);
+    }
+
+    public Training updateDetails(
+            final TrainingName newName,
+            final Cost newCost,
+            final Hours newHours,
+            final TrainingPurpose newPurpose,
+            final TypeId newTypeId,
+            final Instant now) {
+        TrainingGuard.requireTrainingName(newName);
+        TrainingGuard.requireCost(newCost);
+        TrainingGuard.requireHours(newHours);
+        TrainingGuard.requirePurpose(newPurpose);
+        TrainingGuard.requireTypeId(newTypeId);
+        TrainingGuard.requireUpdatedAt(now);
+        return new Training(
+                id,
+                requestedBy,
+                organizationalUnitId,
+                newName,
+                newCost,
+                newHours,
+                newPurpose,
+                newTypeId,
+                status,
+                rawManagerReview,
+                createdAt,
+                now,
+                attendees,
+                active);
+    }
+
+    public Training deactivate() {
+        return new Training(
+                id,
+                requestedBy,
+                organizationalUnitId,
+                name,
+                cost,
+                hours,
+                purpose,
+                typeId,
+                status,
+                rawManagerReview,
+                createdAt,
+                updatedAt,
+                attendees,
+                false);
     }
 
     public Optional<ManagerReview> managerReview() {

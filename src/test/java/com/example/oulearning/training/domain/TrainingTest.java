@@ -126,12 +126,55 @@ class TrainingTest {
                     null,
                     now,
                     now,
-                    Set.of(EmployeeTestFactory.randomEmployeeId()));
+                    Set.of(EmployeeTestFactory.randomEmployeeId()),
+                    true);
 
             // when
 
             // then
             assertThat(t1).isEqualTo(t2).hasSameHashCodeAs(t2);
+        }
+
+        @Test
+        @DisplayName("given updated fields, when updating details, then training has updated fields")
+        void givenUpdatedFields_whenUpdatingDetails_thenTrainingHasUpdatedFields() {
+            // given
+            final var training =
+                    Training.create(id, employeeId, organizationalUnitId, name, cost, hours, purpose, typeId, now);
+            final var newName = TrainingTestFactory.randomTrainingName();
+            final var newCost = TrainingTestFactory.randomCost();
+            final var newHours = TrainingTestFactory.randomHours();
+            final var newPurpose = TrainingPurpose.departmentGoals();
+            final var newTypeId = TrainingTestFactory.randomTypeId();
+            final var updateTime = now.plusSeconds(3600);
+
+            // when
+            final var updated = training.updateDetails(newName, newCost, newHours, newPurpose, newTypeId, updateTime);
+
+            // then
+            assertThat(updated.name()).isEqualTo(newName);
+            assertThat(updated.cost()).isEqualTo(newCost);
+            assertThat(updated.hours()).isEqualTo(newHours);
+            assertThat(updated.purpose()).isEqualTo(newPurpose);
+            assertThat(updated.typeId()).isEqualTo(newTypeId);
+            assertThat(updated.updatedAt()).isEqualTo(updateTime);
+            assertThat(updated.createdAt()).isEqualTo(now);
+            assertThat(updated.active()).isTrue();
+        }
+
+        @Test
+        @DisplayName("given active training, when deactivating, then training is inactive")
+        void givenActiveTraining_whenDeactivating_thenTrainingIsInactive() {
+            // given
+            final var training =
+                    Training.create(id, employeeId, organizationalUnitId, name, cost, hours, purpose, typeId, now);
+
+            // when
+            final var deactivated = training.deactivate();
+
+            // then
+            assertThat(deactivated.active()).isFalse();
+            assertThat(deactivated.id()).isEqualTo(id);
         }
 
         @Test
