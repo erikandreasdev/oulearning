@@ -25,8 +25,9 @@ class RemoveMemberServiceTest {
     @DisplayName("given existing OU with member, when removing member, then updated OU without member is saved")
     void givenExistingOuWithMember_whenRemovingMember_thenUpdatedOuWithoutMemberIsSaved() {
         // given
+        final var remainingMember = EmployeeTestFactory.randomEmployeeId();
         final var memberToRemove = EmployeeTestFactory.randomEmployeeId();
-        final var ou = HierarchyTestFactory.randomOrganizationalUnit().addMember(memberToRemove);
+        final var ou = HierarchyTestFactory.randomOrganizationalUnit().addMembers(Set.of(remainingMember, memberToRemove));
         final var command = new RemoveMemberCommand(ou.id(), Set.of(memberToRemove));
         when(repository.findById(ou.id())).thenReturn(Optional.of(ou));
 
@@ -37,7 +38,7 @@ class RemoveMemberServiceTest {
         final var captor = ArgumentCaptor.forClass(OrganizationalUnit.class);
         verify(repository).save(captor.capture());
         final var saved = captor.getValue();
-        assertThat(saved.members()).doesNotContain(memberToRemove);
+        assertThat(saved.members()).isNotEmpty().doesNotContain(memberToRemove);
     }
 
     @Test

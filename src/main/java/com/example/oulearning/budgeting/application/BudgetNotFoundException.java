@@ -4,7 +4,7 @@ import com.example.oulearning.budgeting.domain.BudgetId;
 
 public class BudgetNotFoundException extends RuntimeException {
 
-    private final BudgetId budgetId;
+    private final transient BudgetId budgetId;
 
     public BudgetNotFoundException(final BudgetId budgetId) {
         super("Budget not found with id: %s".formatted(budgetId));

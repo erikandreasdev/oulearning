@@ -4,7 +4,7 @@ import com.example.oulearning.organization.domain.employee.EmployeeId;
 
 public class EmployeeNotFoundException extends RuntimeException {
 
-    private final EmployeeId employeeId;
+    private final transient EmployeeId employeeId;
 
     public EmployeeNotFoundException(final EmployeeId employeeId) {
         super("Employee not found with id: %s".formatted(employeeId));

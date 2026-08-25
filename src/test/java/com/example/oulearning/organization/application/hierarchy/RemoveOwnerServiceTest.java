@@ -25,8 +25,9 @@ class RemoveOwnerServiceTest {
     @DisplayName("given existing OU with owner, when removing owner, then updated OU without owner is saved")
     void givenExistingOuWithOwner_whenRemovingOwner_thenUpdatedOuWithoutOwnerIsSaved() {
         // given
+        final var remainingOwner = EmployeeTestFactory.randomEmployeeId();
         final var ownerToRemove = EmployeeTestFactory.randomEmployeeId();
-        final var ou = HierarchyTestFactory.randomOrganizationalUnit().addOwner(ownerToRemove);
+        final var ou = HierarchyTestFactory.randomOrganizationalUnit().addOwners(Set.of(remainingOwner, ownerToRemove));
         final var command = new RemoveOwnerCommand(ou.id(), Set.of(ownerToRemove));
         when(repository.findById(ou.id())).thenReturn(Optional.of(ou));
 
@@ -37,7 +38,7 @@ class RemoveOwnerServiceTest {
         final var captor = ArgumentCaptor.forClass(OrganizationalUnit.class);
         verify(repository).save(captor.capture());
         final var saved = captor.getValue();
-        assertThat(saved.owners()).doesNotContain(ownerToRemove);
+        assertThat(saved.owners()).isNotEmpty().doesNotContain(ownerToRemove);
     }
 
     @Test
