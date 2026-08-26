@@ -26,7 +26,7 @@ domain <- application <- infrastructure (adapters) <- bootstrap (Spring config)
 - Leverage Java type inference using `var` for local variables wherever possible (`final var x = ...;`).
 - Constructor injection only. Never `@Autowired` on fields. No static mutable state, no singletons.
 - Formatted strings only everywhere: use `String#formatted` / `"%s ...".formatted(...)`, avoid string concatenation with `+`.
-- All identifiers are typed UUID value objects (`EmployeeId`, `OuId`, `BudgetId`, `TrainingId`, `TypeId`), never raw `UUID` or `String` primitives in domain/application models.
+- All identifiers are typed value objects (`EmployeeId`, `OuId`, `BudgetId`, `TrainingId`, `TypeId`) containing sequential IDs (e.g. `Long`), never raw `Long` or `String` primitives in domain/application models.
 - Clean separation of constants:
   - **Domain constants** (`src/main/java/**/<Context>Constants.java`): only contain business rules and invariants enforced by domain objects (min/max lengths, regexes, scales, limits).
   - **Test generation constants** (`src/test/java/**`): live strictly inside test factories/test classes (ranges, generation templates, replacement characters).
@@ -37,7 +37,7 @@ domain <- application <- infrastructure (adapters) <- bootstrap (Spring config)
 - Naming follows the ubiquitous language in `doc/GLOSSARY.md`. If a term is missing, ask or add it. Do not invent domain concepts silently.
 - Google Java Style, 4-space indent, 120 cols. Run `./mvnw spotless:apply`.
 - Pure code in production: No line, block, or Javadoc comments anywhere in production code. In tests, strictly only the mandatory `// given`, `// when`, `// then` line comments are permitted.
-- Inject `java.time.Clock` and id generators; never inline `Instant.now()` / `UUID.randomUUID()` in production domain/application logic.
+- Inject `java.time.Clock` and id generators; never inline `Instant.now()` in production domain/application logic.
 
 ## Agent workflow
 1. Read the bounded context README/glossary and the existing aggregate before adding behavior. Reuse existing value objects and use cases.

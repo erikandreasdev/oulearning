@@ -8,7 +8,7 @@ description: Apply when reviewing code, discussing design, or when the user asks
 When reviewing or planning, check and report explicitly:
 1. Does any `domain` file import a framework? (Reject.)
 2. Are invariants enforced inside the aggregate, or leaked into a use case/controller? (Move them in.)
-3. Any primitive obsession — raw `String`/`BigDecimal`/`UUID` for a domain concept? (Introduce a value object.)
+3. Any primitive obsession — raw `String`/`BigDecimal`/`Long` for a domain concept? (Introduce a value object.)
 4. Any use case touching more than one aggregate in a single transaction? (Use domain events.)
 5. Any controller calling a repository or containing branching business logic? (Route through a use case.)
 6. Any JPA entity or aggregate crossing an HTTP/message boundary? (Add DTOs/contracts.)

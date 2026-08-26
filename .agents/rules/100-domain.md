@@ -10,7 +10,7 @@ description: Domain layer rules — aggregates, value objects, domain events, re
 - Every domain model class (aggregates, entities, value objects, domain events) must be an immutable `record` to leverage immutability, data security, and clarity.
 - Aggregates own and enforce their invariants. No public setters. State changes go through intention-revealing methods (`order.confirm()`, not `setStatus`), which validate and return updated record states or register domain events.
 - Value objects are immutable `record`s with validation in the compact constructor. Use them for every domain concept (`Money`, `Email`, `Quantity`, `FullName`), never raw primitives.
-- Identity is a typed UUID value object (`record TrainingId(UUID value)`), never bare `UUID`/`Long`/`String`.
+- Identity is a typed value object (`record TrainingId(Long value)`), never bare `Long`/`String`.
 - Enforce validation and invariants strictly in domain code via centralized domain guards (`*Guard`) that throw domain-specific exceptions extending `DomainException`.
 - All domain validations must be driven by configurable constants in vertical slice constants classes (`*Constants.java`) with zero magic numbers/strings in domain code.
 - Domain events are immutable records named in past tense (`TrainingApproved`), carrying ids and relevant data — not whole aggregates. Aggregates register events (`pullDomainEvents()`); they never publish them.

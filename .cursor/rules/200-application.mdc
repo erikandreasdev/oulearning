@@ -13,6 +13,6 @@ alwaysApply: false
 - Depends on `domain` only. Allowed Spring: `@Transactional`, optionally `@Service`. Constructor injection.
 - Output ports (interfaces) for anything external: `OrderRepository`, `PaymentGateway`, `DomainEventPublisher`, `Clock`. Never call adapters directly.
 - Queries (CQRS-lite): read-only, may use dedicated read ports/DTOs and bypass aggregates. Never mutate.
-- Inject `java.time.Clock` / an id generator port; never call `Instant.now()`/`UUID.randomUUID()` inline.
+- Inject `java.time.Clock` / an id generator port; never call `Instant.now()` inline.
 - Application exceptions (`OrderNotFoundException`) are specific; let domain exceptions propagate.
 - Tests: JUnit + in-memory fakes for ports (`InMemoryOrderRepository`); Mockito only for external side effects. No Spring context.
