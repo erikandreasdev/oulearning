@@ -1,0 +1,20 @@
+post:
+  summary: Create a new OU-Budget for specific OU or OU and child OUs
+  operationId: createOrganizationalUnitBudgets
+  tags:
+    - Budgets
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/requests/CreateOuBudgetRequest.yaml'
+  responses:
+    '201':
+      description: OU budgets created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/PaginatedOuBudgetResponse.yaml'
+    '400':
+      description: Invalid budget parameters

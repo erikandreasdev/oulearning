@@ -209,6 +209,39 @@ class TrainingTest {
         }
 
         @Test
+        @DisplayName("given manager review, when updating manager review, then training has updated review")
+        void givenManagerReview_whenUpdatingManagerReview_thenTrainingHasUpdatedReview() {
+            // given
+            final var training =
+                    Training.create(id, employeeId, organizationalUnitId, name, cost, hours, purpose, typeId, now);
+            final var review = TrainingTestFactory.randomManagerReview();
+            final var updateTime = now.plusSeconds(3600);
+
+            // when
+            final var updated = training.updateManagerReview(review, updateTime);
+
+            // then
+            assertThat(updated.managerReview()).contains(review);
+            assertThat(updated.updatedAt()).isEqualTo(updateTime);
+        }
+
+        @Test
+        @DisplayName("given null review timestamp, when updating manager review, then throw InvalidTrainingOperationException")
+        void givenNullTimestamp_whenUpdatingManagerReview_thenThrowInvalidTrainingOperationException() {
+            // given
+            final var training =
+                    Training.create(id, employeeId, organizationalUnitId, name, cost, hours, purpose, typeId, now);
+            final var review = TrainingTestFactory.randomManagerReview();
+
+            // when
+
+            // then
+            assertThatThrownBy(() -> training.updateManagerReview(review, null))
+                    .isInstanceOf(InvalidTrainingOperationException.class)
+                    .hasMessageContaining("cannot be null");
+        }
+
+        @Test
         @DisplayName("given same training instance, when comparing, then they are equal")
         void givenSameTrainingInstance_whenComparing_thenTheyAreEqual() {
             // given

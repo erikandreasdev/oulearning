@@ -136,6 +136,25 @@ public record Training(
                 active);
     }
 
+    public Training updateManagerReview(final ManagerReview review, final Instant now) {
+        TrainingGuard.requireReviewedAt(now);
+        return new Training(
+                id,
+                requestedBy,
+                organizationalUnitId,
+                name,
+                cost,
+                hours,
+                purpose,
+                typeId,
+                status,
+                review,
+                createdAt,
+                now,
+                attendees,
+                active);
+    }
+
     public Training addAttendee(final EmployeeId attendee, final Instant now) {
         TrainingGuard.requireAttendee(attendee);
         TrainingGuard.requireUpdatedAt(now);

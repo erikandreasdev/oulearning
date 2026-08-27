@@ -23,6 +23,68 @@ interface TrainingMapper {
                     + "FROM training WHERE id = #{id}")
     Optional<TrainingEntity> findById(Long id);
 
+    @Select(
+            "SELECT id, requested_by_employee_id AS requestedByEmployeeId, organizational_unit_id AS organizationalUnitId, "
+                    + "name, cost_amount AS costAmount, cost_currency AS costCurrency, hours, purpose_type AS purposeType, "
+                    + "purpose_other AS purposeOther, type_id AS typeId, status, manager_review_comments AS managerReviewComments, "
+                    + "manager_review_modality AS managerReviewModality, manager_review_start_date AS managerReviewStartDate, "
+                    + "manager_review_end_date AS managerReviewEndDate, manager_review_external_provider_id AS managerReviewExternalProviderId, "
+                    + "manager_review_reviewed_at AS managerReviewReviewedAt, created_at AS createdAt, updated_at AS updatedAt, active "
+                    + "FROM training WHERE organizational_unit_id = #{organizationalUnitId}")
+    java.util.List<TrainingEntity> findByOrganizationalUnitId(Long organizationalUnitId);
+
+    @Select("<script>"
+            + "SELECT id, requested_by_employee_id AS requestedByEmployeeId, organizational_unit_id AS organizationalUnitId, "
+            + "name, cost_amount AS costAmount, cost_currency AS costCurrency, hours, purpose_type AS purposeType, "
+            + "purpose_other AS purposeOther, type_id AS typeId, status, manager_review_comments AS managerReviewComments, "
+            + "manager_review_modality AS managerReviewModality, manager_review_start_date AS managerReviewStartDate, "
+            + "manager_review_end_date AS managerReviewEndDate, manager_review_external_provider_id AS managerReviewExternalProviderId, "
+            + "manager_review_reviewed_at AS managerReviewReviewedAt, created_at AS createdAt, updated_at AS updatedAt, active "
+            + "FROM training "
+            + "<where>"
+            + "<if test='name != null and name != \"\"'> AND name LIKE #{name} </if>"
+            + "<if test='costAmount != null'> AND cost_amount = #{costAmount} </if>"
+            + "<if test='organizationalUnitId != null'> AND organizational_unit_id = #{organizationalUnitId} </if>"
+            + "<if test='purposeType != null and purposeType != \"\"'> AND purpose_type = #{purposeType} </if>"
+            + "<if test='typeId != null'> AND type_id = #{typeId} </if>"
+            + "<if test='hours != null'> AND hours = #{hours} </if>"
+            + "<if test='status != null and status != \"\"'> AND status = #{status} </if>"
+            + "</where>"
+            + "ORDER BY id DESC "
+            + "OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY"
+            + "</script>")
+    java.util.List<TrainingEntity> findAll(
+            @Param("name") String name,
+            @Param("costAmount") java.math.BigDecimal costAmount,
+            @Param("organizationalUnitId") Long organizationalUnitId,
+            @Param("purposeType") String purposeType,
+            @Param("typeId") Long typeId,
+            @Param("hours") Integer hours,
+            @Param("status") String status,
+            @Param("offset") int offset,
+            @Param("limit") int limit);
+
+    @Select("<script>"
+            + "SELECT COUNT(*) FROM training "
+            + "<where>"
+            + "<if test='name != null and name != \"\"'> AND name LIKE #{name} </if>"
+            + "<if test='costAmount != null'> AND cost_amount = #{costAmount} </if>"
+            + "<if test='organizationalUnitId != null'> AND organizational_unit_id = #{organizationalUnitId} </if>"
+            + "<if test='purposeType != null and purposeType != \"\"'> AND purpose_type = #{purposeType} </if>"
+            + "<if test='typeId != null'> AND type_id = #{typeId} </if>"
+            + "<if test='hours != null'> AND hours = #{hours} </if>"
+            + "<if test='status != null and status != \"\"'> AND status = #{status} </if>"
+            + "</where>"
+            + "</script>")
+    long count(
+            @Param("name") String name,
+            @Param("costAmount") java.math.BigDecimal costAmount,
+            @Param("organizationalUnitId") Long organizationalUnitId,
+            @Param("purposeType") String purposeType,
+            @Param("typeId") Long typeId,
+            @Param("hours") Integer hours,
+            @Param("status") String status);
+
     @Insert(
             "INSERT INTO training (requested_by_employee_id, organizational_unit_id, name, cost_amount, cost_currency, hours, "
                     + "purpose_type, purpose_other, type_id, status, manager_review_comments, manager_review_modality, "

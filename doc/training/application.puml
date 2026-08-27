@@ -10,58 +10,38 @@ skinparam ranksep 25
 title Training Application Model
 
 package training.application {
-  interface CreateTrainingUseCase << (I, #00FF77) >> {
-    + TrainingId execute(CreateTrainingCommand command)
+  interface GetAreaTrainingsUseCase << (I, #00FF77) >> {
+    + AreaTrainingsOverviewDto execute(OrganizationalUnitId organizationalUnitId)
+  }
+  interface GetTrainingDetailsUseCase << (I, #00FF77) >> {
+    + TrainingDetailedViewDto execute(TrainingId id)
+  }
+  interface RequestNewTrainingUseCase << (I, #00FF77) >> {
+    + Training execute(RequestNewTrainingCommand command)
+  }
+  interface ListTrainingRequestsUseCase << (I, #00FF77) >> {
+    + PaginatedTrainingRequestsResult execute(ListTrainingRequestsQuery query)
+  }
+  interface UpdateTrainingReviewUseCase << (I, #00FF77) >> {
+    + Training execute(UpdateTrainingReviewCommand command)
   }
   interface GetTrainingUseCase << (I, #00FF77) >> {
     + Training execute(TrainingId id)
   }
-  interface UpdateTrainingUseCase << (I, #00FF77) >> {
-    + void execute(UpdateTrainingCommand command)
-  }
-  interface DeleteTrainingUseCase << (I, #00FF77) >> {
-    + void execute(TrainingId id)
-  }
 
-  class CreateTrainingCommand << (R, #FF7700) record >> {
-    long employeeId
-    long ouId
-    String name
-    BigDecimal cost
-    int hours
-    String purposeType
-    String purposeOther
-    long typeId
-  }
-  class UpdateTrainingCommand << (R, #FF7700) record >> {
-    long trainingId
-    String name
-    BigDecimal cost
-    int hours
-    String purposeType
-    String purposeOther
-    long typeId
-  }
+  class RequestNewTrainingCommand << (R, #FF7700) record >>
+  class ListTrainingRequestsQuery << (R, #FF7700) record >>
+  class UpdateTrainingReviewCommand << (R, #FF7700) record >>
+  class AreaTrainingsOverviewDto << (R, #FF7700) record >>
+  class TrainingDetailedViewDto << (R, #FF7700) record >>
+  class PaginatedTrainingRequestsResult << (R, #FF7700) record >>
 
-  class CreateTrainingService {
-    - TrainingRepository trainingRepository
-    - IdGenerator idGenerator
-    - Clock clock
-    + TrainingId execute(CreateTrainingCommand command)
-  }
-  class GetTrainingService {
-    - TrainingRepository trainingRepository
-    + Training execute(TrainingId id)
-  }
-  class UpdateTrainingService {
-    - TrainingRepository trainingRepository
-    - Clock clock
-    + void execute(UpdateTrainingCommand command)
-  }
-  class DeleteTrainingService {
-    - TrainingRepository trainingRepository
-    + void execute(TrainingId id)
-  }
+  class GetAreaTrainingsService
+  class GetTrainingDetailsService
+  class RequestNewTrainingService
+  class ListTrainingRequestsService
+  class UpdateTrainingReviewService
+  class GetTrainingService
 
   class TrainingNotFoundException << (E, #FF5555) >>
 }
@@ -72,24 +52,30 @@ package training.domain <<Folder>> {
   class TrainingId << (R, #FF7700) record >>
 }
 
-package common <<Folder>> {
-  class Clock << (C, #FF7700) >>
+package budgeting.domain <<Folder>> {
+  interface BudgetRepository << (I, #00FF77) >>
 }
 
-CreateTrainingService ..|> CreateTrainingUseCase
+package organization.application <<Folder>> {
+  interface GetEmployeeUseCase << (I, #00FF77) >>
+  interface GetOrganizationalUnitUseCase << (I, #00FF77) >>
+}
+
+GetAreaTrainingsService ..|> GetAreaTrainingsUseCase
+GetTrainingDetailsService ..|> GetTrainingDetailsUseCase
+RequestNewTrainingService ..|> RequestNewTrainingUseCase
+ListTrainingRequestsService ..|> ListTrainingRequestsUseCase
+UpdateTrainingReviewService ..|> UpdateTrainingReviewUseCase
 GetTrainingService ..|> GetTrainingUseCase
-UpdateTrainingService ..|> UpdateTrainingUseCase
-DeleteTrainingService ..|> DeleteTrainingUseCase
 
-CreateTrainingService --> CreateTrainingCommand : uses
-UpdateTrainingService --> UpdateTrainingCommand : uses
-
-CreateTrainingService --> TrainingRepository : uses
+GetAreaTrainingsService --> TrainingRepository : uses
+GetAreaTrainingsService --> BudgetRepository : uses
+GetTrainingDetailsService --> TrainingRepository : uses
+GetTrainingDetailsService --> GetEmployeeUseCase : uses
+RequestNewTrainingService --> TrainingRepository : uses
+RequestNewTrainingService --> GetOrganizationalUnitUseCase : uses
+ListTrainingRequestsService --> TrainingRepository : uses
+UpdateTrainingReviewService --> TrainingRepository : uses
 GetTrainingService --> TrainingRepository : uses
-UpdateTrainingService --> TrainingRepository : uses
-DeleteTrainingService --> TrainingRepository : uses
-
-CreateTrainingService --> Clock : uses
-UpdateTrainingService --> Clock : uses
 
 @enduml

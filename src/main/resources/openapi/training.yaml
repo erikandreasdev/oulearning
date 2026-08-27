@@ -5,7 +5,13 @@ info:
 servers:
   - url: /
 paths:
-  /api/v1/trainings:
-    $ref: './training/paths/trainings.v1.yaml'
+  /api/v1/areas/{organizationalUnitId}/trainings:
+    $ref: './training/paths/areas_trainings.v1.yaml'
+  /api/v1/trainings/{id}/details:
+    $ref: './training/paths/trainings_details.v1.yaml'
+  /api/v1/trainings/requests:
+    $ref: './training/paths/trainings_requests.v1.yaml'
+  /api/v1/trainings/{id}/review:
+    $ref: './training/paths/trainings_review.v1.yaml'
   /api/v1/trainings/{id}:
     $ref: './training/paths/trainings_by_id.v1.yaml'

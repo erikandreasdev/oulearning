@@ -15,6 +15,8 @@ import com.example.oulearning.training.domain.model.TrainingPurposeType;
 import com.example.oulearning.training.domain.model.TrainingStatus;
 import com.example.oulearning.training.domain.model.TypeId;
 import com.example.oulearning.training.domain.repository.TrainingRepository;
+import com.example.oulearning.training.domain.repository.TrainingFilterCriteria;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,6 +40,45 @@ class MyBatisTrainingRepository implements TrainingRepository {
         final var attendees = trainingMapper.findAttendeesByTrainingId(id.value());
         entity.get().setAttendeeIds(attendees);
         return entity.map(this::toDomain);
+    }
+
+    @Override
+    public List<Training> findByOrganizationalUnitId(final OrganizationalUnitId organizationalUnitId) {
+        final var entities = trainingMapper.findByOrganizationalUnitId(organizationalUnitId.value());
+        for (final var entity : entities) {
+            entity.setAttendeeIds(trainingMapper.findAttendeesByTrainingId(entity.getId()));
+        }
+        return entities.stream().map(this::toDomain).toList();
+    }
+
+    @Override
+    public List<Training> findAll(final TrainingFilterCriteria criteria, final int offset, final int limit) {
+        final String namePattern = criteria != null && criteria.name() != null ? "%s%s%s".formatted("%", criteria.name().value(), "%") : null;
+        final var costAmount = criteria != null && criteria.cost() != null ? criteria.cost().amount() : null;
+        final var ouId = criteria != null && criteria.organizationalUnitId() != null ? criteria.organizationalUnitId().value() : null;
+        final var purposeType = criteria != null && criteria.purposeType() != null ? criteria.purposeType().name() : null;
+        final var typeId = criteria != null && criteria.typeId() != null ? criteria.typeId().value() : null;
+        final var hours = criteria != null && criteria.hours() != null ? criteria.hours().value() : null;
+        final var status = criteria != null && criteria.status() != null ? criteria.status().name() : null;
+
+        final var entities = trainingMapper.findAll(namePattern, costAmount, ouId, purposeType, typeId, hours, status, offset, limit);
+        for (final var entity : entities) {
+            entity.setAttendeeIds(trainingMapper.findAttendeesByTrainingId(entity.getId()));
+        }
+        return entities.stream().map(this::toDomain).toList();
+    }
+
+    @Override
+    public long count(final TrainingFilterCriteria criteria) {
+        final String namePattern = criteria != null && criteria.name() != null ? "%s%s%s".formatted("%", criteria.name().value(), "%") : null;
+        final var costAmount = criteria != null && criteria.cost() != null ? criteria.cost().amount() : null;
+        final var ouId = criteria != null && criteria.organizationalUnitId() != null ? criteria.organizationalUnitId().value() : null;
+        final var purposeType = criteria != null && criteria.purposeType() != null ? criteria.purposeType().name() : null;
+        final var typeId = criteria != null && criteria.typeId() != null ? criteria.typeId().value() : null;
+        final var hours = criteria != null && criteria.hours() != null ? criteria.hours().value() : null;
+        final var status = criteria != null && criteria.status() != null ? criteria.status().name() : null;
+
+        return trainingMapper.count(namePattern, costAmount, ouId, purposeType, typeId, hours, status);
     }
 
     @Override

@@ -1,0 +1,14 @@
+type: object
+required:
+  - assignedBudget
+  - availableBudget
+  - trainings
+properties:
+  assignedBudget:
+    type: number
+  availableBudget:
+    type: number
+  trainings:
+    type: array
+    items:
+      $ref: './AreaTrainingItem.yaml'

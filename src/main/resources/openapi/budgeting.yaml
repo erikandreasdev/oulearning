@@ -5,7 +5,7 @@ info:
 servers:
   - url: /
 paths:
-  /api/v1/budgets:
-    $ref: './budgeting/paths/budgets.v1.yaml'
-  /api/v1/budgets/{id}:
-    $ref: './budgeting/paths/budgets_by_id.v1.yaml'
+  /api/v1/budgets/organizational-unit/{organizationalUnitId}:
+    $ref: './budgeting/paths/budgets_by_ou.v1.yaml'
+  /api/v1/budgets/organizational-unit:
+    $ref: './budgeting/paths/budgets_create_ou.v1.yaml'

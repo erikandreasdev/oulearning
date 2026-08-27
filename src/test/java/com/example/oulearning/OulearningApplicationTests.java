@@ -17,6 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
 @Testcontainers
@@ -24,7 +25,8 @@ class OulearningApplicationTests {
 
     @Container
     @ServiceConnection
-    static OracleContainer oracle = new OracleContainer("gvenzl/oracle-xe:21-slim");
+    static OracleContainer oracle = new OracleContainer(
+            DockerImageName.parse("gvenzl/oracle-free:23-slim").asCompatibleSubstituteFor("gvenzl/oracle-xe"));
 
     @MockitoBean
     private EmployeeRepository employeeRepository;

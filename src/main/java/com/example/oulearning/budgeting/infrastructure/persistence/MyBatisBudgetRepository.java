@@ -6,6 +6,7 @@ import com.example.oulearning.budgeting.domain.model.FiscalYear;
 import com.example.oulearning.budgeting.domain.model.Money;
 import com.example.oulearning.budgeting.domain.repository.BudgetRepository;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnitId;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,13 @@ class MyBatisBudgetRepository implements BudgetRepository {
     @Override
     public Optional<Budget> findById(final BudgetId id) {
         return budgetMapper.findById(id.value()).map(this::toDomain);
+    }
+
+    @Override
+    public List<Budget> findByOrganizationalUnitId(final OrganizationalUnitId organizationalUnitId) {
+        return budgetMapper.findByOrganizationalUnitId(organizationalUnitId.value()).stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     @Override

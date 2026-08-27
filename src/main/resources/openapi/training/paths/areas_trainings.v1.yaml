@@ -1,0 +1,21 @@
+get:
+  summary: Retrieve training overview and budget for a specified area
+  operationId: getAreaTrainings
+  tags:
+    - Trainings
+  parameters:
+    - name: organizationalUnitId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '200':
+      description: Area training overview retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/AreaTrainingsResponse.yaml'
+    '404':
+      description: Organizational unit not found

@@ -1,0 +1,30 @@
+type: object
+required:
+  - assignedBudget
+  - fiscalYear
+  - organizationalUnitId
+properties:
+  assignedBudget:
+    type: number
+  fiscalYear:
+    type: integer
+    format: int32
+  organizationalUnitId:
+    type: integer
+    format: int64
+  includeAllChildren:
+    type: boolean
+    default: false
+  targetChildOuIds:
+    type: array
+    items:
+      type: integer
+      format: int64
+  page:
+    type: integer
+    format: int32
+    default: 0
+  size:
+    type: integer
+    format: int32
+    default: 20

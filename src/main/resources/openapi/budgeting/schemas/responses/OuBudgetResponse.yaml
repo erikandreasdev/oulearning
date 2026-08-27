@@ -1,0 +1,30 @@
+type: object
+required:
+  - id
+  - organizationalUnitId
+  - assignedBudget
+  - availableBudget
+  - reservedBudget
+  - fiscalYear
+  - owners
+properties:
+  id:
+    type: integer
+    format: int64
+  organizationalUnitId:
+    type: integer
+    format: int64
+  assignedBudget:
+    type: number
+  availableBudget:
+    type: number
+  reservedBudget:
+    type: number
+  fiscalYear:
+    type: integer
+    format: int32
+  owners:
+    type: array
+    items:
+      type: integer
+      format: int64

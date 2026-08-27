@@ -1,0 +1,21 @@
+get:
+  summary: Get the details of a single training by ID
+  operationId: getTrainingDetails
+  tags:
+    - Trainings
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '200':
+      description: Training details retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/TrainingDetailsResponse.yaml'
+    '404':
+      description: Training not found

@@ -1,18 +1,18 @@
 package com.example.oulearning.budgeting.infrastructure.web;
 
-import com.example.oulearning.budgeting.application.port.in.command.CreateBudgetCommand;
-import com.example.oulearning.budgeting.application.port.in.command.UpdateBudgetCommand;
-import com.example.oulearning.budgeting.application.port.in.usecase.CreateBudgetUseCase;
-import com.example.oulearning.budgeting.application.port.in.usecase.DeleteBudgetUseCase;
-import com.example.oulearning.budgeting.application.port.in.usecase.GetBudgetUseCase;
-import com.example.oulearning.budgeting.application.port.in.usecase.UpdateBudgetUseCase;
-import com.example.oulearning.budgeting.domain.model.Budget;
-import com.example.oulearning.budgeting.domain.model.BudgetId;
+import com.example.oulearning.budgeting.application.port.in.command.CreateOrganizationalUnitBudgetsCommand;
+import com.example.oulearning.budgeting.application.port.in.model.OrganizationalUnitBudgetDto;
+import com.example.oulearning.budgeting.application.port.in.usecase.CreateOrganizationalUnitBudgetsUseCase;
+import com.example.oulearning.budgeting.application.port.in.usecase.GetBudgetsByOrganizationalUnitUseCase;
 import com.example.oulearning.budgeting.infrastructure.web.api.BudgetsApi;
-import com.example.oulearning.budgeting.infrastructure.web.dto.BudgetResponse;
-import com.example.oulearning.budgeting.infrastructure.web.dto.CreateBudgetRequest;
-import com.example.oulearning.budgeting.infrastructure.web.dto.UpdateBudgetRequest;
+import com.example.oulearning.budgeting.infrastructure.web.dto.CreateOuBudgetRequest;
+import com.example.oulearning.budgeting.infrastructure.web.dto.OuBudgetResponse;
+import com.example.oulearning.budgeting.infrastructure.web.dto.PaginatedOuBudgetResponse;
+import com.example.oulearning.organization.domain.employee.model.EmployeeId;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnitId;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,65 +20,62 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 class BudgetController implements BudgetsApi {
 
-    private final CreateBudgetUseCase createBudgetUseCase;
-    private final GetBudgetUseCase getBudgetUseCase;
-    private final UpdateBudgetUseCase updateBudgetUseCase;
-    private final DeleteBudgetUseCase deleteBudgetUseCase;
+    private final GetBudgetsByOrganizationalUnitUseCase getBudgetsByOrganizationalUnitUseCase;
+    private final CreateOrganizationalUnitBudgetsUseCase createOrganizationalUnitBudgetsUseCase;
 
     BudgetController(
-            final CreateBudgetUseCase createBudgetUseCase,
-            final GetBudgetUseCase getBudgetUseCase,
-            final UpdateBudgetUseCase updateBudgetUseCase,
-            final DeleteBudgetUseCase deleteBudgetUseCase) {
-        this.createBudgetUseCase = createBudgetUseCase;
-        this.getBudgetUseCase = getBudgetUseCase;
-        this.updateBudgetUseCase = updateBudgetUseCase;
-        this.deleteBudgetUseCase = deleteBudgetUseCase;
+            final GetBudgetsByOrganizationalUnitUseCase getBudgetsByOrganizationalUnitUseCase,
+            final CreateOrganizationalUnitBudgetsUseCase createOrganizationalUnitBudgetsUseCase) {
+        this.getBudgetsByOrganizationalUnitUseCase = getBudgetsByOrganizationalUnitUseCase;
+        this.createOrganizationalUnitBudgetsUseCase = createOrganizationalUnitBudgetsUseCase;
     }
 
     @Override
-    public ResponseEntity<BudgetResponse> createBudget(final CreateBudgetRequest request) {
-        final var command = new CreateBudgetCommand(
-                new OrganizationalUnitId(request.getOrganizationalUnitId()),
+    public ResponseEntity<List<OuBudgetResponse>> getBudgetsByOrganizationalUnit(
+            final Long organizationalUnitId, final Boolean includeSubtree) {
+        final var dtos = getBudgetsByOrganizationalUnitUseCase.execute(
+                new OrganizationalUnitId(organizationalUnitId),
+                Boolean.TRUE.equals(includeSubtree));
+        final var responses = dtos.stream().map(this::toResponse).toList();
+        return ResponseEntity.ok(responses);
+    }
+
+    @Override
+    public ResponseEntity<PaginatedOuBudgetResponse> createOrganizationalUnitBudgets(
+            final CreateOuBudgetRequest request) {
+        final Set<OrganizationalUnitId> targetChildOuIds = request.getTargetChildOuIds() != null
+                ? request.getTargetChildOuIds().stream().map(OrganizationalUnitId::new).collect(Collectors.toSet())
+                : Set.of();
+
+        final var command = new CreateOrganizationalUnitBudgetsCommand(
+                request.getAssignedBudget(),
                 request.getFiscalYear(),
-                request.getTotalAmount(),
-                request.getReservedAmount(),
-                request.getAvailableAmount());
-        final var id = createBudgetUseCase.execute(command);
-        final var budget = getBudgetUseCase.execute(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(budget));
+                new OrganizationalUnitId(request.getOrganizationalUnitId()),
+                request.getIncludeAllChildren(),
+                targetChildOuIds,
+                request.getPage(),
+                request.getSize());
+
+        final var result = createOrganizationalUnitBudgetsUseCase.execute(command);
+        final var response = new PaginatedOuBudgetResponse();
+        response.setItems(result.items().stream().map(this::toResponse).toList());
+        response.setTotalElements(result.totalElements());
+        response.setTotalPages(result.totalPages());
+        response.setPage(result.page());
+        response.setSize(result.size());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @Override
-    public ResponseEntity<BudgetResponse> getBudget(final Long id) {
-        final var budget = getBudgetUseCase.execute(new BudgetId(id));
-        return ResponseEntity.ok(toResponse(budget));
-    }
-
-    @Override
-    public ResponseEntity<BudgetResponse> updateBudget(final Long id, final UpdateBudgetRequest request) {
-        final var command = new UpdateBudgetCommand(
-                new BudgetId(id), request.getTotalAmount(), request.getReservedAmount(), request.getAvailableAmount());
-        updateBudgetUseCase.execute(command);
-        final var budget = getBudgetUseCase.execute(new BudgetId(id));
-        return ResponseEntity.ok(toResponse(budget));
-    }
-
-    @Override
-    public ResponseEntity<Void> deleteBudget(final Long id) {
-        deleteBudgetUseCase.execute(new BudgetId(id));
-        return ResponseEntity.noContent().build();
-    }
-
-    private BudgetResponse toResponse(final Budget budget) {
-        final var response = new BudgetResponse();
-        response.setId(budget.id().value());
-        response.setOrganizationalUnitId(budget.organizationalUnitId().value());
-        response.setFiscalYear(budget.fiscalYear().value());
-        response.setTotalAmount(budget.total().amount());
-        response.setReservedAmount(budget.reserved().amount());
-        response.setAvailableAmount(budget.available().amount());
-        response.setActive(budget.active());
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    private OuBudgetResponse toResponse(final OrganizationalUnitBudgetDto dto) {
+        final var response = new OuBudgetResponse();
+        response.setId(dto.id().value());
+        response.setOrganizationalUnitId(dto.organizationalUnitId().value());
+        response.setAssignedBudget(dto.total().amount());
+        response.setAvailableBudget(dto.available().amount());
+        response.setReservedBudget(dto.reserved().amount());
+        response.setFiscalYear(dto.fiscalYear().value());
+        response.setOwners(dto.owners().stream().map(EmployeeId::value).toList());
         return response;
     }
 }

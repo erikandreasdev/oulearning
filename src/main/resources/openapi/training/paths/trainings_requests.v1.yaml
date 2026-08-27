@@ -1,0 +1,85 @@
+post:
+  summary: Request a new training
+  operationId: requestNewTraining
+  tags:
+    - Trainings
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/requests/RequestNewTrainingRequest.yaml'
+  responses:
+    '201':
+      description: Training requested successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/TrainingResponse.yaml'
+    '400':
+      description: Invalid request parameters or attendee OU mismatch
+get:
+  summary: List all training requests with filters and pagination
+  operationId: listTrainingRequests
+  tags:
+    - Trainings
+  parameters:
+    - name: name
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: costAmount
+      in: query
+      required: false
+      schema:
+        type: number
+    - name: organizationalUnitId
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int64
+    - name: purposeType
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: typeId
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int64
+    - name: hours
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+    - name: status
+      in: query
+      required: false
+      schema:
+        type: string
+    - name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 0
+    - name: size
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 20
+  responses:
+    '200':
+      description: Training requests retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/PaginatedTrainingRequestsResponse.yaml'

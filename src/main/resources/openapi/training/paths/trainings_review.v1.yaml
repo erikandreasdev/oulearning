@@ -1,0 +1,29 @@
+put:
+  summary: Update a training request (Manager review only)
+  operationId: updateTrainingReview
+  tags:
+    - Trainings
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/requests/UpdateTrainingReviewRequest.yaml'
+  responses:
+    '200':
+      description: Training manager review updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/TrainingResponse.yaml'
+    '404':
+      description: Training not found
+    '400':
+      description: Invalid review parameters or date range

@@ -1,0 +1,25 @@
+type: object
+required:
+  - id
+  - name
+  - organizationalUnitIds
+  - costAmount
+  - costCurrency
+  - status
+properties:
+  id:
+    type: integer
+    format: int64
+  name:
+    type: string
+  organizationalUnitIds:
+    type: array
+    items:
+      type: integer
+      format: int64
+  costAmount:
+    type: number
+  costCurrency:
+    type: string
+  status:
+    type: string

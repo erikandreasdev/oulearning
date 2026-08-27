@@ -10,48 +10,19 @@ skinparam ranksep 25
 title Budgeting Application Model
 
 package budgeting.application {
-  interface CreateBudgetUseCase << (I, #00FF77) >> {
-    + BudgetId execute(CreateBudgetCommand command)
+  interface GetBudgetsByOrganizationalUnitUseCase << (I, #00FF77) >> {
+    + List<OrganizationalUnitBudgetDto> execute(OrganizationalUnitId organizationalUnitId, boolean includeSubtree)
   }
-  interface GetBudgetUseCase << (I, #00FF77) >> {
-    + Budget execute(BudgetId id)
-  }
-  interface UpdateBudgetUseCase << (I, #00FF77) >> {
-    + void execute(UpdateBudgetCommand command)
-  }
-  interface DeleteBudgetUseCase << (I, #00FF77) >> {
-    + void execute(BudgetId id)
+  interface CreateOrganizationalUnitBudgetsUseCase << (I, #00FF77) >> {
+    + PaginatedBudgetsResult execute(CreateOrganizationalUnitBudgetsCommand command)
   }
 
-  class CreateBudgetCommand << (R, #FF7700) record >> {
-    long ouId
-    int fiscalYear
-    BigDecimal totalAmount
-  }
-  class UpdateBudgetCommand << (R, #FF7700) record >> {
-    long budgetId
-    BigDecimal totalAmount
-    BigDecimal reservedAmount
-    BigDecimal availableAmount
-  }
+  class CreateOrganizationalUnitBudgetsCommand << (R, #FF7700) record >>
+  class OrganizationalUnitBudgetDto << (R, #FF7700) record >>
+  class PaginatedBudgetsResult << (R, #FF7700) record >>
 
-  class CreateBudgetService {
-    - BudgetRepository budgetRepository
-    - IdGenerator idGenerator
-    + BudgetId execute(CreateBudgetCommand command)
-  }
-  class GetBudgetService {
-    - BudgetRepository budgetRepository
-    + Budget execute(BudgetId id)
-  }
-  class UpdateBudgetService {
-    - BudgetRepository budgetRepository
-    + void execute(UpdateBudgetCommand command)
-  }
-  class DeleteBudgetService {
-    - BudgetRepository budgetRepository
-    + void execute(BudgetId id)
-  }
+  class GetBudgetsByOrganizationalUnitService
+  class CreateOrganizationalUnitBudgetsService
 
   class BudgetNotFoundException << (E, #FF5555) >>
 }
@@ -62,17 +33,20 @@ package budgeting.domain <<Folder>> {
   class BudgetId << (R, #FF7700) record >>
 }
 
-CreateBudgetService ..|> CreateBudgetUseCase
-GetBudgetService ..|> GetBudgetUseCase
-UpdateBudgetService ..|> UpdateBudgetUseCase
-DeleteBudgetService ..|> DeleteBudgetUseCase
+package organization.application <<Folder>> {
+  interface GetOrganizationalUnitUseCase << (I, #00FF77) >>
+  interface GetSubtreeOrganizationalUnitsUseCase << (I, #00FF77) >>
+}
 
-CreateBudgetService --> CreateBudgetCommand : uses
-UpdateBudgetService --> UpdateBudgetCommand : uses
+GetBudgetsByOrganizationalUnitService ..|> GetBudgetsByOrganizationalUnitUseCase
+CreateOrganizationalUnitBudgetsService ..|> CreateOrganizationalUnitBudgetsUseCase
 
-CreateBudgetService --> BudgetRepository : uses
-GetBudgetService --> BudgetRepository : uses
-UpdateBudgetService --> BudgetRepository : uses
-DeleteBudgetService --> BudgetRepository : uses
+GetBudgetsByOrganizationalUnitService --> BudgetRepository : uses
+GetBudgetsByOrganizationalUnitService --> GetOrganizationalUnitUseCase : uses
+GetBudgetsByOrganizationalUnitService --> GetSubtreeOrganizationalUnitsUseCase : uses
+
+CreateOrganizationalUnitBudgetsService --> BudgetRepository : uses
+CreateOrganizationalUnitBudgetsService --> GetOrganizationalUnitUseCase : uses
+CreateOrganizationalUnitBudgetsService --> GetSubtreeOrganizationalUnitsUseCase : uses
 
 @enduml

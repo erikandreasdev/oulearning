@@ -1,0 +1,39 @@
+type: object
+required:
+  - requestedBy
+  - organizationalUnitId
+  - name
+  - costAmount
+  - costCurrency
+  - hours
+  - purposeType
+  - typeId
+  - attendees
+properties:
+  requestedBy:
+    type: integer
+    format: int64
+  organizationalUnitId:
+    type: integer
+    format: int64
+  name:
+    type: string
+  costAmount:
+    type: number
+  costCurrency:
+    type: string
+  hours:
+    type: integer
+    format: int32
+  purposeType:
+    type: string
+  purposeDescription:
+    type: string
+  typeId:
+    type: integer
+    format: int64
+  attendees:
+    type: array
+    items:
+      type: integer
+      format: int64

@@ -1,0 +1,29 @@
+get:
+  summary: Get list of budgets per organizational unit
+  operationId: getBudgetsByOrganizationalUnit
+  tags:
+    - Budgets
+  parameters:
+    - name: organizationalUnitId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    - name: includeSubtree
+      in: query
+      required: false
+      schema:
+        type: boolean
+        default: false
+  responses:
+    '200':
+      description: Budgets retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/responses/OuBudgetResponse.yaml'
+    '404':
+      description: Organizational unit not found

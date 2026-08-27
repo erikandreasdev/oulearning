@@ -5,6 +5,10 @@ import com.example.oulearning.organization.domain.hierarchy.model.Name;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnit;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnitId;
 import com.example.oulearning.organization.domain.hierarchy.repository.OrganizationalUnitRepository;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
@@ -21,6 +25,30 @@ class MyBatisOrganizationalUnitRepository implements OrganizationalUnitRepositor
     @Override
     public Optional<OrganizationalUnit> findById(final OrganizationalUnitId id) {
         return mapper.findById(id.value()).map(this::toDomain);
+    }
+
+    @Override
+    public List<OrganizationalUnit> findSubtreeById(final OrganizationalUnitId id) {
+        final var rootOpt = findById(id);
+        if (rootOpt.isEmpty()) {
+            return List.of();
+        }
+        final var result = new ArrayList<OrganizationalUnit>();
+        final var queue = new ArrayDeque<OrganizationalUnit>();
+        final var visited = new HashSet<OrganizationalUnitId>();
+        queue.add(rootOpt.get());
+        visited.add(id);
+
+        while (!queue.isEmpty()) {
+            final var current = queue.poll();
+            result.add(current);
+            for (final var childId : current.childIds()) {
+                if (visited.add(childId)) {
+                    findById(childId).ifPresent(queue::add);
+                }
+            }
+        }
+        return List.copyOf(result);
     }
 
     @Override
