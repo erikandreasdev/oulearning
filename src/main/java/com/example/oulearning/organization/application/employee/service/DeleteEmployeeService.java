@@ -1,7 +1,7 @@
 package com.example.oulearning.organization.application.employee.service;
 
-import com.example.oulearning.organization.application.employee.port.in.*;
-import com.example.oulearning.organization.application.employee.exception.*;
+import com.example.oulearning.organization.application.employee.port.in.DeleteEmployeeUseCase;
+import com.example.oulearning.organization.application.employee.exception.EmployeeNotFoundException;
 
 import com.example.oulearning.organization.domain.employee.model.EmployeeId;
 import com.example.oulearning.organization.domain.employee.repository.EmployeeRepository;

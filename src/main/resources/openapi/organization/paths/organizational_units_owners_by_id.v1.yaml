@@ -1,0 +1,21 @@
+delete:
+  summary: Remove an owner from an organizational unit
+  operationId: removeOwner
+  tags:
+    - Organizational Units
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    - name: employeeId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '204':
+      description: Owner removed

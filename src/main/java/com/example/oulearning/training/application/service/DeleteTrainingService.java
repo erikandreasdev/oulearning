@@ -1,7 +1,7 @@
 package com.example.oulearning.training.application.service;
 
-import com.example.oulearning.training.application.port.in.*;
-import com.example.oulearning.training.application.exception.*;
+import com.example.oulearning.training.application.port.in.DeleteTrainingUseCase;
+import com.example.oulearning.training.application.exception.TrainingNotFoundException;
 
 import com.example.oulearning.training.domain.model.TrainingId;
 import com.example.oulearning.training.domain.repository.TrainingRepository;

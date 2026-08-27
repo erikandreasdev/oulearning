@@ -1,7 +1,8 @@
 package com.example.oulearning.organization.application.hierarchy.service;
 
-import com.example.oulearning.organization.application.hierarchy.port.in.*;
-import com.example.oulearning.organization.application.hierarchy.exception.*;
+import com.example.oulearning.organization.application.hierarchy.port.in.UpdateOrganizationalUnitCommand;
+import com.example.oulearning.organization.application.hierarchy.port.in.UpdateOrganizationalUnitUseCase;
+import com.example.oulearning.organization.application.hierarchy.exception.OrganizationalUnitNotFoundException;
 
 import com.example.oulearning.organization.domain.hierarchy.model.Name;
 import com.example.oulearning.organization.domain.hierarchy.repository.OrganizationalUnitRepository;

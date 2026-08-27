@@ -31,6 +31,7 @@ domain <- application <- infrastructure (adapters) <- bootstrap (Spring config)
   - **Domain constants** (`src/main/java/**/<Context>Constants.java`): only contain business rules and invariants enforced by domain objects (min/max lengths, regexes, scales, limits).
   - **Test generation constants** (`src/test/java/**`): live strictly inside test factories/test classes (ranges, generation templates, replacement characters).
   - No magical numbers or strings anywhere.
+- **File structure**: Avoid long documents. Prefer folder organization and short files segmented by purpose (e.g. splitting OpenAPI specs per endpoint/schema, or breaking up large classes).
 - No `null` in public domain/application APIs: `Optional` for returns, guard clauses for parameters. No `Optional` fields or parameters.
 - No Lombok in `domain`. Elsewhere only `@Slf4j` / `@RequiredArgsConstructor`; prefer records.
 - Exceptions are specific and domain-named (`InvalidTrainingOperationException extends DomainException`). Never catch-and-swallow generic `Exception`.

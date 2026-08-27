@@ -1,0 +1,63 @@
+package com.example.oulearning.budgeting.infrastructure.persistence;
+
+import com.example.oulearning.budgeting.domain.model.Budget;
+import com.example.oulearning.budgeting.domain.model.BudgetId;
+import com.example.oulearning.budgeting.domain.model.FiscalYear;
+import com.example.oulearning.budgeting.domain.model.Money;
+import com.example.oulearning.budgeting.domain.repository.BudgetRepository;
+import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnitId;
+import java.util.Optional;
+import org.springframework.stereotype.Repository;
+
+@Repository
+class MyBatisBudgetRepository implements BudgetRepository {
+
+    private final BudgetMapper budgetMapper;
+
+    MyBatisBudgetRepository(final BudgetMapper budgetMapper) {
+        this.budgetMapper = budgetMapper;
+    }
+
+    @Override
+    public Optional<Budget> findById(final BudgetId id) {
+        return budgetMapper.findById(id.value()).map(this::toDomain);
+    }
+
+    @Override
+    public void save(final Budget budget) {
+        final var entity = toEntity(budget);
+        if (budget.id() == null) {
+            budgetMapper.insert(entity);
+            // Budget domain model requires an ID, so in a real app we might return the ID or set it,
+            // but the domain repository port interface returns void. We assume the ID generation is handled.
+        } else {
+            budgetMapper.update(entity);
+        }
+    }
+
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    private Budget toDomain(final BudgetEntity entity) {
+        return Budget.reconstitute(
+                new BudgetId(entity.getId()),
+                new OrganizationalUnitId(entity.getOrganizationalUnitId()),
+                new FiscalYear(entity.getFiscalYear()),
+                Money.of(entity.getTotalAmount()),
+                Money.of(entity.getReservedAmount()),
+                Money.of(entity.getAvailableAmount()),
+                entity.getActive());
+    }
+
+    private BudgetEntity toEntity(final Budget budget) {
+        final var entity = new BudgetEntity();
+        if (budget.id() != null) {
+            entity.setId(budget.id().value());
+        }
+        entity.setOrganizationalUnitId(budget.organizationalUnitId().value());
+        entity.setFiscalYear(budget.fiscalYear().value());
+        entity.setTotalAmount(budget.total().amount());
+        entity.setReservedAmount(budget.reserved().amount());
+        entity.setAvailableAmount(budget.available().amount());
+        entity.setActive(budget.active());
+        return entity;
+    }
+}

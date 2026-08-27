@@ -1,0 +1,19 @@
+type: object
+required:
+  - id
+  - name
+  - surname
+  - email
+  - active
+properties:
+  id:
+    type: integer
+    format: int64
+  name:
+    type: string
+  surname:
+    type: string
+  email:
+    type: string
+  active:
+    type: boolean

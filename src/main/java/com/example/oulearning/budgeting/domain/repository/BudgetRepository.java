@@ -1,6 +1,7 @@
 package com.example.oulearning.budgeting.domain.repository;
 
-import com.example.oulearning.budgeting.domain.model.*;
+import com.example.oulearning.budgeting.domain.model.Budget;
+import com.example.oulearning.budgeting.domain.model.BudgetId;
 
 import java.util.Optional;
 

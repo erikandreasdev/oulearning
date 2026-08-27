@@ -1,6 +1,7 @@
 package com.example.oulearning.training.domain.repository;
 
-import com.example.oulearning.training.domain.model.*;
+import com.example.oulearning.training.domain.model.Training;
+import com.example.oulearning.training.domain.model.TrainingId;
 
 import java.util.Optional;
 

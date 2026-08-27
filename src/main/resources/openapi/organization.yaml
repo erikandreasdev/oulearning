@@ -1,0 +1,23 @@
+openapi: 3.0.3
+info:
+  title: Organization API
+  version: 1.0.0
+servers:
+  - url: /
+paths:
+  /api/v1/employees:
+    $ref: './organization/paths/employees.v1.yaml'
+  /api/v1/employees/{id}:
+    $ref: './organization/paths/employees_by_id.v1.yaml'
+  /api/v1/organizational-units:
+    $ref: './organization/paths/organizational_units.v1.yaml'
+  /api/v1/organizational-units/{id}:
+    $ref: './organization/paths/organizational_units_by_id.v1.yaml'
+  /api/v1/organizational-units/{id}/members:
+    $ref: './organization/paths/organizational_units_members.v1.yaml'
+  /api/v1/organizational-units/{id}/members/{employeeId}:
+    $ref: './organization/paths/organizational_units_members_by_id.v1.yaml'
+  /api/v1/organizational-units/{id}/owners:
+    $ref: './organization/paths/organizational_units_owners.v1.yaml'
+  /api/v1/organizational-units/{id}/owners/{employeeId}:
+    $ref: './organization/paths/organizational_units_owners_by_id.v1.yaml'

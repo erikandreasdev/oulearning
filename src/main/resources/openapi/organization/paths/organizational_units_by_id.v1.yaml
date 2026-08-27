@@ -1,0 +1,59 @@
+get:
+  summary: Get an organizational unit by ID
+  operationId: getOrganizationalUnit
+  tags:
+    - Organizational Units
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '200':
+      description: Organizational Unit details
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/OrganizationalUnitResponse.yaml'
+put:
+  summary: Update an organizational unit
+  operationId: updateOrganizationalUnit
+  tags:
+    - Organizational Units
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/requests/UpdateOrganizationalUnitRequest.yaml'
+  responses:
+    '200':
+      description: Organizational Unit updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/OrganizationalUnitResponse.yaml'
+delete:
+  summary: Delete an organizational unit
+  operationId: deleteOrganizationalUnit
+  tags:
+    - Organizational Units
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '204':
+      description: Organizational Unit deleted

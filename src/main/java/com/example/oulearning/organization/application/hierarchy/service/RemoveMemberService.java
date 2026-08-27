@@ -1,7 +1,8 @@
 package com.example.oulearning.organization.application.hierarchy.service;
 
-import com.example.oulearning.organization.application.hierarchy.port.in.*;
-import com.example.oulearning.organization.application.hierarchy.exception.*;
+import com.example.oulearning.organization.application.hierarchy.port.in.RemoveMemberCommand;
+import com.example.oulearning.organization.application.hierarchy.port.in.RemoveMemberUseCase;
+import com.example.oulearning.organization.application.hierarchy.exception.OrganizationalUnitNotFoundException;
 
 import com.example.oulearning.organization.domain.hierarchy.repository.OrganizationalUnitRepository;
 import org.springframework.stereotype.Service;

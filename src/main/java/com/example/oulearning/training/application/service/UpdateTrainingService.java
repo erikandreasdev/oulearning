@@ -1,7 +1,8 @@
 package com.example.oulearning.training.application.service;
 
-import com.example.oulearning.training.application.port.in.*;
-import com.example.oulearning.training.application.exception.*;
+import com.example.oulearning.training.application.port.in.UpdateTrainingCommand;
+import com.example.oulearning.training.application.port.in.UpdateTrainingUseCase;
+import com.example.oulearning.training.application.exception.TrainingNotFoundException;
 
 import com.example.oulearning.training.domain.model.Cost;
 import com.example.oulearning.training.domain.model.Hours;

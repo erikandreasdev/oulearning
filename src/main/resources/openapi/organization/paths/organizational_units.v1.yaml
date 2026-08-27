@@ -1,0 +1,18 @@
+post:
+  summary: Create a new organizational unit
+  operationId: createOrganizationalUnit
+  tags:
+    - Organizational Units
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/requests/CreateOrganizationalUnitRequest.yaml'
+  responses:
+    '201':
+      description: Organizational Unit created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/OrganizationalUnitResponse.yaml'
