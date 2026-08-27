@@ -1,8 +1,7 @@
 package com.example.oulearning.organization.application.hierarchy.service;
 
-import com.example.oulearning.organization.application.hierarchy.port.in.CreateOrganizationalUnitCommand;
-import com.example.oulearning.organization.application.hierarchy.port.in.CreateOrganizationalUnitUseCase;
-
+import com.example.oulearning.organization.application.hierarchy.port.in.command.CreateOrganizationalUnitCommand;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.CreateOrganizationalUnitUseCase;
 import com.example.oulearning.organization.domain.hierarchy.model.IdGenerator;
 import com.example.oulearning.organization.domain.hierarchy.model.Name;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnit;

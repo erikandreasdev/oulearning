@@ -1,4 +1,4 @@
-package com.example.oulearning.organization.application.hierarchy.port.in;
+package com.example.oulearning.organization.application.hierarchy.port.in.usecase;
 
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnit;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnitId;

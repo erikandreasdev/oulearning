@@ -1,4 +1,4 @@
-package com.example.oulearning.training.application.port.in;
+package com.example.oulearning.training.application.port.in.usecase;
 
 import com.example.oulearning.training.domain.model.TrainingId;
 

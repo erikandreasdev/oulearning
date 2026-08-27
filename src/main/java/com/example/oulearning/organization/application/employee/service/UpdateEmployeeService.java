@@ -1,12 +1,11 @@
 package com.example.oulearning.organization.application.employee.service;
 
-import com.example.oulearning.organization.application.employee.port.in.UpdateEmployeeCommand;
-import com.example.oulearning.organization.application.employee.port.in.UpdateEmployeeUseCase;
 import com.example.oulearning.organization.application.employee.exception.EmployeeNotFoundException;
-
+import com.example.oulearning.organization.application.employee.port.in.command.UpdateEmployeeCommand;
+import com.example.oulearning.organization.application.employee.port.in.usecase.UpdateEmployeeUseCase;
 import com.example.oulearning.organization.domain.employee.model.Email;
-import com.example.oulearning.organization.domain.employee.repository.EmployeeRepository;
 import com.example.oulearning.organization.domain.employee.model.FullName;
+import com.example.oulearning.organization.domain.employee.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
 @Service

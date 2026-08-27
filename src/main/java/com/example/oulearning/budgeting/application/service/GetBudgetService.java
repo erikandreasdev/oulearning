@@ -1,8 +1,7 @@
 package com.example.oulearning.budgeting.application.service;
 
-import com.example.oulearning.budgeting.application.port.in.GetBudgetUseCase;
 import com.example.oulearning.budgeting.application.exception.BudgetNotFoundException;
-
+import com.example.oulearning.budgeting.application.port.in.usecase.GetBudgetUseCase;
 import com.example.oulearning.budgeting.domain.model.Budget;
 import com.example.oulearning.budgeting.domain.model.BudgetId;
 import com.example.oulearning.budgeting.domain.repository.BudgetRepository;

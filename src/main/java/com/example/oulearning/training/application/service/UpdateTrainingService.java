@@ -1,16 +1,15 @@
 package com.example.oulearning.training.application.service;
 
-import com.example.oulearning.training.application.port.in.UpdateTrainingCommand;
-import com.example.oulearning.training.application.port.in.UpdateTrainingUseCase;
 import com.example.oulearning.training.application.exception.TrainingNotFoundException;
-
+import com.example.oulearning.training.application.port.in.command.UpdateTrainingCommand;
+import com.example.oulearning.training.application.port.in.usecase.UpdateTrainingUseCase;
 import com.example.oulearning.training.domain.model.Cost;
 import com.example.oulearning.training.domain.model.Hours;
 import com.example.oulearning.training.domain.model.TrainingName;
 import com.example.oulearning.training.domain.model.TrainingPurpose;
 import com.example.oulearning.training.domain.model.TrainingPurposeType;
-import com.example.oulearning.training.domain.repository.TrainingRepository;
 import com.example.oulearning.training.domain.model.TypeId;
+import com.example.oulearning.training.domain.repository.TrainingRepository;
 import java.time.Clock;
 import org.springframework.stereotype.Service;
 

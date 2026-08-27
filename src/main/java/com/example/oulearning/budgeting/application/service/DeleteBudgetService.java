@@ -1,8 +1,7 @@
 package com.example.oulearning.budgeting.application.service;
 
-import com.example.oulearning.budgeting.application.port.in.DeleteBudgetUseCase;
 import com.example.oulearning.budgeting.application.exception.BudgetNotFoundException;
-
+import com.example.oulearning.budgeting.application.port.in.usecase.DeleteBudgetUseCase;
 import com.example.oulearning.budgeting.domain.model.BudgetId;
 import com.example.oulearning.budgeting.domain.repository.BudgetRepository;
 import org.springframework.stereotype.Service;

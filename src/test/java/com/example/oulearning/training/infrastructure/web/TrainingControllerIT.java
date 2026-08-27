@@ -12,12 +12,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.oulearning.organization.domain.employee.model.EmployeeId;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnitId;
-import com.example.oulearning.training.application.port.in.CreateTrainingCommand;
-import com.example.oulearning.training.application.port.in.CreateTrainingUseCase;
-import com.example.oulearning.training.application.port.in.DeleteTrainingUseCase;
-import com.example.oulearning.training.application.port.in.GetTrainingUseCase;
-import com.example.oulearning.training.application.port.in.UpdateTrainingCommand;
-import com.example.oulearning.training.application.port.in.UpdateTrainingUseCase;
+import com.example.oulearning.training.application.port.in.command.CreateTrainingCommand;
+import com.example.oulearning.training.application.port.in.command.UpdateTrainingCommand;
+import com.example.oulearning.training.application.port.in.usecase.CreateTrainingUseCase;
+import com.example.oulearning.training.application.port.in.usecase.DeleteTrainingUseCase;
+import com.example.oulearning.training.application.port.in.usecase.GetTrainingUseCase;
+import com.example.oulearning.training.application.port.in.usecase.UpdateTrainingUseCase;
 import com.example.oulearning.training.domain.model.Cost;
 import com.example.oulearning.training.domain.model.Hours;
 import com.example.oulearning.training.domain.model.Training;

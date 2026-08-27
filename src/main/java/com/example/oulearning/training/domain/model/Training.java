@@ -158,6 +158,28 @@ public record Training(
                 active);
     }
 
+    public Training removeAttendee(final EmployeeId attendee, final Instant now) {
+        TrainingGuard.requireAttendee(attendee);
+        TrainingGuard.requireUpdatedAt(now);
+        final var updated = new HashSet<>(attendees);
+        updated.remove(attendee);
+        return new Training(
+                id,
+                requestedBy,
+                organizationalUnitId,
+                name,
+                cost,
+                hours,
+                purpose,
+                typeId,
+                status,
+                rawManagerReview,
+                createdAt,
+                now,
+                updated,
+                active);
+    }
+
     public Training updateDetails(
             final TrainingName newName,
             final Cost newCost,

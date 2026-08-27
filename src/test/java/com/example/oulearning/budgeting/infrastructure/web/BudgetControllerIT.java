@@ -10,12 +10,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.oulearning.budgeting.application.port.in.CreateBudgetCommand;
-import com.example.oulearning.budgeting.application.port.in.CreateBudgetUseCase;
-import com.example.oulearning.budgeting.application.port.in.DeleteBudgetUseCase;
-import com.example.oulearning.budgeting.application.port.in.GetBudgetUseCase;
-import com.example.oulearning.budgeting.application.port.in.UpdateBudgetCommand;
-import com.example.oulearning.budgeting.application.port.in.UpdateBudgetUseCase;
+import com.example.oulearning.budgeting.application.port.in.command.CreateBudgetCommand;
+import com.example.oulearning.budgeting.application.port.in.command.UpdateBudgetCommand;
+import com.example.oulearning.budgeting.application.port.in.usecase.CreateBudgetUseCase;
+import com.example.oulearning.budgeting.application.port.in.usecase.DeleteBudgetUseCase;
+import com.example.oulearning.budgeting.application.port.in.usecase.GetBudgetUseCase;
+import com.example.oulearning.budgeting.application.port.in.usecase.UpdateBudgetUseCase;
 import com.example.oulearning.budgeting.domain.model.Budget;
 import com.example.oulearning.budgeting.domain.model.BudgetId;
 import com.example.oulearning.budgeting.domain.model.FiscalYear;

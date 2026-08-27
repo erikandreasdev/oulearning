@@ -1,14 +1,13 @@
 package com.example.oulearning.organization.application.employee.service;
 
-import com.example.oulearning.organization.application.employee.port.in.CreateEmployeeCommand;
-import com.example.oulearning.organization.application.employee.port.in.CreateEmployeeUseCase;
-
+import com.example.oulearning.organization.application.employee.port.in.command.CreateEmployeeCommand;
+import com.example.oulearning.organization.application.employee.port.in.usecase.CreateEmployeeUseCase;
 import com.example.oulearning.organization.domain.employee.model.Email;
 import com.example.oulearning.organization.domain.employee.model.Employee;
 import com.example.oulearning.organization.domain.employee.model.EmployeeId;
-import com.example.oulearning.organization.domain.employee.repository.EmployeeRepository;
 import com.example.oulearning.organization.domain.employee.model.FullName;
 import com.example.oulearning.organization.domain.employee.model.IdGenerator;
+import com.example.oulearning.organization.domain.employee.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
 @Service

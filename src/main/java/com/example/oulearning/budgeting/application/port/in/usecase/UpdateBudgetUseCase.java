@@ -1,4 +1,6 @@
-package com.example.oulearning.budgeting.application.port.in;
+package com.example.oulearning.budgeting.application.port.in.usecase;
+
+import com.example.oulearning.budgeting.application.port.in.command.UpdateBudgetCommand;
 
 public interface UpdateBudgetUseCase {
     void execute(UpdateBudgetCommand command);

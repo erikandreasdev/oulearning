@@ -102,7 +102,7 @@ class MyBatisTrainingRepositoryIT {
         trainingRepository.save(retrieved);
 
         retrieved = trainingRepository.findById(trainingId).orElseThrow();
-        final var withoutAttendees = retrieved.removeAttendee(new EmployeeId(100L));
+        final var withoutAttendees = retrieved.removeAttendee(new EmployeeId(100L), Instant.now());
 
         // when
         trainingRepository.save(withoutAttendees);

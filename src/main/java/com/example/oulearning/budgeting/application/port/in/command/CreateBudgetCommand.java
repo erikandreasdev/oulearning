@@ -1,4 +1,4 @@
-package com.example.oulearning.budgeting.application.port.in;
+package com.example.oulearning.budgeting.application.port.in.command;
 
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnitId;
 import java.math.BigDecimal;

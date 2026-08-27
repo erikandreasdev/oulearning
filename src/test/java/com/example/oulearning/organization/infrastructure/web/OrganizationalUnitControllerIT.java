@@ -10,17 +10,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.oulearning.organization.application.hierarchy.port.in.AssignMemberCommand;
-import com.example.oulearning.organization.application.hierarchy.port.in.AssignMemberUseCase;
-import com.example.oulearning.organization.application.hierarchy.port.in.AssignOwnerUseCase;
-import com.example.oulearning.organization.application.hierarchy.port.in.CreateOrganizationalUnitCommand;
-import com.example.oulearning.organization.application.hierarchy.port.in.CreateOrganizationalUnitUseCase;
-import com.example.oulearning.organization.application.hierarchy.port.in.DeleteOrganizationalUnitUseCase;
-import com.example.oulearning.organization.application.hierarchy.port.in.GetOrganizationalUnitUseCase;
-import com.example.oulearning.organization.application.hierarchy.port.in.RemoveMemberUseCase;
-import com.example.oulearning.organization.application.hierarchy.port.in.RemoveOwnerUseCase;
-import com.example.oulearning.organization.application.hierarchy.port.in.UpdateOrganizationalUnitCommand;
-import com.example.oulearning.organization.application.hierarchy.port.in.UpdateOrganizationalUnitUseCase;
+import com.example.oulearning.organization.application.hierarchy.port.in.command.AssignMemberCommand;
+import com.example.oulearning.organization.application.hierarchy.port.in.command.CreateOrganizationalUnitCommand;
+import com.example.oulearning.organization.application.hierarchy.port.in.command.UpdateOrganizationalUnitCommand;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.AssignMemberUseCase;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.AssignOwnerUseCase;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.CreateOrganizationalUnitUseCase;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.DeleteOrganizationalUnitUseCase;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.GetOrganizationalUnitUseCase;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.RemoveMemberUseCase;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.RemoveOwnerUseCase;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.UpdateOrganizationalUnitUseCase;
 import com.example.oulearning.organization.domain.employee.model.EmployeeId;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnit;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnitId;

@@ -1,4 +1,4 @@
-package com.example.oulearning.training.application.port.in;
+package com.example.oulearning.training.application.port.in.command;
 
 import com.example.oulearning.organization.domain.employee.model.EmployeeId;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnitId;

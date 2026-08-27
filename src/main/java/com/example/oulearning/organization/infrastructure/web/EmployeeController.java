@@ -1,11 +1,11 @@
 package com.example.oulearning.organization.infrastructure.web;
 
-import com.example.oulearning.organization.application.employee.port.in.CreateEmployeeCommand;
-import com.example.oulearning.organization.application.employee.port.in.CreateEmployeeUseCase;
-import com.example.oulearning.organization.application.employee.port.in.DeleteEmployeeUseCase;
-import com.example.oulearning.organization.application.employee.port.in.GetEmployeeUseCase;
-import com.example.oulearning.organization.application.employee.port.in.UpdateEmployeeCommand;
-import com.example.oulearning.organization.application.employee.port.in.UpdateEmployeeUseCase;
+import com.example.oulearning.organization.application.employee.port.in.command.CreateEmployeeCommand;
+import com.example.oulearning.organization.application.employee.port.in.command.UpdateEmployeeCommand;
+import com.example.oulearning.organization.application.employee.port.in.usecase.CreateEmployeeUseCase;
+import com.example.oulearning.organization.application.employee.port.in.usecase.DeleteEmployeeUseCase;
+import com.example.oulearning.organization.application.employee.port.in.usecase.GetEmployeeUseCase;
+import com.example.oulearning.organization.application.employee.port.in.usecase.UpdateEmployeeUseCase;
 import com.example.oulearning.organization.domain.employee.model.Employee;
 import com.example.oulearning.organization.domain.employee.model.EmployeeId;
 import com.example.oulearning.organization.infrastructure.web.api.EmployeesApi;
