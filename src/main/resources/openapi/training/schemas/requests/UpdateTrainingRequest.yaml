@@ -1,0 +1,25 @@
+type: object
+required:
+  - name
+  - costAmount
+  - currency
+  - hours
+  - purposeType
+  - typeId
+properties:
+  name:
+    type: string
+  costAmount:
+    type: number
+  currency:
+    type: string
+  hours:
+    type: integer
+    format: int32
+  purposeType:
+    type: string
+  purposeDescription:
+    type: string
+  typeId:
+    type: integer
+    format: int64

@@ -1,0 +1,18 @@
+post:
+  summary: Create a new budget
+  operationId: createBudget
+  tags:
+    - Budgets
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/requests/CreateBudgetRequest.yaml'
+  responses:
+    '201':
+      description: Budget created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/BudgetResponse.yaml'

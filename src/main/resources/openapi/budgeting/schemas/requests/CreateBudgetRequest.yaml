@@ -1,0 +1,20 @@
+type: object
+required:
+  - organizationalUnitId
+  - fiscalYear
+  - totalAmount
+  - reservedAmount
+  - availableAmount
+properties:
+  organizationalUnitId:
+    type: integer
+    format: int64
+  fiscalYear:
+    type: integer
+    format: int32
+  totalAmount:
+    type: number
+  reservedAmount:
+    type: number
+  availableAmount:
+    type: number

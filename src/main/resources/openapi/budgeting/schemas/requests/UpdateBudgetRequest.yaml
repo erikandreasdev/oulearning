@@ -1,0 +1,12 @@
+type: object
+required:
+  - totalAmount
+  - reservedAmount
+  - availableAmount
+properties:
+  totalAmount:
+    type: number
+  reservedAmount:
+    type: number
+  availableAmount:
+    type: number

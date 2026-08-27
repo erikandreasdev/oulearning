@@ -1,0 +1,65 @@
+get:
+  summary: Get a budget by ID
+  operationId: getBudget
+  tags:
+    - Budgets
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '200':
+      description: Budget retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/BudgetResponse.yaml'
+    '404':
+      description: Budget not found
+put:
+  summary: Update a budget
+  operationId: updateBudget
+  tags:
+    - Budgets
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/requests/UpdateBudgetRequest.yaml'
+  responses:
+    '200':
+      description: Budget updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/responses/BudgetResponse.yaml'
+    '404':
+      description: Budget not found
+delete:
+  summary: Delete a budget
+  operationId: deleteBudget
+  tags:
+    - Budgets
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '204':
+      description: Budget deleted successfully
+    '404':
+      description: Budget not found

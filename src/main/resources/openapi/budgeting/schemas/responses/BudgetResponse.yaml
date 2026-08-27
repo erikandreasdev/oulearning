@@ -1,0 +1,19 @@
+type: object
+properties:
+  id:
+    type: integer
+    format: int64
+  organizationalUnitId:
+    type: integer
+    format: int64
+  fiscalYear:
+    type: integer
+    format: int32
+  totalAmount:
+    type: number
+  reservedAmount:
+    type: number
+  availableAmount:
+    type: number
+  active:
+    type: boolean
