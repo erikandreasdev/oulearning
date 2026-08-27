@@ -29,7 +29,7 @@ class MyBatisBudgetRepositoryIT {
 
     @Container
     @ServiceConnection
-    static OracleContainer oracle = new OracleContainer("gvenzl/oracle-xe:21-slim");
+    static OracleContainer oracle = new OracleContainer(org.testcontainers.utility.DockerImageName.parse("gvenzl/oracle-free:23-slim").asCompatibleSubstituteFor("gvenzl/oracle-xe"));
 
     @Autowired
     private MyBatisBudgetRepository budgetRepository;
