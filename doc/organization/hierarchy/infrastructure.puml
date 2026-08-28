@@ -9,18 +9,6 @@ skinparam ranksep 25
 
 title Hierarchy Infrastructure & Adapters
 
-package "Inbound Web Adapters (REST)" {
-  class OrganizationalUnitController << (@RestController) >> {
-    - CreateOrganizationalUnitUseCase createOuUseCase
-    - GetOrganizationalUnitUseCase getOuUseCase
-    - UpdateOrganizationalUnitUseCase updateOuUseCase
-    - DeleteOrganizationalUnitUseCase deleteOuUseCase
-    - AssignOwnerUseCase assignOwnerUseCase
-    - RemoveOwnerUseCase removeOwnerUseCase
-    - AssignMemberUseCase assignMemberUseCase
-    - RemoveMemberUseCase removeMemberUseCase
-  }
-}
 
 package "Outbound Persistence Adapters (JPA)" {
   package "Organizational Unit Persistence" {

@@ -1,7 +1,0 @@
-type: object
-required:
-  - employeeId
-properties:
-  employeeId:
-    type: integer
-    format: int64

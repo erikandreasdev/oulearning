@@ -185,27 +185,7 @@
 				<artifactId>openapi-generator-maven-plugin</artifactId>
 				<version>7.6.0</version>
 				<executions>
-					<execution>
-						<id>generate-organization-api</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<inputSpec>${project.basedir}/src/main/resources/openapi/organization.yaml</inputSpec>
-							<generatorName>spring</generatorName>
-							<apiPackage>com.example.oulearning.organization.infrastructure.web.api</apiPackage>
-							<modelPackage>com.example.oulearning.organization.infrastructure.web.dto</modelPackage>
-							<supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
-							<configOptions>
-								<delegatePattern>false</delegatePattern>
-								<interfaceOnly>true</interfaceOnly>
-								<useSpringBoot3>true</useSpringBoot3>
-								<useJakartaEe>true</useJakartaEe>
-								<skipDefaultInterface>true</skipDefaultInterface>
-								<useTags>true</useTags>
-							</configOptions>
-						</configuration>
-					</execution>
+
 					<execution>
 						<id>generate-budgeting-api</id>
 						<goals>

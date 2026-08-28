@@ -9,18 +9,6 @@ skinparam ranksep 25
 
 title Employee Infrastructure & Adapters
 
-package "Inbound Web Adapters (REST)" {
-  class EmployeeController << (@RestController) >> {
-    - CreateEmployeeUseCase createEmployeeUseCase
-    - GetEmployeeUseCase getEmployeeUseCase
-    - UpdateEmployeeUseCase updateEmployeeUseCase
-    - DeleteEmployeeUseCase deleteEmployeeUseCase
-    + ResponseEntity<EmployeeResponseDto> create(CreateEmployeeRequestDto request)
-    + ResponseEntity<EmployeeResponseDto> getById(Long id)
-    + ResponseEntity<Void> update(Long id, UpdateEmployeeRequestDto request)
-    + ResponseEntity<Void> delete(Long id)
-  }
-}
 
 package "Outbound Persistence Adapters (JPA)" {
   package "Employee Persistence" {
