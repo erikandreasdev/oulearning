@@ -1,0 +1,15 @@
+meta {
+  name: Get Budgets by Organizational Unit
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/budgets/organizational-unit/{{ouId}}?includeSubtree=false
+  body: none
+  auth: none
+}
+
+params:query {
+  includeSubtree: false
+}

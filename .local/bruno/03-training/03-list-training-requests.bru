@@ -1,0 +1,17 @@
+meta {
+  name: List Training Requests
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/trainings/requests?organizationalUnitId={{ouId}}&page=0&size=20
+  body: none
+  auth: none
+}
+
+params:query {
+  organizationalUnitId: {{ouId}}
+  page: 0
+  size: 20
+}

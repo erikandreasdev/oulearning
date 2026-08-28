@@ -1,0 +1,27 @@
+meta {
+  name: Create Member Employee
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/employees
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "{{memberEmployeeName}}",
+    "surname": "{{memberEmployeeSurname}}",
+    "email": "{{memberEmployeeEmail}}"
+  }
+}
+
+vars:post-response {
+  memberEmployeeId: res.body.id
+}

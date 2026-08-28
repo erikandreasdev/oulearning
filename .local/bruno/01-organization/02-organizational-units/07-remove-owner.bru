@@ -1,0 +1,11 @@
+meta {
+  name: Remove Owner
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/organizational-units/{{ouId}}/owners/{{employeeId}}
+  body: none
+  auth: none
+}

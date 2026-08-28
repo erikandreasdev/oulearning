@@ -1,0 +1,27 @@
+meta {
+  name: Create Organizational Unit Budgets
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/budgets/organizational-unit
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "assignedBudget": {{assignedBudget}},
+    "fiscalYear": {{fiscalYear}},
+    "organizationalUnitId": {{ouId}},
+    "includeAllChildren": false,
+    "targetChildOuIds": [],
+    "page": 0,
+    "size": 20
+  }
+}

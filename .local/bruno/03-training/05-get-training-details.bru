@@ -1,0 +1,11 @@
+meta {
+  name: Get Training Details
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/trainings/{{trainingId}}/details
+  body: none
+  auth: none
+}

@@ -1,0 +1,26 @@
+meta {
+  name: Update Training Review
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/v1/trainings/{{trainingId}}/review
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "comments": "{{reviewComments}}",
+    "modality": "{{reviewModality}}",
+    "startDate": "{{reviewStartDate}}",
+    "endDate": "{{reviewEndDate}}",
+    "externalProviderId": {{reviewExternalProviderId}},
+    "reviewedAt": "{{reviewedAt}}"
+  }
+}
