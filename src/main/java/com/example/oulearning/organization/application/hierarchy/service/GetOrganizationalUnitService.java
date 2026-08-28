@@ -19,6 +19,7 @@ public class GetOrganizationalUnitService implements GetOrganizationalUnitUseCas
     @Override
     public OrganizationalUnit execute(final OrganizationalUnitId id) {
         return organizationalUnitRepository.findById(id)
+                .filter(OrganizationalUnit::active)
                 .orElseThrow(() -> new OrganizationalUnitNotFoundException(id));
     }
 }

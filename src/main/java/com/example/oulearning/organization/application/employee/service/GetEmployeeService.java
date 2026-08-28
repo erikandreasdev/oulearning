@@ -19,6 +19,7 @@ public class GetEmployeeService implements GetEmployeeUseCase {
     @Override
     public Employee execute(final EmployeeId id) {
         return employeeRepository.findById(id)
+                .filter(Employee::active)
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
     }
 }

@@ -17,3 +17,6 @@ spring:
     url: jdbc:oracle:thin:@localhost:1521/oulearning
     user: oulearning
     password: oulearning
+mybatis:
+  configuration:
+    jdbc-type-for-null: "NULL"

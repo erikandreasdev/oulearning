@@ -84,7 +84,7 @@ class MyBatisTrainingRepository implements TrainingRepository {
     @Override
     public void save(final Training training) {
         final var entity = toEntity(training);
-        if (training.id() == null) {
+        if (trainingMapper.findById(training.id().value()).isEmpty()) {
             trainingMapper.insert(entity);
             saveAttendees(entity.getId(), training.attendees());
         } else {

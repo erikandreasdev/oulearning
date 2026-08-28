@@ -86,11 +86,11 @@ interface TrainingMapper {
             @Param("status") String status);
 
     @Insert(
-            "INSERT INTO training (requested_by_employee_id, organizational_unit_id, name, cost_amount, cost_currency, hours, "
+            "INSERT INTO training (id, requested_by_employee_id, organizational_unit_id, name, cost_amount, cost_currency, hours, "
                     + "purpose_type, purpose_other, type_id, status, manager_review_comments, manager_review_modality, "
                     + "manager_review_start_date, manager_review_end_date, manager_review_external_provider_id, "
                     + "manager_review_reviewed_at, created_at, updated_at, active) "
-                    + "VALUES (#{requestedByEmployeeId}, #{organizationalUnitId}, #{name}, #{costAmount}, #{costCurrency}, #{hours}, "
+                    + "VALUES (#{id}, #{requestedByEmployeeId}, #{organizationalUnitId}, #{name}, #{costAmount}, #{costCurrency}, #{hours}, "
                     + "#{purposeType}, #{purposeOther}, #{typeId}, #{status}, #{managerReviewComments}, #{managerReviewModality}, "
                     + "#{managerReviewStartDate}, #{managerReviewEndDate}, #{managerReviewExternalProviderId}, "
                     + "#{managerReviewReviewedAt}, #{createdAt}, #{updatedAt}, #{active})")

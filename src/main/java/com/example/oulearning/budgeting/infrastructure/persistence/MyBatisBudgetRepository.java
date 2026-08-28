@@ -34,10 +34,8 @@ class MyBatisBudgetRepository implements BudgetRepository {
     @Override
     public void save(final Budget budget) {
         final var entity = toEntity(budget);
-        if (budget.id() == null) {
+        if (budgetMapper.findById(budget.id().value()).isEmpty()) {
             budgetMapper.insert(entity);
-            // Budget domain model requires an ID, so in a real app we might return the ID or set it,
-            // but the domain repository port interface returns void. We assume the ID generation is handled.
         } else {
             budgetMapper.update(entity);
         }

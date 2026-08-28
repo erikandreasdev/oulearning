@@ -19,7 +19,7 @@ interface BudgetMapper {
     java.util.List<BudgetEntity> findByOrganizationalUnitId(Long organizationalUnitId);
 
     @Insert(
-            "INSERT INTO budget (organizational_unit_id, fiscal_year, total_amount, reserved_amount, available_amount, active) VALUES (#{organizationalUnitId}, #{fiscalYear}, #{totalAmount}, #{reservedAmount}, #{availableAmount}, #{active})")
+            "INSERT INTO budget (id, organizational_unit_id, fiscal_year, total_amount, reserved_amount, available_amount, active) VALUES (#{id}, #{organizationalUnitId}, #{fiscalYear}, #{totalAmount}, #{reservedAmount}, #{availableAmount}, #{active})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(BudgetEntity entity);
 

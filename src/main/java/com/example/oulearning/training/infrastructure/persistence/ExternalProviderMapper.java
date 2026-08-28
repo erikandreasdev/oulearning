@@ -13,7 +13,7 @@ interface ExternalProviderMapper {
     @Select("SELECT id, name, email, phone, active FROM external_provider WHERE id = #{id}")
     Optional<ExternalProviderEntity> findById(Long id);
 
-    @Insert("INSERT INTO external_provider (name, email, phone, active) VALUES (#{name}, #{email}, #{phone}, #{active})")
+    @Insert("INSERT INTO external_provider (id, name, email, phone, active) VALUES (#{id}, #{name}, #{email}, #{phone}, #{active})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(ExternalProviderEntity entity);
 

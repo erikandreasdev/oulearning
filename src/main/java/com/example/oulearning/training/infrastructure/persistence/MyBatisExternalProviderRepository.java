@@ -25,7 +25,7 @@ class MyBatisExternalProviderRepository implements ExternalProviderRepository {
     @Override
     public void save(final ExternalProvider externalProvider) {
         final var entity = toEntity(externalProvider);
-        if (externalProvider.id() == null) {
+        if (externalProviderMapper.findById(externalProvider.id().value()).isEmpty()) {
             externalProviderMapper.insert(entity);
         } else {
             externalProviderMapper.update(entity);
