@@ -113,7 +113,7 @@
 				</dependencies>
 				<configuration>
 					<configLocation>google_checks.xml</configLocation>
-					<suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+					<suppressionsLocation>config/checkstyle-suppressions.xml</suppressionsLocation>
 					<consoleOutput>true</consoleOutput>
 					<failsOnError>true</failsOnError>
 					<includeTestSourceDirectory>true</includeTestSourceDirectory>
@@ -211,7 +211,7 @@
 					<failOnViolation>true</failOnViolation>
 					<includeTests>false</includeTests>
 					<rulesets>
-						<ruleset>pmd-ruleset.xml</ruleset>
+						<ruleset>config/pmd-ruleset.xml</ruleset>
 					</rulesets>
 				</configuration>
 				<executions>

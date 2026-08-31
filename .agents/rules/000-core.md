@@ -44,11 +44,12 @@ domain <- application <- infrastructure (adapters) <- bootstrap (Spring config)
 2. For non-trivial tasks produce an implementation plan listing changes per layer (domain → application → adapters → tests). Wait for approval when the change touches aggregate invariants, public APIs, or the schema.
 3. Implement inside-out: domain + unit tests → use case → adapters → wiring.
 4. Small, focused diffs. No unrelated refactors "while here".
-5. Before reporting done, run `./mvnw spotless:apply checkstyle:check pmd:check verify` and include the real result. Verify zero Checkstyle errors and no static analysis / PMD / SonarQube quality warnings. Never claim tests pass without running them.
-6. No new dependencies without stating why. Never any framework in `domain`.
-7. Never delete, weaken, or `@Disabled` tests to make a build green.
-8. No hardcoded secrets; use `application-*.yml` + environment variables.
-9. Commits use Conventional Commits: `feat(training): …`, `fix(employee): …`, `refactor`, `test`, `chore`, `docs`. Body explains intent and domain reasoning.
+5. Keep `docs/RUN.md` up to date: maintain category command tables (Docker infrastructure, quality/verification commands, application run commands) whenever infrastructure, build scripts, or execution commands are introduced or changed.
+6. Before reporting done, run `./mvnw spotless:apply checkstyle:check pmd:check verify` and include the real result. Verify zero Checkstyle errors and no static analysis / PMD / SonarQube quality warnings. Never claim tests pass without running them.
+7. No new dependencies without stating why. Never any framework in `domain`.
+8. Never delete, weaken, or `@Disabled` tests to make a build green.
+9. No hardcoded secrets; use `application-*.yml` + environment variables.
+10. Commits use Conventional Commits: `feat(training): …`, `fix(employee): …`, `refactor`, `test`, `chore`, `docs`. Body explains intent and domain reasoning.
 
 ## Never do
 - Framework annotations (`@Entity`, `@Component`, `@JsonProperty`, `@Valid`, …) on domain classes.

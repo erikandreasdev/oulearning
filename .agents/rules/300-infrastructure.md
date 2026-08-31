@@ -26,6 +26,7 @@ description: Infrastructure/adapter rules — REST, persistence, messaging, conf
 ## Bootstrap / config
 - `@Configuration` wiring and `@ConfigurationProperties` records with validation. This is the only layer allowed to know all others.
 - Log at boundaries with SLF4J parameterized messages, no PII.
+- Keep `docs/RUN.md` updated with relevant Docker container commands and instructions whenever new infrastructure components are introduced.
 
 ## Tests
 - Persistence: `@DataJpaTest` + Testcontainers Postgres (never H2).
