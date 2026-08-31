@@ -1,0 +1,6 @@
+openapi: 3.0.3
+info:
+  title: Organization API
+  description: API for the Organization bounded context (Employees, Organizational Units).
+  version: 1.0.0
+paths: {}

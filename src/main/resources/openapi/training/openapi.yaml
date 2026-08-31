@@ -1,0 +1,6 @@
+openapi: 3.0.3
+info:
+  title: Training API
+  description: API for the Training bounded context (Trainings, Sessions).
+  version: 1.0.0
+paths: {}

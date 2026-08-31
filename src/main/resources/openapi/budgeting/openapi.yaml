@@ -1,0 +1,6 @@
+openapi: 3.0.3
+info:
+  title: Budgeting API
+  description: API for the Budgeting bounded context (Budgets, Transactions).
+  version: 1.0.0
+paths: {}
