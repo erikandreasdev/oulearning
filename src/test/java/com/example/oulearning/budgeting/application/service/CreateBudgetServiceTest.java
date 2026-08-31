@@ -1,24 +1,17 @@
 package com.example.oulearning.budgeting.application.service;
-import com.example.oulearning.budgeting.application.port.in.command.CreateBudgetCommand;
-
-import com.example.oulearning.budgeting.domain.model.*;
-import com.example.oulearning.budgeting.application.exception.*;
-import com.example.oulearning.organization.domain.employee.model.*;
-import com.example.oulearning.organization.application.employee.exception.*;
-import com.example.oulearning.organization.domain.hierarchy.model.*;
-import com.example.oulearning.organization.application.hierarchy.exception.*;
-import com.example.oulearning.training.domain.model.*;
-import com.example.oulearning.training.application.exception.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.oulearning.budgeting.application.port.in.command.CreateBudgetCommand;
+import com.example.oulearning.budgeting.domain.exception.InvalidBudgetOperationException;
 import com.example.oulearning.budgeting.domain.model.Budget;
-import com.example.oulearning.budgeting.domain.repository.BudgetRepository;
 import com.example.oulearning.budgeting.domain.model.BudgetingTestFactory;
 import com.example.oulearning.budgeting.domain.model.IdGenerator;
+import com.example.oulearning.budgeting.domain.repository.BudgetRepository;
 import com.example.oulearning.organization.domain.hierarchy.model.HierarchyTestFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,6 +34,7 @@ class CreateBudgetServiceTest {
         final var reserved = BudgetingTestFactory.randomBigDecimalAmount();
         final var available = BudgetingTestFactory.randomBigDecimalAmount();
         final var command = new CreateBudgetCommand(ouId, fiscalYear, total, reserved, available);
+        when(repository.existsByOrganizationalUnitId(ouId)).thenReturn(false);
         when(idGenerator.generate()).thenReturn(generatedId);
 
         // when
@@ -58,5 +52,26 @@ class CreateBudgetServiceTest {
         assertThat(saved.reserved().amount()).isEqualTo(reserved);
         assertThat(saved.available().amount()).isEqualTo(available);
         assertThat(saved.active()).isTrue();
+    }
+
+    @Test
+    @DisplayName("given existing budget for OU, when creating budget, then throws exception")
+    void givenExistingBudgetForOu_whenCreatingBudget_thenThrowsException() {
+        // given
+        final var ouId = HierarchyTestFactory.randomOrganizationalUnitId();
+        final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
+        final var total = BudgetingTestFactory.randomBigDecimalAmount();
+        final var reserved = BudgetingTestFactory.randomBigDecimalAmount();
+        final var available = BudgetingTestFactory.randomBigDecimalAmount();
+        final var command = new CreateBudgetCommand(ouId, fiscalYear, total, reserved, available);
+        when(repository.existsByOrganizationalUnitId(ouId)).thenReturn(true);
+
+        // when
+        final var executable = (org.assertj.core.api.ThrowableAssert.ThrowingCallable) () -> service.execute(command);
+
+        // then
+        assertThatThrownBy(executable)
+                .isInstanceOf(InvalidBudgetOperationException.class)
+                .hasMessageContaining("A budget already exists for organizational unit %d".formatted(ouId.value()));
     }
 }

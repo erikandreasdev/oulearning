@@ -69,5 +69,37 @@ class BudgetingWorkflowIT extends AbstractOracleIntegrationTest {
         assertThat(fetchBody[0].getReservedBudget()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(fetchBody[0].getOwners()).containsExactly(existingOwnerId);
     }
+
+    @Test
+    @DisplayName("given existing budget, when creating duplicate budget for same OU, then returns bad request")
+    @Sql(scripts = "/sql/cleanup-all.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/insert-employee.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/insert-ou.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void givenExistingBudget_whenCreatingDuplicateBudgetForSameOu_thenReturnsBadRequest() {
+        // given
+        final var existingOuId = 2L;
+        final var existingOwnerId = 10L;
+        final var randomFiscalYear = BudgetingTestFactory.randomFiscalYearValue();
+        final var randomAssignedBudget = BudgetingTestFactory.randomBigDecimalAmount();
+
+        final var request = new CreateOuBudgetRequest();
+        request.setOrganizationalUnitId(existingOuId);
+        request.setFiscalYear(randomFiscalYear);
+        request.setAssignedBudget(randomAssignedBudget);
+        request.setOwners(java.util.List.of(existingOwnerId));
+        request.setIncludeAllChildren(false);
+
+        final var firstResponse = restTemplate.postForEntity(
+                BudgetingApiEndpoints.BUDGETS_OU, request, PaginatedOuBudgetResponse.class);
+        assertThat(firstResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        // when
+        final var duplicateResponse = restTemplate.postForEntity(
+                BudgetingApiEndpoints.BUDGETS_OU, request, String.class);
+
+        // then
+        assertThat(duplicateResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(duplicateResponse.getBody()).contains("A budget already exists for organizational unit 2");
+    }
 }
 

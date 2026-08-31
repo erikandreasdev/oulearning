@@ -2,6 +2,7 @@ package com.example.oulearning.budgeting.application.service;
 
 import com.example.oulearning.budgeting.application.port.in.command.CreateBudgetCommand;
 import com.example.oulearning.budgeting.application.port.in.usecase.CreateBudgetUseCase;
+import com.example.oulearning.budgeting.domain.exception.InvalidBudgetOperationException;
 import com.example.oulearning.budgeting.domain.model.Budget;
 import com.example.oulearning.budgeting.domain.model.BudgetId;
 import com.example.oulearning.budgeting.domain.model.FiscalYear;
@@ -23,6 +24,9 @@ public class CreateBudgetService implements CreateBudgetUseCase {
 
     @Override
     public BudgetId execute(final CreateBudgetCommand command) {
+        if (budgetRepository.existsByOrganizationalUnitId(command.ouId())) {
+            throw InvalidBudgetOperationException.budgetAlreadyExists(command.ouId());
+        }
         final var id = BudgetId.of(idGenerator.generate());
         final var budget = Budget.create(
                 id,

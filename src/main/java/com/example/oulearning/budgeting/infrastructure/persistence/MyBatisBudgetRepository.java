@@ -32,6 +32,11 @@ class MyBatisBudgetRepository implements BudgetRepository {
     }
 
     @Override
+    public boolean existsByOrganizationalUnitId(final OrganizationalUnitId organizationalUnitId) {
+        return budgetMapper.existsByOrganizationalUnitId(organizationalUnitId.value());
+    }
+
+    @Override
     public void save(final Budget budget) {
         final var entity = toEntity(budget);
         if (budgetMapper.findById(budget.id().value()).isEmpty()) {

@@ -121,5 +121,19 @@ final class InvalidBudgetOperationExceptionTest {
             assertThat(exception.getMessage()).isEqualTo("Invalid Budget id format: abc");
             assertThat(exception.getCause()).isSameAs(cause);
         }
+
+        @Test
+        @DisplayName("given ou id, when calling budgetAlreadyExists, then produce expected message")
+        void givenOuId_whenCallingBudgetAlreadyExists_thenProduceExpectedMessage() {
+            // given
+            final var ouId = HierarchyTestFactory.randomOrganizationalUnitId();
+
+            // when
+            final var exception = InvalidBudgetOperationException.budgetAlreadyExists(ouId);
+
+            // then
+            assertThat(exception.getMessage())
+                    .isEqualTo("A budget already exists for organizational unit %d".formatted(ouId.value()));
+        }
     }
 }

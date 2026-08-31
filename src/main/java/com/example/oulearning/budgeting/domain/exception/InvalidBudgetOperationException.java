@@ -2,6 +2,8 @@ package com.example.oulearning.budgeting.domain.exception;
 
 import com.example.oulearning.budgeting.domain.model.BudgetingConstants;
 
+import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnitId;
+
 public final class InvalidBudgetOperationException extends BudgetingException {
 
     public InvalidBudgetOperationException(final String message) {
@@ -35,7 +37,12 @@ public final class InvalidBudgetOperationException extends BudgetingException {
     }
 
     public static InvalidBudgetOperationException invalidId(
-            final String fieldName, final String value, final Throwable cause) {
+        final String fieldName, final String value, final Throwable cause) {
         return new InvalidBudgetOperationException("Invalid %s format: %s".formatted(fieldName, value), cause);
+    }
+
+    public static InvalidBudgetOperationException budgetAlreadyExists(final OrganizationalUnitId ouId) {
+        return new InvalidBudgetOperationException(
+                "A budget already exists for organizational unit %d".formatted(ouId.value()));
     }
 }

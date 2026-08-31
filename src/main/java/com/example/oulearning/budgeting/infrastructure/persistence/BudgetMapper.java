@@ -18,6 +18,10 @@ interface BudgetMapper {
             "SELECT id, organizational_unit_id AS organizationalUnitId, fiscal_year AS fiscalYear, total_amount AS totalAmount, reserved_amount AS reservedAmount, available_amount AS availableAmount, active FROM budget WHERE organizational_unit_id = #{organizationalUnitId}")
     java.util.List<BudgetEntity> findByOrganizationalUnitId(Long organizationalUnitId);
 
+    @Select(
+            "SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END FROM budget WHERE organizational_unit_id = #{organizationalUnitId}")
+    boolean existsByOrganizationalUnitId(Long organizationalUnitId);
+
     @Insert(
             "INSERT INTO budget (id, organizational_unit_id, fiscal_year, total_amount, reserved_amount, available_amount, active) VALUES (#{id}, #{organizationalUnitId}, #{fiscalYear}, #{totalAmount}, #{reservedAmount}, #{availableAmount}, #{active})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")

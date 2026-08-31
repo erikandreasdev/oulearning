@@ -150,9 +150,117 @@ class CreateOrganizationalUnitBudgetsServiceTest {
         final var amount = BudgetingTestFactory.randomBigDecimalAmount();
         final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
 
-        // when / then
-        assertThatThrownBy(() -> new CreateOrganizationalUnitBudgetsCommand(
-                        amount, fiscalYear, ouId, Set.of(), false, Set.of(), 0, 20))
-                .isInstanceOf(IllegalArgumentException.class);
+        // when
+        final var executable = (org.assertj.core.api.ThrowableAssert.ThrowingCallable) () ->
+                new CreateOrganizationalUnitBudgetsCommand(amount, fiscalYear, ouId, Set.of(), false, Set.of(), 0, 20);
+
+        // then
+        assertThatThrownBy(executable).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("given null owners, when creating command, then throws exception")
+    void givenNullOwners_whenCreatingCommand_thenThrowsException() {
+        // given
+        final var ouId = HierarchyTestFactory.randomOrganizationalUnitId();
+        final var amount = BudgetingTestFactory.randomBigDecimalAmount();
+        final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
+
+        // when
+        final var executable = (org.assertj.core.api.ThrowableAssert.ThrowingCallable) () ->
+                new CreateOrganizationalUnitBudgetsCommand(amount, fiscalYear, ouId, null, false, Set.of(), 0, 20);
+
+        // then
+        assertThatThrownBy(executable).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("given null target children and null page and size, when creating budgets, then defaults apply")
+    void givenNullTargetChildrenAndNullPageAndSize_whenCreatingBudgets_thenDefaultsApply() {
+        // given
+        final var ou = HierarchyTestFactory.randomOrganizationalUnit();
+        final var owner = EmployeeTestFactory.randomEmployeeId();
+        final var amount = BudgetingTestFactory.randomBigDecimalAmount();
+        final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
+        final var command = new CreateOrganizationalUnitBudgetsCommand(
+                amount, fiscalYear, ou.id(), Set.of(owner), false, null, null, null);
+        when(getOrganizationalUnitUseCase.execute(ou.id())).thenReturn(ou);
+        when(idGenerator.generate()).thenReturn(401L);
+
+        // when
+        final var result = service.execute(command);
+
+        // then
+        assertThat(result.page()).isZero();
+        assertThat(result.size()).isEqualTo(20);
+        assertThat(result.items()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("given negative page and non-positive size, when creating budgets, then fallback defaults apply")
+    void givenNegativePageAndNonPositiveSize_whenCreatingBudgets_thenFallbackDefaultsApply() {
+        // given
+        final var ou = HierarchyTestFactory.randomOrganizationalUnit();
+        final var owner = EmployeeTestFactory.randomEmployeeId();
+        final var amount = BudgetingTestFactory.randomBigDecimalAmount();
+        final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
+        final var command = new CreateOrganizationalUnitBudgetsCommand(
+                amount, fiscalYear, ou.id(), Set.of(owner), false, Set.of(), -1, 0);
+        when(getOrganizationalUnitUseCase.execute(ou.id())).thenReturn(ou);
+        when(idGenerator.generate()).thenReturn(501L);
+
+        // when
+        final var result = service.execute(command);
+
+        // then
+        assertThat(result.page()).isZero();
+        assertThat(result.size()).isEqualTo(20);
+        assertThat(result.items()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("given existing budget for OU, when creating budgets, then throws exception")
+    void givenExistingBudgetForOu_whenCreatingBudgets_thenThrowsException() {
+        // given
+        final var ou = HierarchyTestFactory.randomOrganizationalUnit();
+        final var owner = EmployeeTestFactory.randomEmployeeId();
+        final var amount = BudgetingTestFactory.randomBigDecimalAmount();
+        final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
+        final var command = new CreateOrganizationalUnitBudgetsCommand(
+                amount, fiscalYear, ou.id(), Set.of(owner), false, Set.of(), 0, 20);
+        when(getOrganizationalUnitUseCase.execute(ou.id())).thenReturn(ou);
+        when(budgetRepository.existsByOrganizationalUnitId(ou.id())).thenReturn(true);
+
+        // when
+        final var executable = (org.assertj.core.api.ThrowableAssert.ThrowingCallable) () -> service.execute(command);
+
+        // then
+        assertThatThrownBy(executable)
+                .isInstanceOf(com.example.oulearning.budgeting.domain.exception.InvalidBudgetOperationException.class)
+                .hasMessageContaining("A budget already exists for organizational unit %d".formatted(ou.id().value()));
+    }
+
+    @Test
+    @DisplayName("given existing budget for child OU, when creating subtree budgets, then throws exception")
+    void givenExistingBudgetForChildOu_whenCreatingSubtreeBudgets_thenThrowsException() {
+        // given
+        final var ou1 = HierarchyTestFactory.randomOrganizationalUnit();
+        final var ou2 = HierarchyTestFactory.randomOrganizationalUnit();
+        final var owner = EmployeeTestFactory.randomEmployeeId();
+        final var amount = BudgetingTestFactory.randomBigDecimalAmount();
+        final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
+        final var command = new CreateOrganizationalUnitBudgetsCommand(
+                amount, fiscalYear, ou1.id(), Set.of(owner), true, Set.of(), 0, 20);
+        when(getSubtreeOrganizationalUnitsUseCase.execute(ou1.id())).thenReturn(List.of(ou1, ou2));
+        when(budgetRepository.existsByOrganizationalUnitId(ou1.id())).thenReturn(false);
+        when(budgetRepository.existsByOrganizationalUnitId(ou2.id())).thenReturn(true);
+
+        // when
+        final var executable = (org.assertj.core.api.ThrowableAssert.ThrowingCallable) () -> service.execute(command);
+
+        // then
+        assertThatThrownBy(executable)
+                .isInstanceOf(com.example.oulearning.budgeting.domain.exception.InvalidBudgetOperationException.class)
+                .hasMessageContaining("A budget already exists for organizational unit %d".formatted(ou2.id().value()));
     }
 }

@@ -8,10 +8,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-@Testcontainers
 public abstract class AbstractOracleIntegrationTest {
 
-    @Container
     protected static final GenericContainer<?> ORACLE_CONTAINER =
             new GenericContainer<>(DockerImageName.parse("gvenzl/oracle-free:23-slim-faststart"))
                     .withEnv("APP_USER", "test")
@@ -20,6 +18,10 @@ public abstract class AbstractOracleIntegrationTest {
                     .withExposedPorts(1521)
                     .waitingFor(new LogMessageWaitStrategy()
                             .withRegEx(".*DATABASE IS READY TO USE!.*\\s"));
+
+    static {
+        ORACLE_CONTAINER.start();
+    }
 
     @DynamicPropertySource
     static void oracleProperties(final DynamicPropertyRegistry registry) {

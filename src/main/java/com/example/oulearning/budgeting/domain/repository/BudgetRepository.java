@@ -12,5 +12,7 @@ public interface BudgetRepository {
 
     List<Budget> findByOrganizationalUnitId(OrganizationalUnitId organizationalUnitId);
 
+    boolean existsByOrganizationalUnitId(OrganizationalUnitId organizationalUnitId);
+
     void save(Budget budget);
 }

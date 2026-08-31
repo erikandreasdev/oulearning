@@ -53,4 +53,61 @@ class ListTrainingRequestsServiceTest {
         assertThat(result.page()).isEqualTo(0);
         assertThat(result.size()).isEqualTo(10);
     }
+
+    @Test
+    @DisplayName("given empty query with blank name and null page size, when listing requests, then defaults apply")
+    void givenEmptyQueryWithBlankNameAndNullPageSize_whenListingRequests_thenDefaultsApply() {
+        // given
+        when(trainingRepository.findAll(any(TrainingFilterCriteria.class), eq(0), eq(20)))
+                .thenReturn(List.of());
+        when(trainingRepository.count(any(TrainingFilterCriteria.class))).thenReturn(0L);
+
+        final var query = new ListTrainingRequestsQuery(
+                "   ",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        // when
+        final var result = service.execute(query);
+
+        // then
+        assertThat(result.items()).isEmpty();
+        assertThat(result.totalElements()).isZero();
+        assertThat(result.page()).isZero();
+        assertThat(result.size()).isEqualTo(20);
+    }
+
+    @Test
+    @DisplayName("given negative page and zero size, when listing requests, then fallback defaults apply")
+    void givenNegativePageAndZeroSize_whenListingRequests_thenFallbackDefaultsApply() {
+        // given
+        when(trainingRepository.findAll(any(TrainingFilterCriteria.class), eq(0), eq(20)))
+                .thenReturn(List.of());
+        when(trainingRepository.count(any(TrainingFilterCriteria.class))).thenReturn(0L);
+
+        final var query = new ListTrainingRequestsQuery(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                -1,
+                0);
+
+        // when
+        final var result = service.execute(query);
+
+        // then
+        assertThat(result.items()).isEmpty();
+        assertThat(result.page()).isZero();
+        assertThat(result.size()).isEqualTo(20);
+    }
 }

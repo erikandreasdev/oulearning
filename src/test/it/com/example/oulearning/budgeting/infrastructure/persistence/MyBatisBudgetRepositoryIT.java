@@ -123,5 +123,22 @@ class MyBatisBudgetRepositoryIT extends AbstractOracleIntegrationTest {
         final var b = updated.orElseThrow();
         assertThat(b.active()).isFalse();
     }
+
+    @Test
+    @DisplayName("given existing and non-existing OU, when checking existsByOrganizationalUnitId, then returns expected boolean")
+    @Sql(scripts = {"/sql/cleanup-all.sql", "/sql/insert-budget.sql"})
+    void givenExistingAndNonExistingOu_whenCheckingExistsByOrganizationalUnitId_thenReturnsExpectedBoolean() {
+        // given
+        final var existingOuId = new OrganizationalUnitId(2L);
+        final var nonExistingOuId = new OrganizationalUnitId(99999L);
+
+        // when
+        final var existsForExisting = budgetRepository.existsByOrganizationalUnitId(existingOuId);
+        final var existsForNonExisting = budgetRepository.existsByOrganizationalUnitId(nonExistingOuId);
+
+        // then
+        assertThat(existsForExisting).isTrue();
+        assertThat(existsForNonExisting).isFalse();
+    }
 }
 

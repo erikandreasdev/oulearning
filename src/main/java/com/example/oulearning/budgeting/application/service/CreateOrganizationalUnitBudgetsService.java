@@ -4,6 +4,7 @@ import com.example.oulearning.budgeting.application.port.in.command.CreateOrgani
 import com.example.oulearning.budgeting.application.port.in.model.OrganizationalUnitBudgetDto;
 import com.example.oulearning.budgeting.application.port.in.model.PaginatedBudgetsResult;
 import com.example.oulearning.budgeting.application.port.in.usecase.CreateOrganizationalUnitBudgetsUseCase;
+import com.example.oulearning.budgeting.domain.exception.InvalidBudgetOperationException;
 import com.example.oulearning.budgeting.domain.model.Budget;
 import com.example.oulearning.budgeting.domain.model.BudgetId;
 import com.example.oulearning.budgeting.domain.model.FiscalYear;
@@ -46,7 +47,7 @@ public class CreateOrganizationalUnitBudgetsService implements CreateOrganizatio
         final List<OrganizationalUnit> targetUnits;
         if (Boolean.TRUE.equals(command.includeAllChildren())) {
             targetUnits = getSubtreeOrganizationalUnitsUseCase.execute(command.organizationalUnitId());
-        } else if (command.targetChildOuIds() != null && !command.targetChildOuIds().isEmpty()) {
+        } else if (!command.targetChildOuIds().isEmpty()) {
             final var subtree = getSubtreeOrganizationalUnitsUseCase.execute(command.organizationalUnitId());
             targetUnits = subtree.stream()
                     .filter(ou -> ou.id().equals(command.organizationalUnitId())
@@ -54,6 +55,12 @@ public class CreateOrganizationalUnitBudgetsService implements CreateOrganizatio
                     .toList();
         } else {
             targetUnits = List.of(getOrganizationalUnitUseCase.execute(command.organizationalUnitId()));
+        }
+
+        for (final var unit : targetUnits) {
+            if (budgetRepository.existsByOrganizationalUnitId(unit.id())) {
+                throw InvalidBudgetOperationException.budgetAlreadyExists(unit.id());
+            }
         }
 
         final var createdBudgets = new ArrayList<OrganizationalUnitBudgetDto>();
