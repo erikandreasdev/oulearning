@@ -1,5 +1,5 @@
 # Endpoints
-1. Endpoint to retrieve training for an specified area.
+1. Endpoint to get trainings for an specified OU.
 Expected parameters: 'ouCode'
 Expected response:
 Assgined budget, Budget available to spend, List of trainings (id, name, list of ouCodes associated with the training, training budget, training status (enum)).    
@@ -11,8 +11,8 @@ Training status can be one of the following values:
 - COMPLETED: The training is completed.
 - CANCELLED: The training is cancelled.
 
-2. Endpoint to get the details of a single training (by id)
-Expected parameters: 'id' (path parameter)
+2. Endpoint to get the details of a single training (by id). Must validate if employee doing the request belongs to the list of owners of the OU that owns the training or if it is an employee that belongs to an OU that owns the training. If not, return 403 forbidden.
+Expected parameters: 'id' (path parameter), employeeId (query parameter)
 Expected response: training name, cost, owner name that request the training, purpose, type, hours and attendees (name, email).
 
 3. Endpoint to request a new Training. The owner of the Ou want to request a new training for his ou and want to send x members of the same ou to the training. Members from another Ous are not allowed.
@@ -85,3 +85,5 @@ Notes:
 - Remove previously created endpoints but do not remove use cases in application layer for future use.
 - Update openapi/doc after those changes.
 - Update doc folder after implementing those endpoints.
+
+9. Endpoint to retrieve the list of employees that are members of an OU by ou id
