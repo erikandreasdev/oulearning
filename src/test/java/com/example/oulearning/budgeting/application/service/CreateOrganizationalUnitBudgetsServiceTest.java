@@ -1,6 +1,7 @@
 package com.example.oulearning.budgeting.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -12,9 +13,13 @@ import com.example.oulearning.budgeting.domain.model.Budget;
 import com.example.oulearning.budgeting.domain.model.BudgetingTestFactory;
 import com.example.oulearning.budgeting.domain.model.IdGenerator;
 import com.example.oulearning.budgeting.domain.repository.BudgetRepository;
+import com.example.oulearning.organization.application.hierarchy.port.in.command.AssignOwnerCommand;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.AssignOwnerUseCase;
 import com.example.oulearning.organization.application.hierarchy.port.in.usecase.GetOrganizationalUnitUseCase;
 import com.example.oulearning.organization.application.hierarchy.port.in.usecase.GetSubtreeOrganizationalUnitsUseCase;
+import com.example.oulearning.organization.domain.employee.model.EmployeeTestFactory;
 import com.example.oulearning.organization.domain.hierarchy.model.HierarchyTestFactory;
+import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnit;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
@@ -27,17 +32,24 @@ class CreateOrganizationalUnitBudgetsServiceTest {
     private final GetOrganizationalUnitUseCase getOrganizationalUnitUseCase = mock(GetOrganizationalUnitUseCase.class);
     private final GetSubtreeOrganizationalUnitsUseCase getSubtreeOrganizationalUnitsUseCase =
             mock(GetSubtreeOrganizationalUnitsUseCase.class);
+    private final AssignOwnerUseCase assignOwnerUseCase = mock(AssignOwnerUseCase.class);
     private final CreateOrganizationalUnitBudgetsService service = new CreateOrganizationalUnitBudgetsService(
-            budgetRepository, idGenerator, getOrganizationalUnitUseCase, getSubtreeOrganizationalUnitsUseCase);
+            budgetRepository,
+            idGenerator,
+            getOrganizationalUnitUseCase,
+            getSubtreeOrganizationalUnitsUseCase,
+            assignOwnerUseCase);
 
     @Test
     @DisplayName("given single OU command, when creating budgets, then save single budget and return result")
     void givenSingleOuCommand_whenCreatingBudgets_thenSaveSingleBudgetAndReturnResult() {
         // given
         final var ou = HierarchyTestFactory.randomOrganizationalUnit();
+        final var owner = EmployeeTestFactory.randomEmployeeId();
         final var amount = BudgetingTestFactory.randomBigDecimalAmount();
         final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
-        final var command = new CreateOrganizationalUnitBudgetsCommand(amount, fiscalYear, ou.id(), false, Set.of(), 0, 20);
+        final var command = new CreateOrganizationalUnitBudgetsCommand(
+                amount, fiscalYear, ou.id(), Set.of(owner), false, Set.of(), 0, 20);
         when(getOrganizationalUnitUseCase.execute(ou.id())).thenReturn(ou);
         when(idGenerator.generate()).thenReturn(100L);
 
@@ -47,6 +59,7 @@ class CreateOrganizationalUnitBudgetsServiceTest {
         // then
         assertThat(result.totalElements()).isEqualTo(1);
         assertThat(result.items()).hasSize(1);
+        verify(assignOwnerUseCase, times(1)).execute(any(AssignOwnerCommand.class));
         verify(budgetRepository, times(1)).save(any(Budget.class));
     }
 
@@ -56,10 +69,14 @@ class CreateOrganizationalUnitBudgetsServiceTest {
         // given
         final var ou1 = HierarchyTestFactory.randomOrganizationalUnit();
         final var ou2 = HierarchyTestFactory.randomOrganizationalUnit();
+        final var owner = EmployeeTestFactory.randomEmployeeId();
         final var amount = BudgetingTestFactory.randomBigDecimalAmount();
         final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
-        final var command = new CreateOrganizationalUnitBudgetsCommand(amount, fiscalYear, ou1.id(), true, Set.of(), 0, 20);
+        final var command = new CreateOrganizationalUnitBudgetsCommand(
+                amount, fiscalYear, ou1.id(), Set.of(owner), true, Set.of(), 0, 20);
         when(getSubtreeOrganizationalUnitsUseCase.execute(ou1.id())).thenReturn(List.of(ou1, ou2));
+        when(getOrganizationalUnitUseCase.execute(ou1.id())).thenReturn(ou1);
+        when(getOrganizationalUnitUseCase.execute(ou2.id())).thenReturn(ou2);
         when(idGenerator.generate()).thenReturn(101L, 102L);
 
         // when
@@ -68,6 +85,74 @@ class CreateOrganizationalUnitBudgetsServiceTest {
         // then
         assertThat(result.totalElements()).isEqualTo(2);
         assertThat(result.items()).hasSize(2);
+        verify(assignOwnerUseCase, times(2)).execute(any(AssignOwnerCommand.class));
         verify(budgetRepository, times(2)).save(any(Budget.class));
+    }
+
+    @Test
+    @DisplayName("given target child ou ids, when creating budgets, then save only filtered subtree budgets")
+    void givenTargetChildOuIds_whenCreatingBudgets_thenSaveOnlyFilteredSubtreeBudgets() {
+        // given
+        final var ou1 = HierarchyTestFactory.randomOrganizationalUnit();
+        final var ou2 = HierarchyTestFactory.randomOrganizationalUnit();
+        final var ou3 = HierarchyTestFactory.randomOrganizationalUnit();
+        final var owner = EmployeeTestFactory.randomEmployeeId();
+        final var amount = BudgetingTestFactory.randomBigDecimalAmount();
+        final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
+        final var command = new CreateOrganizationalUnitBudgetsCommand(
+                amount, fiscalYear, ou1.id(), Set.of(owner), false, Set.of(ou2.id()), 0, 20);
+        when(getSubtreeOrganizationalUnitsUseCase.execute(ou1.id())).thenReturn(List.of(ou1, ou2, ou3));
+        when(getOrganizationalUnitUseCase.execute(ou1.id())).thenReturn(ou1);
+        when(getOrganizationalUnitUseCase.execute(ou2.id())).thenReturn(ou2);
+        when(idGenerator.generate()).thenReturn(201L, 202L);
+
+        // when
+        final var result = service.execute(command);
+
+        // then
+        assertThat(result.totalElements()).isEqualTo(2);
+        assertThat(result.items()).hasSize(2);
+        verify(assignOwnerUseCase, times(2)).execute(any(AssignOwnerCommand.class));
+        verify(budgetRepository, times(2)).save(any(Budget.class));
+    }
+
+    @Test
+    @DisplayName("given existing owners, when assigning duplicate and new owners, then owners are idempotent")
+    void givenExistingOwners_whenAssigningDuplicateAndNewOwners_thenOwnersAreIdempotent() {
+        // given
+        final var existingOwner = EmployeeTestFactory.randomEmployeeId();
+        final var newOwner = EmployeeTestFactory.randomEmployeeId();
+        final var ou = OrganizationalUnit.create(
+                HierarchyTestFactory.randomOrganizationalUnitId(),
+                HierarchyTestFactory.randomName(),
+                null).addOwner(existingOwner);
+        final var updatedOu = ou.addOwner(newOwner);
+        final var amount = BudgetingTestFactory.randomBigDecimalAmount();
+        final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
+        final var command = new CreateOrganizationalUnitBudgetsCommand(
+                amount, fiscalYear, ou.id(), Set.of(existingOwner, newOwner), false, Set.of(), 0, 20);
+        when(getOrganizationalUnitUseCase.execute(ou.id())).thenReturn(updatedOu);
+        when(idGenerator.generate()).thenReturn(301L);
+
+        // when
+        final var result = service.execute(command);
+
+        // then
+        assertThat(result.items().getFirst().owners())
+                .containsExactlyInAnyOrder(existingOwner, newOwner);
+    }
+
+    @Test
+    @DisplayName("given empty owners, when creating command, then throws exception")
+    void givenEmptyOwners_whenCreatingCommand_thenThrowsException() {
+        // given
+        final var ouId = HierarchyTestFactory.randomOrganizationalUnitId();
+        final var amount = BudgetingTestFactory.randomBigDecimalAmount();
+        final var fiscalYear = BudgetingTestFactory.randomFiscalYearValue();
+
+        // when / then
+        assertThatThrownBy(() -> new CreateOrganizationalUnitBudgetsCommand(
+                        amount, fiscalYear, ouId, Set.of(), false, Set.of(), 0, 20))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

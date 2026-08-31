@@ -47,10 +47,15 @@ class BudgetController implements BudgetsApi {
                 ? request.getTargetChildOuIds().stream().map(OrganizationalUnitId::new).collect(Collectors.toSet())
                 : Set.of();
 
+        final Set<EmployeeId> owners = request.getOwners() != null
+                ? request.getOwners().stream().map(EmployeeId::new).collect(Collectors.toSet())
+                : Set.of();
+
         final var command = new CreateOrganizationalUnitBudgetsCommand(
                 request.getAssignedBudget(),
                 request.getFiscalYear(),
                 new OrganizationalUnitId(request.getOrganizationalUnitId()),
+                owners,
                 request.getIncludeAllChildren(),
                 targetChildOuIds,
                 request.getPage(),

@@ -36,6 +36,7 @@ package budgeting.domain <<Folder>> {
 package organization.application <<Folder>> {
   interface GetOrganizationalUnitUseCase << (I, #00FF77) >>
   interface GetSubtreeOrganizationalUnitsUseCase << (I, #00FF77) >>
+  interface AssignOwnerUseCase << (I, #00FF77) >>
 }
 
 GetBudgetsByOrganizationalUnitService ..|> GetBudgetsByOrganizationalUnitUseCase
@@ -48,5 +49,6 @@ GetBudgetsByOrganizationalUnitService --> GetSubtreeOrganizationalUnitsUseCase :
 CreateOrganizationalUnitBudgetsService --> BudgetRepository : uses
 CreateOrganizationalUnitBudgetsService --> GetOrganizationalUnitUseCase : uses
 CreateOrganizationalUnitBudgetsService --> GetSubtreeOrganizationalUnitsUseCase : uses
+CreateOrganizationalUnitBudgetsService --> AssignOwnerUseCase : uses
 
 @enduml

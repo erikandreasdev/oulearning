@@ -93,6 +93,7 @@ class BudgetControllerIT {
         request.setOrganizationalUnitId(ouId);
         request.setFiscalYear(fiscalYear);
         request.setAssignedBudget(assignedBudget);
+        request.setOwners(List.of(BudgetingTestFactory.randomId()));
         request.setIncludeAllChildren(false);
 
         final var budgetId = BudgetingTestFactory.randomId();

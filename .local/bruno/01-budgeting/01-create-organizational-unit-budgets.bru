@@ -19,9 +19,17 @@ body:json {
     "assignedBudget": {{assignedBudget}},
     "fiscalYear": {{fiscalYear}},
     "organizationalUnitId": {{ouId}},
+    "owners": [10],
     "includeAllChildren": false,
     "targetChildOuIds": [],
     "page": 0,
     "size": 20
   }
+}
+
+vars:pre-request {
+  assignedBudget: 10000
+  fiscalYear: 2026
+  ouId: 106
+  baseUrl: http://localhost:8080
 }

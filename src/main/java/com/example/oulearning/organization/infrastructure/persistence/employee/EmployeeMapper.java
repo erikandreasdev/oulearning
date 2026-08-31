@@ -12,6 +12,9 @@ interface EmployeeMapper {
     @Select("SELECT id, name, surname, email, active FROM employee WHERE id = #{id}")
     Optional<EmployeeEntity> findById(Long id);
 
+    @Select("SELECT id, name, surname, email, active FROM employee WHERE email = #{email}")
+    Optional<EmployeeEntity> findByEmail(String email);
+
     @Insert("INSERT INTO employee (id, name, surname, email, active) VALUES (#{id}, #{name}, #{surname}, #{email}, #{active})")
     void insert(EmployeeEntity entity);
 

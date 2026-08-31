@@ -10,6 +10,8 @@ import com.example.oulearning.budgeting.domain.model.FiscalYear;
 import com.example.oulearning.budgeting.domain.model.IdGenerator;
 import com.example.oulearning.budgeting.domain.model.Money;
 import com.example.oulearning.budgeting.domain.repository.BudgetRepository;
+import com.example.oulearning.organization.application.hierarchy.port.in.command.AssignOwnerCommand;
+import com.example.oulearning.organization.application.hierarchy.port.in.usecase.AssignOwnerUseCase;
 import com.example.oulearning.organization.application.hierarchy.port.in.usecase.GetOrganizationalUnitUseCase;
 import com.example.oulearning.organization.application.hierarchy.port.in.usecase.GetSubtreeOrganizationalUnitsUseCase;
 import com.example.oulearning.organization.domain.hierarchy.model.OrganizationalUnit;
@@ -24,16 +26,19 @@ public class CreateOrganizationalUnitBudgetsService implements CreateOrganizatio
     private final IdGenerator idGenerator;
     private final GetOrganizationalUnitUseCase getOrganizationalUnitUseCase;
     private final GetSubtreeOrganizationalUnitsUseCase getSubtreeOrganizationalUnitsUseCase;
+    private final AssignOwnerUseCase assignOwnerUseCase;
 
     public CreateOrganizationalUnitBudgetsService(
             final BudgetRepository budgetRepository,
             final IdGenerator idGenerator,
             final GetOrganizationalUnitUseCase getOrganizationalUnitUseCase,
-            final GetSubtreeOrganizationalUnitsUseCase getSubtreeOrganizationalUnitsUseCase) {
+            final GetSubtreeOrganizationalUnitsUseCase getSubtreeOrganizationalUnitsUseCase,
+            final AssignOwnerUseCase assignOwnerUseCase) {
         this.budgetRepository = budgetRepository;
         this.idGenerator = idGenerator;
         this.getOrganizationalUnitUseCase = getOrganizationalUnitUseCase;
         this.getSubtreeOrganizationalUnitsUseCase = getSubtreeOrganizationalUnitsUseCase;
+        this.assignOwnerUseCase = assignOwnerUseCase;
     }
 
     @Override
@@ -53,6 +58,8 @@ public class CreateOrganizationalUnitBudgetsService implements CreateOrganizatio
 
         final var createdBudgets = new ArrayList<OrganizationalUnitBudgetDto>();
         for (final var unit : targetUnits) {
+            assignOwnerUseCase.execute(new AssignOwnerCommand(unit.id(), command.owners()));
+
             final var id = BudgetId.of(idGenerator.generate());
             final var budget = Budget.create(
                     id,
@@ -62,6 +69,8 @@ public class CreateOrganizationalUnitBudgetsService implements CreateOrganizatio
                     Money.zero(),
                     Money.of(command.assignedBudget()));
             budgetRepository.save(budget);
+
+            final var updatedUnit = getOrganizationalUnitUseCase.execute(unit.id());
             createdBudgets.add(new OrganizationalUnitBudgetDto(
                     budget.id(),
                     budget.organizationalUnitId(),
@@ -69,7 +78,7 @@ public class CreateOrganizationalUnitBudgetsService implements CreateOrganizatio
                     budget.available(),
                     budget.reserved(),
                     budget.fiscalYear(),
-                    unit.owners().stream().toList()));
+                    updatedUnit.owners().stream().toList()));
         }
 
         final int page = command.page() != null && command.page() >= 0 ? command.page() : 0;

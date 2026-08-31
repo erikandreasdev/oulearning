@@ -3,6 +3,7 @@ required:
   - assignedBudget
   - fiscalYear
   - organizationalUnitId
+  - owners
 properties:
   assignedBudget:
     type: number
@@ -12,6 +13,12 @@ properties:
   organizationalUnitId:
     type: integer
     format: int64
+  owners:
+    type: array
+    items:
+      type: integer
+      format: int64
+    minItems: 1
   includeAllChildren:
     type: boolean
     default: false

@@ -28,6 +28,15 @@ class MyBatisOrganizationalUnitRepository implements OrganizationalUnitRepositor
     }
 
     @Override
+    public Optional<OrganizationalUnit> findByNameAndParentId(
+            final Name name, final Optional<OrganizationalUnitId> parentId) {
+        final var entityOpt = parentId.isPresent()
+                ? mapper.findByNameAndParentId(name.value(), parentId.get().value())
+                : mapper.findRootByName(name.value());
+        return entityOpt.map(this::toDomain);
+    }
+
+    @Override
     public List<OrganizationalUnit> findSubtreeById(final OrganizationalUnitId id) {
         final var rootOpt = findById(id);
         if (rootOpt.isEmpty()) {
@@ -49,6 +58,13 @@ class MyBatisOrganizationalUnitRepository implements OrganizationalUnitRepositor
             }
         }
         return List.copyOf(result);
+    }
+
+    @Override
+    public List<OrganizationalUnit> findAll() {
+        return mapper.findAll().stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     @Override

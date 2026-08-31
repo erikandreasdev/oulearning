@@ -23,6 +23,11 @@ class MyBatisEmployeeRepository implements EmployeeRepository {
     }
 
     @Override
+    public Optional<Employee> findByEmail(final Email email) {
+        return employeeMapper.findByEmail(email.value()).map(this::toDomain);
+    }
+
+    @Override
     public void save(final Employee employee) {
         final var entity = toEntity(employee);
         if (employeeMapper.findById(entity.id()).isEmpty()) {

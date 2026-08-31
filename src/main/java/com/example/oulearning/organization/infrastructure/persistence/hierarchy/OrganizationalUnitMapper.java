@@ -15,6 +15,15 @@ interface OrganizationalUnitMapper {
     @Select("SELECT id, name, parent_id, active FROM organizational_unit WHERE id = #{id}")
     Optional<OrganizationalUnitEntity> findById(Long id);
 
+    @Select("SELECT id, name, parent_id, active FROM organizational_unit ORDER BY id ASC")
+    List<OrganizationalUnitEntity> findAll();
+
+    @Select("SELECT id, name, parent_id, active FROM organizational_unit WHERE name = #{name} AND parent_id = #{parentId}")
+    Optional<OrganizationalUnitEntity> findByNameAndParentId(@Param("name") String name, @Param("parentId") Long parentId);
+
+    @Select("SELECT id, name, parent_id, active FROM organizational_unit WHERE name = #{name} AND parent_id IS NULL")
+    Optional<OrganizationalUnitEntity> findRootByName(@Param("name") String name);
+
     @Insert("INSERT INTO organizational_unit (id, name, parent_id, active) VALUES (#{id}, #{name}, #{parentId}, #{active})")
     void insert(OrganizationalUnitEntity entity);
 

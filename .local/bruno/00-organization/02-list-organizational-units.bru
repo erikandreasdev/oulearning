@@ -1,0 +1,15 @@
+meta {
+  name: List Organizational Units
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/organization/units
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:8080
+}
